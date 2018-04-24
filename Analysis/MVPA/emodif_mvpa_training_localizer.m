@@ -2,9 +2,9 @@
 function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,penalty,shiftTRs)
   
   %----------------------------------------------------------------------
-  % [stuff] = repref_mvpa_training_phase1(... ALL ARGS ARE STRINGS ...)
+  % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
   % * for development -
-  % imdif_mvpa_training_localizer_tw('1505201','tempoccfusi_pHg_combined_epi_space','L2logreg','fsor', '50','05')
+  % emodif_mvpa_training_localizer('101','tempoccfusi_pHg_combined_epi_space','L2logreg','fsoner', '50','05')
   % * subjNum     = subject ID (e.g., '110915')
   % * maskName    = name of mask to use to read in data (no SUBJID)
   % * featSel     = 1|0: do voxelwise ANOVA feature selection, p=0.05
@@ -18,7 +18,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   % 2. train a classifier on and do cross-validation.
   %
   %----------------------------------------------------------------------
-  version = '2015Aug30';
+  version = '2018Apr24';
   
   %% setup parameters
   %-----------------------------------------------------------------------%
@@ -42,12 +42,11 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
    
   args.script = mfilename;
   args.phase = 'localizer';
-  args.nTRs = 422; %144 trials per run, 15 breaks per block + 8s end, 6 seconds to start  %%%% THIS CHANGES FOR 150511 and 1505121 304 is 144 trials ith 6 seconds to start and 10 seconds to end %%%%%
-
+  args.nTRs = 426; % 135 trials per run, 5 TRs per rest, each post miniblock. each single run 145 stim TRs and 75 rest TRs.  
   
   args.user = strtrim(user); 
   args.hostname = strtrim(host);
-  args.datestamp = sprintf('%s_%s',datetime,args.hostname);
+  args.datestamp = sprintf('%s_%s',date,args.hostname);
   args.subjNum = subjNum;
   args.subjID = sprintf('emodif_%s',num2str(subjNum));
   
@@ -61,15 +60,15 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
 %   args.trainphase = train_phase;
   args.penalty = str2num(penalty);
   args.shiftTRs = str2num(shiftTRs);
-  args.condNames = {'face','scene','object','rest'};
-  args.condNames_short = {'f','s','o','r'};
+  args.condNames = {'face','scene','object','neutral', 'negative' 'rest'};
+  args.condNames_short = {'f','s','o','n','e','r'};
   args.impmapType = 'mcduff';
   
-  args.subj_dir = sprintf('/scratch/03034/twang04/imdif2/%s', args.subjID);
+  args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.output_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.phase, datetime);
+  args.output_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.phase, date);
   mkdir(args.output_dir);   
 
 
@@ -86,7 +85,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
 %% initialize subject structure with 'study' and 'subject' info
   %-----------------------------------------------------------------------%
   %
-  subj = init_subj('imdif', args.subjID);
+  subj = init_subj('emodif', args.subjID);
   
   %% read in the regressors & selectors
   %-----------------------------------------------------------------------%
@@ -95,7 +94,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   % read in subject-specific regressors
   start_dir = pwd;
   cd(args.regs_dir);
-  the_regressors = 'IMDIF_MVPA_REGS.mat';
+  the_regressors = 'EmoDiF_MVPA_reg.mat';
   %the_regressors = sprintf('/work/03034/twang04/Dropbox/studydata/imdif/data/sub_%s/IMDIF_MVPA_REGS.mat', args.subjNum);
   
   load(the_regressors);
@@ -104,9 +103,6 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   loc_runs = mvpa_regs.localizer.run;
   loc_trial = mvpa_regs.localizer.trial;
 %   loc_probe = mvpa_regs.localizer.probe;
-  loc_acc = mvpa_regs.localizer.acc;
-  loc_rt = mvpa_regs.localizer.rt;
- 
   %loc_conds : 1|2|3|4 (object,face,scene,rest)
   %loc_runs  : 1|2|3|4 (run # of the trial)
   %loc_trial : 1|2|...|24 (trial # within the run)
@@ -128,7 +124,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   
   % remove any empty TRs
   norun_trs = isnan(loc_runs);
-  regs = {'loc_conds', 'loc_runs', 'loc_trial', 'loc_acc', 'loc_rt'};
+  regs = {'loc_conds', 'loc_runs', 'loc_trial'};
   if ~isempty(norun_trs)
     fprintf('\n\n## removing %d TRs from localizer regressors\n', count(norun_trs));
     for i = 1:length(regs)
@@ -150,106 +146,113 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
     conds_to_use(i) = cond;
   end
     
-  %% build the regressors and selectors and add to subj structure
-  %-----------------------------------------------------------------------%
-  % 
- 
-  all_conds = []; % 1266 - 4 conditions  
-  all_runs = [];  % 1266 - 3 runs
-  all_trials = []; % 1266 - 432 trials
-  all_TRs = []; %1266 - 1-26 of miniblocks.
+  %% Judy built out regressors already %%
   
-  %%%
+  all_conds = mvpa_regs.localizer.cat; 
+  all_runs = mvpa_regs.localizer.run;
+  all_trials = mvpa_regs.localizer.trial;
+  all_TRs = mvpa_regs.localizer.TR;
   
-  for i = 1:9:424
-      my_cond = loc_conds(i);
-      my_run = loc_runs(i);
-      my_trial = loc_trial(i);
-      my_length = 26; 
-      %%%if first two subjects
-      %my_length = 18;
-      my_train_trs = 1:18;
-      %%%if first two subjects POSSIBLY
-      %my_train_trs = 9:18;
-      trial_runs = my_run*ones(1,my_length);
-      trial_nums = (my_trial+((my_run-1)*144))*ones(1,my_length);
-      trial_TR = 1:26;
-      trial_conds = zeros(count(conds_to_use),my_length);
-      if conds_to_use(my_cond)
-          trial_conds(my_cond, my_train_trs) = 1;
-      end
-      
-      
-      %if conds_to_use(my_cond)
-      all_conds = [all_conds trial_conds];
-      all_runs = [all_runs trial_runs];
-      all_trials = [all_trials trial_nums];
-      all_TRs = [all_TRs trial_TR];
-  end
-  
-  % prepare to insert 6s wait in all_runs
-  temp_run1 = ones(1,6);
-  temp_run2 = repmat(2,1,6);
-  temp_run3 = repmat(3,1,6);
-  
-  %prepare to insert 6s wait in all_conds
-  temp_conds = zeros(4,6);
-  
-  %prepare to insert 6s wait in all_trials 
-  temp_NaNs = NaN(1,6);
-  
-  %prepare to insert 6s wait in all_TRs
-  temp_TRs = 1:6;
-  % now i need to insert 6 seconds at the start of each run - temp matrix
-  % for conditions
-  all_conds = [temp_conds all_conds];
-  temp2_conds = all_conds(1:4,1:422); %Run 1 and includes 6s of wait. 
-  temp_endconds = all_conds(1:4,423:end); %Run 2 and 3 and does not include 6s of wait.
-  temp2_conds = [temp2_conds temp_conds]; %Run 1 and includes wait before and Run2 wait
-  all_conds = [temp2_conds temp_endconds]; %Run 1 and Run 2 with waits before and no wait between 2 and 3
-  temp2_conds = all_conds(1:4, 1:422);
-  temp3_conds = all_conds(1:4,423:844); %Run 2 - no waits
-  temp3_conds = [temp3_conds temp_conds]; %Run 2 with 6s wait after
-  temp_endconds = all_conds(1:4,845:end); %Run 3
-  all_conds = [temp2_conds temp3_conds temp_endconds]; 
-  
-  %for all_runs
-  all_runs = [temp_run1 all_runs];
-  temp2_runs = all_runs(1,1:422);
-  temp_endruns = all_runs(1,423:end);
-  temp2_runs = [temp2_runs temp_run2];
-  all_runs = [temp2_runs temp_endruns]; %Run 1 and Run 2 with waits before and no wait between 2 and 3
-  temp2_runs = all_runs(1, 1:422);
-  temp3_runs = all_runs(1,423:844); %Run 2 - no waits
-  temp3_runs = [temp3_runs temp_run3]; %Run 2 with 6s wait after
-  temp_endruns = all_runs(1,845:end); %Run 3
-  all_runs = [temp2_runs temp3_runs temp_endruns]; 
-  
-  %for all_trials
-  all_trials = [temp_NaNs all_trials];
-  temp2_trials = all_trials(1,1:422);
-  temp_endtrials = all_trials(1,423:end);
-  temp2_trials = [temp2_trials temp_NaNs];
-  all_trials = [temp2_trials temp_endtrials]; %Run 1 and Run 2 with waits before and no wait between 2 and 3
-  temp2_trials = all_trials(1, 1:422);
-  temp3_trials = all_trials(1,423:844); %Run 2 - no waits
-  temp3_trials = [temp3_trials temp_NaNs]; %Run 2 with 6s wait after
-  temp_endtrials = all_trials(1,845:end); %Run 3
-  all_trials = [temp2_trials temp3_trials temp_endtrials]; 
-  
-  
-  %for all_TRs
-  all_TRs = [temp_TRs all_TRs];
-  temp2_TRs = all_TRs(1,1:422);
-  temp_endTRs = all_TRs(1,423:end);
-  temp2_TRs = [temp2_TRs temp_NaNs];
-  all_TRs = [temp2_TRs temp_endTRs]; %Run 1 and Run 2 with waits before and no wait between 2 and 3
-  temp2_TRs = all_TRs(1, 1:422);
-  temp3_TRs = all_TRs(1,423:844); %Run 2 - no waits
-  temp3_TRs = [temp3_TRs temp_NaNs]; %Run 2 with 6s wait after
-  temp_endTRs = all_TRs(1,845:end); %Run 3
-  all_TRs = [temp2_TRs temp3_TRs temp_endTRs]; 
+%   %% build the regressors and selectors and add to subj structure
+%   %-----------------------------------------------------------------------%
+%   % 
+%  
+%   all_conds = []; % 1266 - 4 conditions  
+%   all_runs = [];  % 1266 - 3 runs
+%   all_trials = []; % 1266 - 432 trials
+%   all_TRs = []; %1266 - 1-26 of miniblocks.
 %   
+%   %%%
+%   
+%   for i = 1:9:424
+%       my_cond = loc_conds(i);
+%       my_run = loc_runs(i);
+%       my_trial = loc_trial(i);
+%       my_length = 26; 
+%       %%%if first two subjects
+%       %my_length = 18;
+%       my_train_trs = 1:18;
+%       %%%if first two subjects POSSIBLY
+%       %my_train_trs = 9:18;
+%       trial_runs = my_run*ones(1,my_length);
+%       trial_nums = (my_trial+((my_run-1)*144))*ones(1,my_length);
+%       trial_TR = 1:26;
+%       trial_conds = zeros(count(conds_to_use),my_length);
+%       if conds_to_use(my_cond)
+%           trial_conds(my_cond, my_train_trs) = 1;
+%       end
+%       
+%       
+%       %if conds_to_use(my_cond)
+%       all_conds = [all_conds trial_conds];
+%       all_runs = [all_runs trial_runs];
+%       all_trials = [all_trials trial_nums];
+%       all_TRs = [all_TRs trial_TR];
+%   end
+%   
+%   % prepare to insert 6s wait in all_runs
+%   temp_run1 = ones(1,6);
+%   temp_run2 = repmat(2,1,6);
+%   temp_run3 = repmat(3,1,6);
+%   
+%   %prepare to insert 6s wait in all_conds
+%   temp_conds = zeros(4,6);
+%   
+%   %prepare to insert 6s wait in all_trials 
+%   temp_NaNs = NaN(1,6);
+%   
+%   %prepare to insert 6s wait in all_TRs
+%   temp_TRs = 1:6;
+%   % now i need to insert 6 seconds at the start of each run - temp matrix
+%   % for conditions
+%   all_conds = [temp_conds all_conds];
+%   temp2_conds = all_conds(1:4,1:422); %Run 1 and includes 6s of wait. 
+%   temp_endconds = all_conds(1:4,423:end); %Run 2 and 3 and does not include 6s of wait.
+%   temp2_conds = [temp2_conds temp_conds]; %Run 1 and includes wait before and Run2 wait
+%   all_conds = [temp2_conds temp_endconds]; %Run 1 and Run 2 with waits before and no wait between 2 and 3
+%   temp2_conds = all_conds(1:4, 1:422);
+%   temp3_conds = all_conds(1:4,423:844); %Run 2 - no waits
+%   temp3_conds = [temp3_conds temp_conds]; %Run 2 with 6s wait after
+%   temp_endconds = all_conds(1:4,845:end); %Run 3
+%   all_conds = [temp2_conds temp3_conds temp_endconds]; 
+%   
+%   %for all_runs
+%   all_runs = [temp_run1 all_runs];
+%   temp2_runs = all_runs(1,1:422);
+%   temp_endruns = all_runs(1,423:end);
+%   temp2_runs = [temp2_runs temp_run2];
+%   all_runs = [temp2_runs temp_endruns]; %Run 1 and Run 2 with waits before and no wait between 2 and 3
+%   temp2_runs = all_runs(1, 1:422);
+%   temp3_runs = all_runs(1,423:844); %Run 2 - no waits
+%   temp3_runs = [temp3_runs temp_run3]; %Run 2 with 6s wait after
+%   temp_endruns = all_runs(1,845:end); %Run 3
+%   all_runs = [temp2_runs temp3_runs temp_endruns]; 
+%   
+%   %for all_trials
+%   all_trials = [temp_NaNs all_trials];
+%   temp2_trials = all_trials(1,1:422);
+%   temp_endtrials = all_trials(1,423:end);
+%   temp2_trials = [temp2_trials temp_NaNs];
+%   all_trials = [temp2_trials temp_endtrials]; %Run 1 and Run 2 with waits before and no wait between 2 and 3
+%   temp2_trials = all_trials(1, 1:422);
+%   temp3_trials = all_trials(1,423:844); %Run 2 - no waits
+%   temp3_trials = [temp3_trials temp_NaNs]; %Run 2 with 6s wait after
+%   temp_endtrials = all_trials(1,845:end); %Run 3
+%   all_trials = [temp2_trials temp3_trials temp_endtrials]; 
+%   
+%   
+%   %for all_TRs
+%   all_TRs = [temp_TRs all_TRs];
+%   temp2_TRs = all_TRs(1,1:422);
+%   temp_endTRs = all_TRs(1,423:end);
+%   temp2_TRs = [temp2_TRs temp_NaNs];
+%   all_TRs = [temp2_TRs temp_endTRs]; %Run 1 and Run 2 with waits before and no wait between 2 and 3
+%   temp2_TRs = all_TRs(1, 1:422);
+%   temp3_TRs = all_TRs(1,423:844); %Run 2 - no waits
+%   temp3_TRs = [temp3_TRs temp_NaNs]; %Run 2 with 6s wait after
+%   temp_endTRs = all_TRs(1,845:end); %Run 3
+%   all_TRs = [temp2_TRs temp3_TRs temp_endTRs]; 
+% %   
   
 % % %   for i = 1:length(loc_conds)
 % % %     % get regressors for current trial
@@ -347,26 +350,28 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   
   % determine how many epis there are
   % only grab data from runs that are selected
-  runs_to_use = unique(loc_runs);
-  cmd = 'ls -1 imdif_localizer*/bold_dt_mcf_brain.nii | grep -c local'; %dt is 30 sigma dt128 is 128 sigma 
-  [s,r] = system(cmd); %using the system to get this
-  nEPIs = str2num(r);
-  assert(nEPIs == count(runs_to_use),'** Mismatch on # of runs to use');
+%   runs_to_use = unique(loc_runs);
+%   cmd = 'ls -1 imdif_localizer*/bold_dt_mcf_brain.nii | grep -c local'; %dt is 30 sigma dt128 is 128 sigma 
+%   [s,r] = system(cmd); %using the system to get this
+%   nEPIs = str2num(r);
+%   assert(nEPIs == count(runs_to_use),'** Mismatch on # of runs to use');
+% 
+%   
+%   raw_filenames={};
+%   cmd = 'ls -1 imdif_localizer_epi_*/bold_dt_mcf_brain.nii | cut -d_ -f4 | cut -d/ -f1 | sort -nr';
+%   [~,r] = system(cmd);
+%   %listing files
+%   r = strtrim(r);
+%   raw_filenum= strsplit(r);
+%   for i = 1:length(raw_filenum);
+%   raw_filename = sprintf('imdif_localizer_epi_%s/bold_dt_mcf_brain.nii', raw_filenum{i});
+%   raw_filenames = [raw_filename raw_filenames];
+%   end
+%       
+%       
+%   raw_filenames=raw_filenames(1:count(runs_to_use));
 
-  
-  raw_filenames={};
-  cmd = 'ls -1 imdif_localizer_epi_*/bold_dt_mcf_brain.nii | cut -d_ -f4 | cut -d/ -f1 | sort -nr';
-  [~,r] = system(cmd);
-  %listing files
-  r = strtrim(r);
-  raw_filenum= strsplit(r);
-  for i = 1:length(raw_filenum);
-  raw_filename = sprintf('imdif_localizer_epi_%s/bold_dt_mcf_brain.nii', raw_filenum{i});
-  raw_filenames = [raw_filename raw_filenames];
-  end
-      
-      
-  raw_filenames=raw_filenames(1:count(runs_to_use));
+  raw_filenames = {'MVPA_training_1_corr_dt_mcf_brain.nii', 'MVPA_training_2_corr_dt_mcf_brain.nii'};
   
   readmask = get_mat(subj,'mask','read_mask');
   

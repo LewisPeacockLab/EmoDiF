@@ -46,8 +46,9 @@ FUNC_AVG_DIR=${FUNC_DIR}/avg_func_ref
 mkdir ${FUNC_AVG_DIR}
 
 ##### VARIABLES THAT CAN CHANGE!!!!####
+
 ST_MASK_HIP=${ST_MASK_DIR}/hippocampus_thr50_MNI152.nii 
-ST_MASK=${ST_MASK_DIR}/tempoccfusi_pHg_combined_MNI152.nii
+ST_MASK=${ST_MASK_DIR}/tempoccfusi_pHg_combined_bin_MNI152.nii
 ST_TEMPLATE=${ST_MASK_DIR}/MNI152_T1_1mm_brain.nii
 ST_TEMPLATE_HEAD=${ST_MASK_DIR}/MNI152_T1_1mm.nii
 ST_TEMPLATE_MASK=${ST_MASK_DIR}/MNI152_T1_1mm_brain_mask_dil.nii
@@ -59,8 +60,10 @@ midrun_bold=${FUNC_DIR}/DF_encoding_1_ref_mcf
 pre_fRI=${FUNC_DIR}/DF_encoding_1_avg_mcf
 fRI_head=${FUNC_AVG_DIR}/DF_encoding_1_avg_mcf
 fRI=${FUNC_AVG_DIR}/DF_encoding_1_avg_mcf_brain
-aRI=${ANAT_DIR}/s101_T1_anon_brain
-aRI_head=${ANAT_DIR}/s101_T1_anon
+aRI=${ANAT_DIR}/T1_hires_brain
+aRI_head=${ANAT_DIR}/T1_hires
+
+slicetimecorr=${BASEDIR}/slicetiming
 
 # take the bold.nii from the middle run, mcflirt and mean
 echo movement correction on middle run
@@ -75,46 +78,54 @@ gunzip ${FUNC_AVG_DIR}/*.gz
 
 # motion correct (coreg) all functionals the to average of the middle run; brain extract and bptf high pass all runs
 
+cd ${FUNC_DIR}
+
 #scan_list=`ls ${FUNC_DIR} | grep imdif`
 #for x in $scan_list; do cd ${FUNC_DIR}/$x; echo $x;
-echo 'movement correction'; mcflirt -in Preview1.nii -out Preview1_mcf -reffile ${fRI_head} -mats -plots;
-echo 'epi brain extraction'; bet Preview1_mcf.nii Preview1_mcf_brain.nii -F;
-echo 'creating temporary mean'; fslmaths Preview1_mcf_brain.nii -Tmean tempmean
-echo 'high pass temporal filter';fslmaths Preview1_mcf_brain.nii -bptf 32 -1 -add tempmean Preview1_dt_mcf_brain.nii; rm tempmean; #128s high pass filter
+echo 'slice time correction'; slicetimer -i Preview1.nii -o Preview1_corr.nii -r 2; 
+echo 'movement correction'; mcflirt -in Preview1_corr.nii -out Preview1_corr_mcf -reffile ${fRI_head} -mats -plots;
+echo 'epi brain extraction'; bet Preview1_corr_mcf.nii Preview1_corr_mcf_brain.nii -F;
+echo 'creating temporary mean'; fslmaths Preview1_corr_mcf_brain.nii -Tmean tempmean
+echo 'high pass temporal filter';fslmaths Preview1_corr_mcf_brain.nii -bptf 32 -1 -add tempmean Preview1_corr_dt_mcf_brain.nii; rm tempmean.nii.gz; #128s high pass filter
 
+echo 'slice time correction'; slicetimer -i Preview2.nii -o Preview2_corr.nii -r 2;
+echo 'movement correction'; mcflirt -in Preview2_corr.nii -out Preview2_corr_mcf -reffile ${fRI_head} -mats -plots;
+echo 'epi brain extraction'; bet Preview2_corr_mcf.nii Preview2_corr_mcf_brain.nii -F;
+echo 'creating temporary mean'; fslmaths Preview2_corr_mcf_brain.nii -Tmean tempmean
+echo 'high pass temporal filter';fslmaths Preview2_corr_mcf_brain.nii -bptf 32 -1 -add tempmean Preview2_corr_dt_mcf_brain.nii; rm tempmean.nii.gz; #128s high pass filter
 
-echo 'movement correction'; mcflirt -in Preview2.nii -out Preview2_mcf -reffile ${fRI_head} -mats -plots;
-echo 'epi brain extraction'; bet Preview2_mcf.nii Preview2_mcf_brain.nii -F;
-echo 'creating temporary mean'; fslmaths Preview2_mcf_brain.nii -Tmean tempmean
-echo 'high pass temporal filter';fslmaths Preview2_mcf_brain.nii -bptf 32 -1 -add tempmean Preview2_dt_mcf_brain.nii; rm tempmean; #128s high pass filter
+echo 'slice time correction'; slicetimer -i DF_encoding_1.nii -o DF_encoding_1_corr.nii -r 2;
+echo 'movement correction'; mcflirt -in DF_encoding_1_corr.nii -out DF_encoding_1_corr_mcf -reffile ${fRI_head} -mats -plots;
+echo 'epi brain extraction'; bet DF_encoding_1_corr_mcf.nii DF_encoding_1_corr_mcf_brain.nii -F;
+echo 'creating temporary mean'; fslmaths DF_encoding_1_corr_mcf_brain.nii -Tmean tempmean
+echo 'high pass temporal filter';fslmaths DF_encoding_1_corr_mcf_brain.nii -bptf 32 -1 -add tempmean DF_encoding_1_corr_dt_mcf_brain.nii; rm tempmean.nii.gz; #128s high pass filter
 
-echo 'movement correction'; mcflirt -in DF_encoding_1.nii -out DF_encoding_1_mcf -reffile ${fRI_head} -mats -plots;
-echo 'epi brain extraction'; bet DF_encoding_1_mcf.nii DF_encoding_1_mcf_brain.nii -F;
-echo 'creating temporary mean'; fslmaths DF_encoding_1_mcf_brain.nii -Tmean tempmean
-echo 'high pass temporal filter';fslmaths DF_encoding_1_mcf_brain.nii -bptf 32 -1 -add tempmean DF_encoding_1_dt_mcf_brain.nii; rm tempmean; #128s high pass filter
+echo 'slice time correction'; slicetimer -i DF_encoding_2.nii -o DF_encoding_2_corr.nii -r 2;
+echo 'movement correction'; mcflirt -in DF_encoding_2_corr.nii -out DF_encoding_2_corr_mcf -reffile ${fRI_head} -mats -plots;
+echo 'epi brain extraction'; bet DF_encoding_2_corr_mcf.nii DF_encoding_2_corr_mcf_brain.nii -F;
+echo 'creating temporary mean'; fslmaths DF_encoding_2_corr_mcf_brain.nii -Tmean tempmean
+echo 'high pass temporal filter';fslmaths DF_encoding_2_corr_mcf_brain.nii -bptf 32 -1 -add tempmean DF_encoding_2_corr_dt_mcf_brain.nii; rm tempmean.nii.gz; #128s high pass filter
 
-echo 'movement correction'; mcflirt -in DF_encoding_2.nii -out DF_encoding_2_mcf -reffile ${fRI_head} -mats -plots;
-echo 'epi brain extraction'; bet DF_encoding_2_mcf.nii DF_encoding_2_mcf_brain.nii -F;
-echo 'creating temporary mean'; fslmaths DF_encoding_2_mcf_brain.nii -Tmean tempmean
-echo 'high pass temporal filter';fslmaths DF_encoding_2_mcf_brain.nii -bptf 32 -1 -add tempmean DF_encoding_2_dt_mcf_brain.nii; rm tempmean; #128s high pass filter
+echo 'slice time correction'; slicetimer -i MVPA_training_1.nii -o MVPA_training_1_corr.nii -r 2;
+echo 'movement correction'; mcflirt -in MVPA_training_1_corr.nii -out MVPA_training_1_corr_mcf -reffile ${fRI_head} -mats -plots;
+echo 'epi brain extraction'; bet MVPA_training_1_corr_mcf.nii MVPA_training_1_corr_mcf_brain.nii -F;
+echo 'creating temporary mean'; fslmaths MVPA_training_1_corr_mcf_brain.nii -Tmean tempmean
+echo 'high pass temporal filter';fslmaths MVPA_training_1_corr_mcf_brain.nii -bptf 32 -1 -add tempmean MVPA_training_1_corr_dt_mcf_brain.nii; rm tempmean.nii.gz; #128s high pass filter
 
-echo 'movement correction'; mcflirt -in MVPA_training_1.nii -out MVPA_training_1_mcf -reffile ${fRI_head} -mats -plots;
-echo 'epi brain extraction'; bet MVPA_training_1_mcf.nii MVPA_training_1_mcf_brain.nii -F;
-echo 'creating temporary mean'; fslmaths MVPA_training_1_mcf_brain.nii -Tmean tempmean
-echo 'high pass temporal filter';fslmaths MVPA_training_1_mcf_brain.nii -bptf 32 -1 -add tempmean MVPA_training_1_dt_mcf_brain.nii; rm tempmean; #128s high pass filter
-
-echo 'movement correction'; mcflirt -in MVPA_training_2_.nii -out MVPA_training_2_mcf -reffile ${fRI_head} -mats -plots;
-echo 'epi brain extraction'; bet MVPA_training_2_mcf.nii MVPA_training_2_mcf_brain.nii -F;
-echo 'creating temporary mean'; fslmaths MVPA_training_2_mcf_brain.nii -Tmean tempmean
-echo 'high pass temporal filter';fslmaths MVPA_training_2_mcf_brain.nii -bptf 32 -1 -add tempmean MVPA_training_2_dt_mcf_brain.nii; rm tempmean; #128s high pass filter
+echo 'slice time correction'; slicetimer -i MVPA_training_2.nii -o MVPA_training_2_corr.nii -r 2;
+echo 'movement correction'; mcflirt -in MVPA_training_2_corr.nii -out MVPA_training_2_corr_mcf -reffile ${fRI_head} -mats -plots;
+echo 'epi brain extraction'; bet MVPA_training_2_corr_mcf.nii MVPA_training_2_corr_mcf_brain.nii -F;
+echo 'creating temporary mean'; fslmaths MVPA_training_2_corr_mcf_brain.nii -Tmean tempmean
+echo 'high pass temporal filter';fslmaths MVPA_training_2_corr_mcf_brain.nii -bptf 32 -1 -add tempmean MVPA_training_2_corr_dt_mcf_brain.nii; rm tempmean.nii.gz; #128s high pass filter
 
 echo 'unzipping all files'; gunzip *; 
 
 
 #BET your structural with -R (recursive) and -B (neck removal)
 
+#temporarily pre- skull stripped from anonymizing
 echo 'bet ${aRI_head} ${aRI} -R -B'
-bet ${aRI_head} ${aRI} -R -B
+bet ${aRI_head} ${aRI} -B -f 0.3
 
 #Register your fRI to the anatomical scan (MPRAGE)
 
@@ -150,11 +161,11 @@ echo "apply concateonated warps"
 # to ventral temporal mask
 applywarp --ref=${fRI} --in=${ST_MASK} --warp=${MNI2T1} --postmat=${T12fRI} --out=${MASK}
 # to hippocampus mask
-applywarp --ref=${fRI} --in=${ST_MASK_HIP} --warp=${MNI2T1} --postmat=${T12fRI} --out=${MASK_HIP}
+#applywarp --ref=${fRI} --in=${ST_MASK_HIP} --warp=${MNI2T1} --postmat=${T12fRI} --out=${MASK_HIP}
 #unzip mask
 echo "unzipping subject-specific mask for MVPA decoding"
 gunzip ${MASK}
-gunzip ${MASK_HIP}
+#gunzip ${MASK_HIP}
 gunzip ${FUNC_DIR}/*/*.gz
 
 #return to launch
