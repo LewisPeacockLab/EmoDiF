@@ -5,4 +5,4 @@ Emotional Directed Forgetting
 Preview
 DF Encoding
 Localizer
-Recognition/structural g
+Recognition/structural 
