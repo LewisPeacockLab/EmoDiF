@@ -183,13 +183,7 @@ rest_ID_idx_run2_rand_sorted = sortrows(rest_ID_idx_run2_rand);
  face_ID_idx = find(my_conds == 1);
  num_face_ID_idx_perrun = (length(face_ID_idx))/2;
  
- num_rest_TR_elim = length(rest_ID_idx_run1) - num_face_ID_idx_perrun;
- 
- for x = 1:num_rest_TR_elim
-     my_conds(1,rest_ID_idx_run1(x)) = NaN;
-     my_conds(1,rest_ID_idx_run2(x)) = NaN;
- end
- 
+ rest_TR_elim = length(rest_ID_idx_run1) - num_face_ID_idx_perrun
 %   %-----------------------------------------------------------------------%
 %   % 
 %  
