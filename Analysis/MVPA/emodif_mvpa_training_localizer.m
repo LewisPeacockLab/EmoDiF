@@ -148,7 +148,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
     
   %% Judy built out regressors already %%
   
-  all_conds = mvpa_regs.localizer.cat; 
+  my_conds = mvpa_regs.localizer.cat; 
   all_runs = mvpa_regs.localizer.run;
   all_trials = mvpa_regs.localizer.trial;
   all_TRs = mvpa_regs.localizer.TR;
@@ -157,14 +157,31 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
 %   %-----------------------------------------------------------------------%
 %   % 
 %  
-%   all_conds = []; % 1266 - 4 conditions  
+  all_conds = []; % 6 conditions face, scene, object, neutral, emotional, rest  
 %   all_runs = [];  % 1266 - 3 runs
 %   all_trials = []; % 1266 - 432 trials
 %   all_TRs = []; %1266 - 1-26 of miniblocks.
 %   
-%   %%%
-%   
-%   for i = 1:9:424
+  %%%
+
+  
+  for k = 1:length(conds_to_use)
+      temp_conds= [];
+      for i = 1:length(my_conds)
+          if conds_to_use(k) == 1;
+              if my_conds(i) == k
+                  temp_conds(i)=1;
+              else
+                  temp_conds(i)=0;
+              end
+          end
+          
+      end
+      all_conds = vertcat(all_conds,temp_conds);
+  end
+  
+      
+%       9:424
 %       my_cond = loc_conds(i);
 %       my_run = loc_runs(i);
 %       my_trial = loc_trial(i);
@@ -189,13 +206,13 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
 %       all_trials = [all_trials trial_nums];
 %       all_TRs = [all_TRs trial_TR];
 %   end
-%   
-%   % prepare to insert 6s wait in all_runs
+% %   
+% %   % prepare to insert 6s wait in all_runs
 %   temp_run1 = ones(1,6);
 %   temp_run2 = repmat(2,1,6);
 %   temp_run3 = repmat(3,1,6);
-%   
-%   %prepare to insert 6s wait in all_conds
+  
+  %prepare to insert 6s wait in all_conds
 %   temp_conds = zeros(4,6);
 %   
 %   %prepare to insert 6s wait in all_trials 
@@ -252,30 +269,30 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
 %   temp3_TRs = [temp3_TRs temp_NaNs]; %Run 2 with 6s wait after
 %   temp_endTRs = all_TRs(1,845:end); %Run 3
 %   all_TRs = [temp2_TRs temp3_TRs temp_endTRs]; 
-% %   
+%   
   
-% % %   for i = 1:length(loc_conds)
-% % %     % get regressors for current trial
-% % %     my_cond = loc_conds(i);
-% % %     my_run = loc_runs(i);
-% % %     my_trial = loc_trial(i);
-% % %     my_length = 2; % 1.5s display stim and .5s iti    
-% % %     my_break = 8;  % break between miniblocks 
-% % %     my_startwait = 6;
-% % %     
-% % %     trial_runs = my_run*ones(1,my_length);
-% % %     trial_nums = (my_trial+((my_run-1)*144))*ones(1,my_length);
-% % %     trial_TR = 1:2;
-% % %     my_train_trs = 1:2; %training on both TRs of each trial.
-% % %     
-% % %     % create conditions matrix - build out regressors
-% % %     % trial_conds = zeros(length(conds_to_use),my_length);
-% % % 
-% % %      trial_conds = zeros(count(conds_to_use),my_length);
-% % %     if conds_to_use(my_cond)
-% % %         trial_conds(my_cond, my_train_trs) = 1;
-% % %     end
-% % %     
+% %   for i = 1:length(loc_conds)
+% %     % get regressors for current trial
+% %     my_cond = loc_conds(i);
+% %     my_run = loc_runs(i);
+% %     my_trial = loc_trial(i);
+% %     my_length = 2; % 1.5s display stim and .5s iti    
+% %     my_break = 8;  % break between miniblocks 
+% %     my_startwait = 6;
+% %     
+% %     trial_runs = my_run*ones(1,my_length);
+% %     trial_nums = (my_trial+((my_run-1)*144))*ones(1,my_length);
+% %     trial_TR = 1:2;
+% %     my_train_trs = 1:2; %training on both TRs of each trial.
+% %     
+%     create conditions matrix - build out regressors
+%     trial_conds = zeros(length(conds_to_use),my_length);
+% 
+%      trial_conds = zeros(count(conds_to_use),my_length);
+%     if conds_to_use(my_cond)
+%         trial_conds(my_cond, my_train_trs) = 1;
+%     end
+    
 % % %     % add in iti
 % % %     if conds_to_use(end)
 % % %       trial_conds(end, my_iti_trs) = 1;
@@ -350,7 +367,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   
   % determine how many epis there are
   % only grab data from runs that are selected
-%   runs_to_use = unique(loc_runs);
+  runs_to_use = unique(loc_runs);
 %   cmd = 'ls -1 imdif_localizer*/bold_dt_mcf_brain.nii | grep -c local'; %dt is 30 sigma dt128 is 128 sigma 
 %   [s,r] = system(cmd); %using the system to get this
 %   nEPIs = str2num(r);
@@ -456,10 +473,10 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
       
       class_args.train_funct_name = 'train_L2_RLR';
       class_args.test_funct_name = 'test_L2_RLR';
-      %       class_args.penalty = args.penalty;
-      %       class_args.lambda = 'crossvalidation';
-      class_args.lambda = args.penalty;
-      
+            class_args.penalty = args.penalty;
+            class_args.lambda = 'crossvalidation';
+
+%       class_args.lambda = args.penalty;      
     case 'logreg'
       class_args.train_funct_name = 'train_logreg';
       class_args.test_funct_name = 'test_logreg';
@@ -481,7 +498,8 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   [subj results] =  cross_validation(subj, ...
       'localizer_epis_z', sh_conds_name, [runs_name '_xval'], ...
       xval_mask, class_args);
-    
+  
+    results.args = args;
     % save results structure 
     mkdir(args.output_dir)
     results_file = sprintf('%s/%s_%s_results.mat',...
@@ -549,3 +567,41 @@ function [] = verify_string(thisarg)
   assert(ischar(thisarg),'** %s must be a string', num2str(thisarg));
 end
 
+function [scratchpad] = train_L2_RLR(trainpats,traintargs,class_args,cv_args)
+ 
+%% Train a K class logistic regression classifier, with optional regularization via L2 norm of weight vector(s)
+ 
+% To implement L2 regularization, user must specify class_args.lambda parameter
+ 
+ 
+ 
+%% process arguments
+                          
+% default parameters
+defaults.regularization = 'L2';
+defaults.lambda         = 1;
+defaults.optimization   = 'minimize';
+defaults.labelsGroup    = []; 
+ 
+ 
+ class_args = mergestructs(class_args, defaults);
+ 
+  regularization = class_args.regularization;
+  lambda         = class_args.lambda;
+  optimization   = class_args.optimization;
+  lambda         = class_args.penalty;
+   
+%% call the classifier function
+ 
+model = classifierLogisticRegression( trainpats', traintargs', 'lambda', lambda);
+ 
+%% pack the results
+ 
+scratchpad.W = model.W;
+scratchpad.weights = model.weights;
+scratchpad.biases  = model.biases;
+ 
+scratchpad.lambda         = lambda;
+scratchpad.regularization = regularization;
+scratchpad.optimization   = optimization;
+end
