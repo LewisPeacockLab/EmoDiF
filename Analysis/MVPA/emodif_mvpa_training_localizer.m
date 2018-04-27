@@ -185,10 +185,12 @@ rest_ID_idx_run2_rand_sorted = sortrows(rest_ID_idx_run2_rand);
  
  num_rest_TR_elim = length(rest_ID_idx_run1) - num_face_ID_idx_perrun;
  
- for x = 1:num_rest_TR_elim
-     my_conds(1,rest_ID_idx_run1(x)) = NaN;
-     my_conds(1,rest_ID_idx_run2(x)) = NaN;
- end
+      for x = 1:num_rest_TR_elim
+         my_conds(1,rest_ID_idx_run1(x)) = 0;
+         my_conds(1,rest_ID_idx_run2(x)) = 0;
+     end
+ 
+
  
 %   %-----------------------------------------------------------------------%
 %   % 
@@ -218,7 +220,35 @@ rest_ID_idx_run2_rand_sorted = sortrows(rest_ID_idx_run2_rand);
       end
       all_conds = vertcat(all_conds,temp_conds);
   end
-  
+
+  %sanity check
+for k = 1:length(conds_to_use)
+    count_conds(k)=sum(all_conds(k,:));
+end
+    
+
+%  % IF rest is used
+%  if conds_to_use(6) == 1; %6 is REST
+%      for x = 1:num_rest_TR_elim
+%          all_conds(:,rest_ID_idx_run1(x)) = 99;
+%          all_conds(:,rest_ID_idx_run2(x)) = 99;
+%      end
+%      
+%      for r = 1:length(pre_conds)
+%          if pre_conds(1,r) ~= 99;
+%              trial_conds = pre_conds(:,r);
+%              trial_runs = pre_runs(:,r);
+%              trial_trials = pre_trials(:,r);
+%              trial_TRs = pre_TRs(:,r);
+%              all_conds = horzcat(all_conds, trial_conds);
+%              all_runs = horzcat(all_runs, trial_runs);
+%              all_trials = horzcat(all_trials,trial_trials);
+%              all_TRs = horzcat(all_TRs, trial_TRs);
+%          end
+%          
+%      end
+%  end
+ 
 
   
   
