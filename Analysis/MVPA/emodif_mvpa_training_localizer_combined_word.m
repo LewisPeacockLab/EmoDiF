@@ -1,5 +1,5 @@
 % function [localizer] = imdif_mvpa_training_localizer_tw(subjNum,maskName,featSel,fsThresh,classifier,categories,penalty,shiftTRs)
-function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,penalty,shiftTRs)
+function emodif_mvpa_training_localizer_combined_word(subjNum,maskName,classifier,categories,penalty,shiftTRs)
   
   %----------------------------------------------------------------------
   % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
@@ -64,12 +64,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   args.condNames_short = {'f','s','o','n','e','r'};
   args.impmapType = 'mcduff';
   
-  %for astoria
-%    args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
-% for tigger
-   args.subj_dir = sprintf('/Users/TWang/emodif_data/%s', args.subjID);
-   
-  
+  args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
