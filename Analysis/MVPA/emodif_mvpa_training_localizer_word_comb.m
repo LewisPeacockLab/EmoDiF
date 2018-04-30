@@ -1,10 +1,10 @@
 % function [localizer] = imdif_mvpa_training_localizer_tw(subjNum,maskName,featSel,fsThresh,classifier,categories,penalty,shiftTRs)
-function emodif_mvpa_training_localizer_combined_word(subjNum,maskName,classifier,categories,penalty,shiftTRs)
+function emodif_mvpa_training_localizer_word_comb(subjNum,maskName,classifier,categories,penalty,shiftTRs,rest_shift)
   
   %----------------------------------------------------------------------
   % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
   % * for development -
-  % emodif_mvpa_training_localizer('101','tempoccfusi_pHg_combined_epi_space','L2logreg','fsoner', '50','05')
+  % emodif_mvpa_training_localizer_word_comb('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02','2')
   % * subjNum     = subject ID (e.g., '110915')
   % * maskName    = name of mask to use to read in data (no SUBJID)
   % * featSel     = 1|0: do voxelwise ANOVA feature selection, p=0.05
@@ -60,11 +60,16 @@ function emodif_mvpa_training_localizer_combined_word(subjNum,maskName,classifie
 %   args.trainphase = train_phase;
   args.penalty = str2num(penalty);
   args.shiftTRs = str2num(shiftTRs);
-  args.condNames = {'face','scene','object','neutral', 'negative' 'rest'};
-  args.condNames_short = {'f','s','o','n','e','r'};
+  args.condNames = {'face','scene','object','word' 'rest'};
+  args.condNames_short = {'f','s','o','w','r'};
   args.impmapType = 'mcduff';
   
-  args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
+  %for astoria
+   args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
+% for tigger
+%    args.subj_dir = sprintf('/Users/TWang/emodif_data/%s', args.subjID);
+   
+  
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
@@ -154,48 +159,53 @@ function emodif_mvpa_training_localizer_combined_word(subjNum,maskName,classifie
   all_TRs = mvpa_regs.localizer.TR;
   
   
-  
-%   %% build the regressors and selectors and add to subj structure and
-%   evenly sample rest
-  %build an ID for all rest blocks
 
-  rest_ID_idx = find(my_conds == 6); %should be 156
   
-  %needs to treat each run separately so pre 213 and post 214 would be the
-  %end of the first block and start of the next block. 
   
- rest_ID_idx_run1 = rest_ID_idx(1,1:78);
- rest_ID_idx_run2 = rest_ID_idx(1,79:end); 
- 
- %generate 78 random numbers
- rand1 = rand(1,78);
- rand2 = rand(1,78);
- %sort these 78 random numbers with your idx run within run
- rest_ID_idx_run1_rand = vertcat(rand1, rest_ID_idx_run1);
- rest_ID_idx_run2_rand = vertcat(rand2, rest_ID_idx_run2);
- 
- rest_ID_idx_run1_rand = rest_ID_idx_run1_rand';
- rest_ID_idx_run2_rand = rest_ID_idx_run2_rand';
- 
-rest_ID_idx_run1_rand_sorted = sortrows(rest_ID_idx_run1_rand);
-rest_ID_idx_run2_rand_sorted = sortrows(rest_ID_idx_run2_rand);
 
- face_ID_idx = find(my_conds == 1);
- num_face_ID_idx_perrun = (length(face_ID_idx))/2;
- 
- num_rest_TR_elim = length(rest_ID_idx_run1) - num_face_ID_idx_perrun;
- 
-      for x = 1:num_rest_TR_elim
-         my_conds(1,rest_ID_idx_run1(x)) = 0;
-         my_conds(1,rest_ID_idx_run2(x)) = 0;
-     end
+  
+  
+% %   %% build the regressors and selectors and add to subj structure and
+% %   evenly sample rest
+%   %build an ID for all rest blocks
+% 
+%   rest_ID_idx = find(my_conds == 6); %should be 156
+%   
+%   %needs to treat each run separately so pre 213 and post 214 would be the
+%   %end of the first block and start of the next block. 
+%   
+%  rest_ID_idx_run1 = rest_ID_idx(1,1:78);
+%  rest_ID_idx_run2 = rest_ID_idx(1,79:end); 
+%  
+%  %generate 78 random numbers
+%  rand1 = rand(1,78);
+%  rand2 = rand(1,78);
+%  %sort these 78 random numbers with your idx run within run
+%  rest_ID_idx_run1_rand = vertcat(rand1, rest_ID_idx_run1);
+%  rest_ID_idx_run2_rand = vertcat(rand2, rest_ID_idx_run2);
+%  
+%  rest_ID_idx_run1_rand = rest_ID_idx_run1_rand';
+%  rest_ID_idx_run2_rand = rest_ID_idx_run2_rand';
+%  
+% rest_ID_idx_run1_rand_sorted = sortrows(rest_ID_idx_run1_rand);
+% rest_ID_idx_run2_rand_sorted = sortrows(rest_ID_idx_run2_rand);
+% 
+%  face_ID_idx = find(my_conds == 1);
+%  num_face_ID_idx_perrun = (length(face_ID_idx))/2;
+%  
+%  num_rest_TR_elim = length(rest_ID_idx_run1) - num_face_ID_idx_perrun;
+%  
+%       for x = 1:num_rest_TR_elim
+%          my_conds(1,rest_ID_idx_run1(x)) = 0;
+%          my_conds(1,rest_ID_idx_run2(x)) = 0;
+%      end
  
 
  
 %   %-----------------------------------------------------------------------%
 %   % 
 %  
-  all_conds = []; % 6 conditions face, scene, object, neutral, emotional, rest  
+  all_conds = []; % 5 conditions face, scene, object, word, rest  
 %   all_runs = [];  % 1266 - 3 runs
 %   all_trials = []; % 1266 - 432 trials
 %   all_TRs = []; %1266 - 1-26 of miniblocks.
@@ -228,7 +238,49 @@ end
     
 
 %  % IF rest is used
-%  if conds_to_use(6) == 1; %6 is REST
+ if conds_to_use(5) == 1; %5 is REST
+     
+       %NONRANDOMLY select rest - take  consistent 2 TRs of every rest block and
+  %one TR for the second to last rest block. This can shift Rest sampling
+  %until we find the best Rest Sample. 
+  
+  n_trial_length = 9;
+  n_rest_length = 5;
+  n_break_length = 8;
+  n_rest_block = 13;
+  last_rest_block = 14;
+  rest_sample = 2;
+  block_size = 213;
+  
+  % 14 rest blocks of 5TRs following 9 trial TRs, 9 trial TR has 7 rest
+  % blocks that follow. 
+  
+  %rest will always sample two TRs, so a shift of 0 will give TRs 1 and 2
+  %of rest.  Shift of 1 will give TRs 2 and 3 or rest, Shift of 2 will give
+  %TRs 3 and 4 of rest, shift of 3 will give TRs 4 and 5 of rest. Shift
+  %maximum is 3.  
+  
+  rest_vector = zeros(1,block_size);
+
+  
+  for i = 1:n_rest_block
+      rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift))))=1;
+      rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift))))=1;
+
+  end
+        rest_vector(1,((n_trial_length*last_rest_block)+(((n_rest_length*last_rest_block)-n_rest_length)+(1+rest_shift))))=1;
+        
+        new_rest= horzcat(rest_vector,rest_vector);
+        
+        all_conds(6,:)=new_rest;
+ end
+        
+ %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%
+ 
+ if_conds_to_use(4) == 1; %4 is Words
+ 
+ 
+        
 %      for x = 1:num_rest_TR_elim
 %          all_conds(:,rest_ID_idx_run1(x)) = 99;
 %          all_conds(:,rest_ID_idx_run2(x)) = 99;
