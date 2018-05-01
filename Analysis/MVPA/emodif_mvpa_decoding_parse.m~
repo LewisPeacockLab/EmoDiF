@@ -113,11 +113,7 @@ forget.std.scene = std(for_scene);
 forget.std.object = std(for_object);
 forget.std.word = std(for_word);
 forget.std.rest = std(for_rest);
-results.DF.remember = rem;
-results.DF.forget = forget;
-
-filename = sprintf('results_%s.mat',test_phase);
-save(filename,'results');
+results.DF.remember = 
 
 
 
@@ -129,32 +125,32 @@ elseif strcmp(test_phase, 'preview') == true;
             negative_acts(:,i)=class_perf(:,emo_negative_idx(i));
     end
         
-neg_face = reshape(negative_acts(1,:),6,30)';
-neg_scene =reshape(negative_acts(2,:),6,30)';
-neg_object =reshape(negative_acts(3,:),6,30)';
-neg_word =reshape(negative_acts(4,:),6,30)';
-neg_rest =   reshape(negative_acts(5,:),6,30)';
+neg_face = reshape(negative_acts(1,:),7,30)';
+neg_scene =reshape(negative_acts(2,:),7,30)';
+neg_object =reshape(negative_acts(3,:),7,30)';
+neg_word =reshape(negative_acts(4,:),7,30)';
+neg_rest =   reshape(negative_acts(5,:),7,30)';
 
     for i = 1:length(emo_neutral_idx)
             neutral_acts(:,i)=class_perf(:,emo_neutral_idx(i));
     end
         
-neu_face = reshape(neutral_acts(1,:),6,30)';
+neu_face = reshape(neutral_acts(1,:),7,30)';
 neutral.acts.face = neu_face;
-neu_scene =reshape(neutral_acts(2,:),6,30)';
+neu_scene =reshape(neutral_acts(2,:),7,30)';
 neutral.acts.scene = neu_scene;
-neu_object =reshape(neutral_acts(3,:),6,30)';
+neu_object =reshape(neutral_acts(3,:),7,30)';
 neutral.acts.object = neu_object;
-neu_word =reshape(neutral_acts(4,:),6,30)';
+neu_word =reshape(neutral_acts(4,:),7,30)';
 neutral.acts.word = neu_word;
-neu_rest =   reshape(neutral_acts(5,:),6,30)';
+neu_rest =   reshape(neutral_acts(5,:),7,30)';
 neutral.acts.rest = neu_rest;
             
-negative.mean.face = mean(neg_face);
-negative.mean.scene = mean(neg_scene);
-negative.mean.object = mean(neg_object);
-negative.mean.word = mean(neg_word);
-negative.mean.rest = mean(neg_rest);
+neg.mean.face = mean(neg_face);
+neg.mean.scene = mean(neg_scene);
+neg.mean.object = mean(neg_object);
+neg.mean.word = mean(neg_word);
+neg.mean.rest = mean(neg_rest);
    
 neutral.mean.face = mean(neu_face);
 neutral.mean.scene = mean(neu_scene);
@@ -162,11 +158,11 @@ neutral.mean.object = mean(neu_object);
 neutral.mean.word = mean(neu_word);
 neutral.mean.rest = mean(neu_rest);
 
-negative.std.face = std(neg_face);
-negative.std.scene = std(neg_scene);
-negative.std.object = std(neg_object);
-negative.std.word = std(neg_word);
-negative.std.rest = std(neg_rest);
+neg.std.face = std(neg_face);
+neg.std.scene = std(neg_scene);
+neg.std.object = std(neg_object);
+neg.std.word = std(neg_word);
+neg.std.rest = std(neg_rest);
    
 neutral.std.face = std(neu_face);
 neutral.std.scene = std(neu_scene);
@@ -176,10 +172,6 @@ neutral.std.rest = std(neu_rest);
 
 results.preview.negative = negative;
 results.preview.neutral = neutral;
-
-filename = sprintf('results_%s.mat',test_phase);
-save(filename,'results');
-
 end
 
 
