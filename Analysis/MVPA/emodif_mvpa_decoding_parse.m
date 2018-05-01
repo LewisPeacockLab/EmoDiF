@@ -48,7 +48,7 @@ instr = regressors(4,:);
 runs = regressors(5,:);
 subacc = regressors(6,:);
 TR = regressors(7,:);
-trial = regressors(7,:);
+trial = regressors(8,:);
 end
 
 face_acts = class_perf(1,:);
@@ -64,7 +64,8 @@ if strcmp(test_phase, 'DFencode') == true
     instr_remember_idx = find(instr == 1);
     instr_forget_idx = find(instr == 0);
 
-    
+    %this is where we should put the rest of the regressors as a sanity
+    %check
     for i = 1:length(instr_remember_idx)
             remember_acts(:,i)=class_perf(:,instr_remember_idx(i));
     end
@@ -74,6 +75,7 @@ rem_scene =reshape(remember_acts(2,:),7,30)';
 rem_object =reshape(remember_acts(3,:),7,30)';
 rem_word =reshape(remember_acts(4,:),7,30)';
 rem_rest =   reshape(remember_acts(5,:),7,30)';
+
 
     for i = 1:length(instr_forget_idx)
             forget_acts(:,i)=class_perf(:,instr_forget_idx(i));
