@@ -1,10 +1,10 @@
 % function [localizer] = imdif_mvpa_training_localizer_tw(subjNum,maskName,featSel,fsThresh,classifier,categories,penalty,shiftTRs)
-function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,penalty,shiftTRs,rest_shift,word_combine)
+function emodif_mvpa_training_localizer_word_comb(subjNum,maskName,classifier,categories,penalty,shiftTRs,rest_shift)
   
   %----------------------------------------------------------------------
   % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
   % * for development -
-  % emodif_mvpa_training_localizer_3('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02', 2, 'yes')
+  % emodif_mvpa_training_localizer_word_comb('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsowr', '50','02', 2)
   % * subjNum     = subject ID (e.g., '110915')
   % * maskName    = name of mask to use to read in data (no SUBJID)
   % * featSel     = 1|0: do voxelwise ANOVA feature selection, p=0.05
@@ -34,7 +34,6 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
 %   verify_string(train_phase);
   verify_string(penalty);
   verify_string(shiftTRs);
-  rest_shift_string = num2str(rest_shift);
   
   % setup args structure to keep arguments
   clear args;
@@ -61,8 +60,8 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
 %   args.trainphase = train_phase;
   args.penalty = str2num(penalty);
   args.shiftTRs = str2num(shiftTRs);
-  args.condNames = {'face','scene','object','neutral', 'negative' 'rest'};
-  args.condNames_short = {'f','s','o','n','e','r'};
+  args.condNames = {'face','scene','object','word' 'rest'};
+  args.condNames_short = {'f','s','o','w','r'};
   args.impmapType = 'mcduff';
   
   %for astoria
@@ -217,7 +216,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   
   
   %build out conditions
-  for k = 1:length(conds_to_use) % 
+  for k = 1:length(6) % replaced conds to use
       temp_conds= [];
       for i = 1:length(my_conds)
           if conds_to_use(k) == 1;
@@ -233,13 +232,13 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   end
 
   %sanity check
-for k = 1:length(conds_to_use)
+for k = 1:length(5)
     count_conds(k)=sum(all_conds(k,:));
 end
     
 
 %  % IF rest is used
- if conds_to_use(6) == 1; %6 is REST
+ if conds_to_use(5) == 1; %5 is REST
      
      
      
@@ -280,7 +279,7 @@ end
         
  %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%
  
- if strcmp(word_combine,'yes') == true; %4 is Words
+ if conds_to_use(4) == 1; %4 is Words
      
      
      rand1 = rand(1,27);
@@ -294,10 +293,10 @@ end
      %needs to treat each run separately so pre 213 and post 214 would be the
      %end of the first block and start of the next block.
      
-     neu_ID_idx_run1 = neu_word_ID_idx(1,1:27);
-     neu_ID_idx_run2 = neu_word_ID_idx(1,28:end);
-     neg_ID_idx_run1 = neg_word_ID_idx(1,1:27);
-     neg_ID_idx_run2 = neg_word_ID_idx(1,28:end);
+     neu_ID_idx_run1 = neu_ID_idx(1,1:27);
+     neu_ID_idx_run2 = neu_ID_idx(1,28:end);
+     neg_ID_idx_run1 = neg_ID_idx(1,1:27);
+     neg_ID_idx_run2 = neg_ID_idx(1,28:end);
 
 
          
@@ -306,11 +305,11 @@ end
          %for the 2nd block, we want 13 neutral and 14 negative words 
          
 
-         neu_ID_idx_run1_rand = vertcat(rand1, neu_ID_idx_run1)';
-         neu_ID_idx_run2_rand = vertcat(rand2, neu_ID_idx_run2)';
+         neu_ID_idx_run1_rand = vertcat(rand1, neu_ID_idx_run1);
+         neu_ID_idx_run2_rand = vertcat(rand2, neu_ID_idx_run2);
          
-         neg_ID_idx_run1_rand = vertcat(rand3, neg_ID_idx_run1)';
-         neg_ID_idx_run2_rand = vertcat(rand4, neg_ID_idx_run2)';
+         neg_ID_idx_run1_rand = vertcat(rand3, neg_ID_idx_run1);
+         neg_ID_idx_run2_rand = vertcat(rand4, neg_ID_idx_run2);
          
          %
          
@@ -321,32 +320,9 @@ end
          neg_ID_idx_run1_rand_sorted = sortrows(neg_ID_idx_run1_rand);
          neg_ID_idx_run2_rand_sorted = sortrows(neg_ID_idx_run2_rand);
          
-         % to eliminate 13 neutral (run 1) and 13 negative (run 2) 
-         
-         for x = 1:13
-             all_conds(4,neu_ID_idx_run1_rand_sorted(x,2)) = 0;
-             all_conds(5,neg_ID_idx_run2_rand_sorted(x,2)) = 0;
-         end
-         
-         for x = 1:14
-             all_conds(4,neu_ID_idx_run2_rand_sorted(x,2)) = 0;
-             all_conds(5,neg_ID_idx_run1_rand_sorted(x,2)) = 0;
-         end
-         
-         all_conds_words = (all_conds(4,:)+all_conds(5,:));
-        
+ end
 
- %build regressors again
- 
- new_all_conds(1,:) = all_conds(1,:);
 
-  new_all_conds(2,:) = all_conds(2,:);
-  new_all_conds(3,:) = all_conds(3,:);
-  new_all_conds(4,:) = all_conds_words(1,:);
-  new_all_conds(5,:) = all_conds(6,:);
-  
-  all_conds = new_all_conds;
-end
 % 
 %  face_ID_idx = find(my_conds == 1);
 %  num_face_ID_idx_perrun = (length(face_ID_idx))/2;
@@ -734,7 +710,7 @@ end
     
     fn = sprintf('%s/%s_%s_parameters.txt',  args.output_dir, args.subjID, args.phase);
     fid=fopen(fn,'w');
-    fprintf(fid,sprintf('%s %s %s %s %s %s %s %s %s %s',args.subjID, args.phase, maskName,  classifier, categories, penalty, shiftTRs, rest_shift_string, word_combine));
+    fprintf(fid,sprintf('%s %s %s %s %s %s %s %s %d',args.subjID, args.phase, maskName,  classifier, categories, penalty, shiftTRs, rest_shift));
 %     [rows cols] = size (concat_perf);
 %     x= repmat('%.4f\t',1,(cols-1));
 %     fprintf(fid,[x,'%.4f\n'],concat_perf);

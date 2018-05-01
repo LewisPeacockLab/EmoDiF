@@ -1,10 +1,10 @@
 % function [localizer] = imdif_mvpa_training_localizer_tw(subjNum,maskName,featSel,fsThresh,classifier,categories,penalty,shiftTRs)
-function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,penalty,shiftTRs,rest_shift,word_combine)
+function emodif_mvpa_decoding_study(subjNum,maskName,classifier,categories,penalty,shiftTRs,test_phase,rest_shift,word_combine)
   
   %----------------------------------------------------------------------
   % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
   % * for development -
-  % emodif_mvpa_training_localizer_3('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02', 2, 'yes')
+  % emodif_mvpa_decoding_study('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02', 'DFencode', 2, 'yes')
   % * subjNum     = subject ID (e.g., '110915')
   % * maskName    = name of mask to use to read in data (no SUBJID)
   % * featSel     = 1|0: do voxelwise ANOVA feature selection, p=0.05
@@ -13,12 +13,15 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   % * categories  = 'fsor' --OR choose one short_cond ('f', 's', 'o', or 'r'! (face|scene|object|rest
   % * penalty    = (e.g., 50|75|100) for 'logreg' & 'ridge' only
   % * shiftTRs    = # of TRs to shift data to adjust for hemodynamic lag
-  %
+  % * test_phase = 'DFencode' or 'Preview'
+  % * rest_shift = '0-3' out of 5 TRs, we sample 2 for each rest phase
+  % * word_combine = combine negative and neutral word evidence 'yes' or
+  % 'no'
   % 1. read in epis.
   % 2. train a classifier on and do cross-validation.
   %
   %----------------------------------------------------------------------
-  version = '2018Apr24';
+  version = '2018Apr30';
   
   %% setup parameters
   %-----------------------------------------------------------------------%
@@ -38,12 +41,17 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   
   % setup args structure to keep arguments
   clear args;
+  
+  args.train_phase = 'localizer'
+  args.test_phase = test_phase;
   [s,user] = system('whoami');
   [s,host] = system('hostname');
    
   args.script = mfilename;
   args.phase = 'localizer';
   args.nTRs = 426; % 135 trials per run, 5 TRs per rest, each post miniblock. each single run 145 stim TRs and 75 rest TRs.  
+  args.study_nTRs = 426;
+  args.preview_nTRs = 366;
   
   args.user = strtrim(user); 
   args.hostname = strtrim(host);
@@ -100,7 +108,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   % read in subject-specific regressors
   start_dir = pwd;
   cd(args.regs_dir);
-  the_regressors = 'EmoDiF_MVPA_reg.mat';
+  the_regressors = 'EmoDiF_MVPA_regsall.mat';
   %the_regressors = sprintf('/work/03034/twang04/Dropbox/studydata/imdif/data/sub_%s/IMDIF_MVPA_REGS.mat', args.subjNum);
   
   load(the_regressors);
@@ -563,7 +571,7 @@ end
   
   cd(args.mask_dir);
   
-  fprintf('\n\n## reading in %s data from %s\n',args.phase, args.maskName);
+  fprintf('\n\n## reading in %s data from %s\n',args.train_phase, args.maskName);
   subj = load_spm_mask(subj,'read_mask',args.maskName);
   
   cd (args.bold_dir);
@@ -629,6 +637,392 @@ end
   fprintf('\n\n## z-scoring data\n');
   subj = zscore_runs(subj, 'localizer_epis', runs_name);
   
+  
+  %%%TESTING PHASE
+ 
+
+  %EmoDiF study - * 
+  %**st_localizer - 2 blocks -213 TRs each block
+  %**DF_encoding - 2 blocks -213 TRs each block
+  %**Preview - 2 blocks - 183 TRs each block
+  
+  %mvpa_regs - %**1 = negative, 0 = neutral; 1= remember, 0 = forget
+  %%%% READING IN REGRESSORS
+  if strcmp(test_phase,'DFencode') == true
+      
+  
+  all_DF_runs = mvpa_regs.DFEncode.run;
+  all_DF_trial = mvpa_regs.DFEncode.trial;
+  all_DF_cat = mvpa_regs.DFEncode.cat;
+  all_DF_TR = mvpa_regs.DFEncode.TR;
+  all_DF_instr = mvpa_regs.DFEncode.instr;
+  all_DF_emo = mvpa_regs.DFEncode.emo;
+  all_DF_subacc = mvpa_regs.DFEncode.subacc;
+  
+  
+  
+  %sets trial regressors by word category - Does it matter? maybe not.
+  trial_regressors = zeros(length(mvpa_regs.DFEncode.cat_names),length(mvpa_regs.DFEncode.trial));
+  for p = 1:length(trial_regressors)
+      if all_DF_emo(1,p)==1
+          trial_regressors(1,p) = 1;
+      elseif all_DF_emo(1,p) == 0
+          trial_regressors(2,p) = 1;
+      end
+  end
+  
+  all_DF_regressors = trial_regressors;
+    
+  test_regs_name = sprintf('%s_all_regs',args.test_phase);
+  test_runs_name = sprintf('%s_all_st_runs',args.test_phase);
+  
+  subj = initset_object(subj,'regressors',test_regs_name,all_DF_regressors);
+  subj = initset_object(subj,'selector',test_runs_name,all_DF_runs);
+  
+   %%SHIFT REGRESSORS AND EXCLUDE REST TIMEPOINTS?
+ 
+ 
+  % read in data from test phase masked by train phase voxels
+  %
+  fprintf('(+) study data for decoding\n');
+  fprintf('(+) using study mask %s\n',args.maskName);
+  
+  %LOAD in test patterns
+  
+  cd (args.bold_dir);
+  DF_raw_filenames = {'DF_encoding_corr_1_dt_mcf_brain.nii', 'DF_encoding_2_corr_dt_mcf_brain.nii'};
+  
+  readmask = get_mat(subj,'mask','read_mask');
+  
+  % read in EPI data as 'doubles'
+  fprintf('\n\n## loading %s data using %s with %d voxels\n', args.phase, args.maskName, count(readmask));
+  subj = load_spm_pattern(subj, 'DF_epis', 'read_mask', DF_raw_filenames);
+  type ='double';
+  fprintf('\n\n## loading %s data using %s with %d voxels\n', args.test_phase, args.maskName, count(readmask));
+  
+  
+    %----------------------------------------------------------------------
+  % z-score data
+  %
+  % Be sure to use the full 'runs' selector here so we include the 'rest'
+  % TRs in the zscoring
+  %
+  fprintf('[+] z-scoring data\n\n');
+  subj = zscore_runs(subj,'DF_epis',test_runs_name);
+  
+   %----------------------------------------------------------------------
+  % setup decoding analysis!
+  %
+  train_epis_name = 'localizer_epis_z';
+  test_epis_name = 'DF_epis_z';
+  combined_epis_name = test_epis_name;
+  mask_name = 'read_mask';
+  
+    % combine train & test epis
+  decode_epis = [...
+    get_masked_pattern(subj,train_epis_name,mask_name) ...
+    get_mat(subj,'pattern',test_epis_name)];
+
+  % don't need the train epis along anymore
+  subj = remove_mat(subj,'pattern',train_epis_name);
+  
+  % replace the test_epis structure with the combined epis. this is important
+  % so that the pattern has information of what mask it was created by.
+  subj = set_mat(subj,'pattern',test_epis_name,decode_epis);
+  
+  % combine train & test phase regressors
+  train_regs_name = sh_conds_name;
+  combined_regs_name = sprintf('%s+%s',train_regs_name,test_regs_name);
+  
+  decode_regs = [ ...
+    get_mat(subj,'regressors',train_regs_name) ...
+    get_mat(subj,'regressors',test_regs_name)];
+  
+  subj = initset_object(subj,'regressors',combined_regs_name,decode_regs);
+  
+  % combine train & test phase selectors
+  train_runs_name = norest_sels_name;
+  combined_runs_name = sprintf('%s+%s',train_runs_name,test_runs_name);
+  
+  % set all testing runs to '2' for classifier decoding
+  test_runs = get_mat(subj,'selector',test_runs_name);
+  test_runs_for_decoding = 2*(test_runs>0);
+  
+  decode_runs = [...
+    get_mat(subj,'selector',train_runs_name) ...
+    test_runs_for_decoding];
+
+  subj = initset_object(subj,'selector',combined_runs_name,decode_runs,...
+    'group_name',combined_runs_name);  
+
+  %-----------------------------------------------------------------------%
+  % do decoding on combined data
+  %
+  
+  switch(args.classifier)
+      
+      case 'bp'
+          class_args.train_funct_name = 'train_bp';
+          class_args.test_funct_name = 'test_bp';
+          class_args.nHidden = 0;
+          nIterations = args.repetitions;
+          
+      case 'L2logreg'
+          
+          class_args.train_funct_name = 'train_L2_RLR';
+          class_args.test_funct_name = 'test_L2_RLR';
+          class_args.penalty = args.penalty;
+          class_args.lambda = 'crossvalidation';
+          class_args.lambda = args.penalty;
+          nIterations = 1;
+          
+      case 'logreg'
+          class_args.train_funct_name = 'train_logreg';
+          class_args.test_funct_name = 'test_logreg';
+          class_args.penalty = str2double(penalty);
+          
+      case 'ridge'
+          class_args.train_funct_name = 'train_ridge';
+          class_args.test_funct_name = 'test_ridge';
+          class_args.penalty = str2double(penalty);
+          nIterations = 1;
+          
+      otherwise
+          disp('(-) unknown classifier type!');
+          return
+          
+  end
+  
+  for i = 1:nIterations
+      fprintf('(+) decoding %s using %s (iter %d of %d)\n',...
+          args.test_phase,args.train_phase,i,nIterations);
+      
+      [subj results] = ...
+          cross_validation(subj, ...
+          combined_epis_name, ...
+          combined_regs_name, ...
+          combined_runs_name, ...
+          mask_name,...
+          class_args);
+      
+      % save results structure for this iteration
+     
+      results_file = sprintf('%s/%s_%s_results.mat',...
+           args.output_dir, args.subjID, args.test_phase);
+      save(results_file, 'results')
+      %write output to xls
+
+      
+
+      
+      concat_perf=[results.iterations.perfmet.guesses; results.iterations.perfmet.desireds; results.iterations.perfmet.corrects; results.iterations.acts];
+      trial_info_test_perf=[all_DF_cat; all_DF_emo; all_DF_instr; all_DF_runs; all_DF_subacc; all_DF_TR; all_DF_trial];
+      
+      dlmwrite(sprintf('%s/%s_%s_class_perf.txt', args.output_dir, args.subjID, args.test_phase),concat_perf);
+      dlmwrite(sprintf('%s/%s_%s_regressors.txt', args.output_dir, args.subjID, args.test_phase),trial_info_test_perf);
+      
+      fn = sprintf( '%s/%s_%s_parameters.txt', args.output_dir, args.subjID, args.test_phase);
+      fid=fopen(fn,'w');
+      fprintf(fid,sprintf('%s %s %s %s %s %s %s %s %s %s',args.subjID, args.train_phase, args.test_phase, maskName,  classifier, categories, penalty, shiftTRs,test_phase,rest_shift,word_combine));
+      %     [rows cols] = size (concat_perf);
+      %     x= repmat('%.4f\t',1,(cols-1));
+      %     fprintf(fid,[x,'%.4f\n'],concat_perf);
+      
+      fclose(fid);
+  end
+  clear results 
+  
+  
+  elseif strcmp(test_phase,'preview') == true
+ 
+      all_preview_runs = mvpa_regs.preview.run;
+      all_preview_cat = mvpa_regs.preview.cat;
+      all_preview_trial = mvpa_regs.preview.trial;
+      all_preview_instr = mvpa_regs.preview.instr;
+      all_preview_subacc = mvpa_regs.preview.subacc;
+      all_preview_rt = mvpa_regs.preview.rt;
+      all_preview_TR = mvpa_regs.preview.tr;
+      all_preview_emo = mvpa_regs.preview.emo;
+      %put in preview regressors here. 
+      
+      
+  
+  
+  %sets trial regressors by word category - Does it matter? maybe not.
+  trial_regressors = zeros(length(mvpa_regs.oreview.cat_names),length(mvpa_regs.preview.trial));
+  for p = 1:length(trial_regressors)
+      if all_preview_emo(1,p)==1
+          trial_regressors(1,p) = 1;
+      elseif all_preview_emo(1,p) == 0
+          trial_regressors(2,p) = 1;
+      end
+  end
+  
+  all_preview_regressors = trial_regressors;
+    
+  test_regs_name = sprintf('%s_all_regs',args.test_phase);
+  test_runs_name = sprintf('%s_all_st_runs',args.test_phase);
+  
+  subj = initset_object(subj,'regressors',test_regs_name,all_preview_regressors);
+  subj = initset_object(subj,'selector',test_runs_name,all_preview_runs);
+  
+   %%SHIFT REGRESSORS AND EXCLUDE REST TIMEPOINTS?
+ 
+ 
+  % read in data from test phase masked by train phase voxels
+  %
+  fprintf('(+) study data for decoding\n');
+  fprintf('(+) using study mask %s\n',args.maskName);
+  
+  %LOAD in test patterns
+  
+  cd (args.bold_dir);
+  preview_raw_filenames = {'Preview1_corr_1_dt_mcf_brain.nii', 'Preview2_corr_dt_mcf_brain.nii'};
+  
+  readmask = get_mat(subj,'mask','read_mask');
+  
+  % read in EPI data as 'doubles'
+  fprintf('\n\n## loading %s data using %s with %d voxels\n', args.phase, args.maskName, count(readmask));
+  subj = load_spm_pattern(subj, 'preview_epis', 'read_mask', preview_raw_filenames);
+  type ='double';
+  fprintf('\n\n## loading %s data using %s with %d voxels\n', args.test_phase, args.maskName, count(readmask));
+  
+  
+    %----------------------------------------------------------------------
+  % z-score data
+  %
+  % Be sure to use the full 'runs' selector here so we include the 'rest'
+  % TRs in the zscoring
+  %
+  fprintf('[+] z-scoring data\n\n');
+  subj = zscore_runs(subj,'DF_epis',test_runs_name);
+  
+   %----------------------------------------------------------------------
+  % setup decoding analysis!
+  %
+  train_epis_name = 'localizer_epis_z';
+  test_epis_name = 'preview_epis_z';
+  combined_epis_name = test_epis_name;
+  mask_name = 'read_mask';
+  
+    % combine train & test epis
+  decode_epis = [...
+    get_masked_pattern(subj,train_epis_name,mask_name) ...
+    get_mat(subj,'pattern',test_epis_name)];
+
+  % don't need the train epis along anymore
+  subj = remove_mat(subj,'pattern',train_epis_name);
+  
+  % replace the test_epis structure with the combined epis. this is important
+  % so that the pattern has information of what mask it was created by.
+  subj = set_mat(subj,'pattern',test_epis_name,decode_epis);
+  
+  % combine train & test phase regressors
+  train_regs_name = sh_conds_name;
+  combined_regs_name = sprintf('%s+%s',train_regs_name,test_regs_name);
+  
+  decode_regs = [ ...
+    get_mat(subj,'regressors',train_regs_name) ...
+    get_mat(subj,'regressors',test_regs_name)];
+  
+  subj = initset_object(subj,'regressors',combined_regs_name,decode_regs);
+  
+  % combine train & test phase selectors
+  train_runs_name = norest_sels_name;
+  combined_runs_name = sprintf('%s+%s',train_runs_name,test_runs_name);
+  
+  % set all testing runs to '2' for classifier decoding
+  test_runs = get_mat(subj,'selector',test_runs_name);
+  test_runs_for_decoding = 2*(test_runs>0);
+  
+  decode_runs = [...
+    get_mat(subj,'selector',train_runs_name) ...
+    test_runs_for_decoding];
+
+  subj = initset_object(subj,'selector',combined_runs_name,decode_runs,...
+    'group_name',combined_runs_name);  
+
+  %-----------------------------------------------------------------------%
+  % do decoding on combined data
+  %
+  
+  switch(args.classifier)
+      
+      case 'bp'
+          class_args.train_funct_name = 'train_bp';
+          class_args.test_funct_name = 'test_bp';
+          class_args.nHidden = 0;
+          nIterations = args.repetitions;
+          
+      case 'L2logreg'
+          
+          class_args.train_funct_name = 'train_L2_RLR';
+          class_args.test_funct_name = 'test_L2_RLR';
+          class_args.penalty = args.penalty;
+          class_args.lambda = 'crossvalidation';
+          class_args.lambda = args.penalty;
+          nIterations = 1;
+          
+      case 'logreg'
+          class_args.train_funct_name = 'train_logreg';
+          class_args.test_funct_name = 'test_logreg';
+          class_args.penalty = str2double(penalty);
+          
+      case 'ridge'
+          class_args.train_funct_name = 'train_ridge';
+          class_args.test_funct_name = 'test_ridge';
+          class_args.penalty = str2double(penalty);
+          nIterations = 1;
+          
+      otherwise
+          disp('(-) unknown classifier type!');
+          return
+          
+  end
+  
+  for i = 1:nIterations
+      fprintf('(+) decoding %s using %s (iter %d of %d)\n',...
+          args.test_phase,args.train_phase,i,nIterations);
+      
+      [subj results] = ...
+          cross_validation(subj, ...
+          combined_epis_name, ...
+          combined_regs_name, ...
+          combined_runs_name, ...
+          mask_name,...
+          class_args);
+      
+      % save results structure for this iteration
+     
+      results_file = sprintf('%s/%s_%s_results.mat',...
+           args.output_dir, args.subjID, args.test_phase);
+      save(results_file, 'results')
+      %write output to xls
+
+      
+
+      
+      concat_perf=[results.iterations.perfmet.guesses; results.iterations.perfmet.desireds; results.iterations.perfmet.corrects; results.iterations.acts];
+      trial_info_test_perf=[all_preview_cat; all_preview_rt; all_preview_emo; all_preview_instr; all_preview_runs; all_preview_subacc; all_preview_TR; all_preview_trial];
+      
+      dlmwrite(sprintf('%s/%s_%s_class_perf.txt', args.output_dir, args.subjID, args.test_phase),concat_perf);
+      dlmwrite(sprintf('%s/%s_%s_regressors.txt', args.output_dir, args.subjID, args.test_phase),trial_info_test_perf);
+      
+      fn = sprintf( '%s/%s_%s_parameters.txt', args.output_dir, args.subjID, args.test_phase);
+      fid=fopen(fn,'w');
+      fprintf(fid,sprintf('%s %s %s %s %s %s %s %s %s %s',args.subjID, args.train_phase, args.test_phase, maskName,  classifier, categories, penalty, shiftTRs,test_phase,rest_shift,word_combine));
+      %     [rows cols] = size (concat_perf);
+      %     x= repmat('%.4f\t',1,(cols-1));
+      %     fprintf(fid,[x,'%.4f\n'],concat_perf);
+      
+      fclose(fid);
+  end
+  clear results 
+  
+  end
+      diary off
+      cd(start_dir);
+      
   
   %% create cross-validation indices
   %-----------------------------------------------------------------------%
