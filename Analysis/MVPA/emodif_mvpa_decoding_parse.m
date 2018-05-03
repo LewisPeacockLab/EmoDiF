@@ -17,9 +17,9 @@ function emodif_mvpa_decoding_parse(subjNum,maskName,conditions,test_phase, test
   
   
     %for astoria
-%    args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
+   args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
 % for tigger
-   args.subj_dir = sprintf('/Users/TWang/emodif_data/%s', args.subjID);
+%    args.subj_dir = sprintf('/Users/TWang/emodif_data/%s', args.subjID);
 
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
@@ -57,12 +57,16 @@ object_acts = class_perf(3,:);
 word_acts = class_perf(4,:);
 rest_acts = class_perf(5,:);
 
+all_regressors = vertcat(class_perf,regressors);
 
 %start breaking everything up by trial 
 
 if strcmp(test_phase, 'DFencode') == true
     instr_remember_idx = find(instr == 1);
     instr_forget_idx = find(instr == 0);
+    
+    for k = 1:length(args.DF.trialn)
+        remember_reg.trials(:,k:) 
 
     %this is where we should put the rest of the regressors as a sanity
     %check

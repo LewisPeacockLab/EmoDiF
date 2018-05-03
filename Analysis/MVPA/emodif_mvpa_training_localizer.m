@@ -4,7 +4,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   %----------------------------------------------------------------------
   % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
   % * for development -
-  % emodif_mvpa_training_localizer_3('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02', 2, 'yes')
+  % emodif_mvpa_training_localizer('102','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02', 2, 'yes')
   % * subjNum     = subject ID (e.g., '110915')
   % * maskName    = name of mask to use to read in data (no SUBJID)
   % * featSel     = 1|0: do voxelwise ANOVA feature selection, p=0.05
@@ -100,7 +100,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   % read in subject-specific regressors
   start_dir = pwd;
   cd(args.regs_dir);
-  the_regressors = 'EmoDiF_MVPA_reg.mat';
+  the_regressors = 'EmoDiF_mvpa_allregs.mat';
   %the_regressors = sprintf('/work/03034/twang04/Dropbox/studydata/imdif/data/sub_%s/IMDIF_MVPA_REGS.mat', args.subjNum);
   
   load(the_regressors);

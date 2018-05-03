@@ -8,7 +8,7 @@
 #MIDRUN = name of the middle run (include localizer, preview  and study together)
 #read in middle run (reference run) from the second argument in the script
 #SUBNO=$1
-SUBNO='101'
+SUBNO='103'
 
 # base directory where experiments are located on SCRATCH
 BASEDIR='/Users/tw24955/emodif_data'
@@ -46,14 +46,15 @@ FUNC_AVG_DIR=${FUNC_DIR}/avg_func_ref
 mkdir ${FUNC_AVG_DIR}
 
 ##### VARIABLES THAT CAN CHANGE!!!!####
-
-ST_MASK_HIP=${ST_MASK_DIR}/hippocampus_thr50_MNI152.nii 
+ST_MASK_2=${ST_MASK_DIR}/tempoccfusi_pHg_LOC_combined_bin_MNI152.nii
+ST_MASK_HIP=${ST_MASK_DIR}/JC_AMYHP_MNI.nii 
 ST_MASK=${ST_MASK_DIR}/tempoccfusi_pHg_combined_bin_MNI152.nii
 ST_TEMPLATE=${ST_MASK_DIR}/MNI152_T1_1mm_brain.nii
 ST_TEMPLATE_HEAD=${ST_MASK_DIR}/MNI152_T1_1mm.nii
 ST_TEMPLATE_MASK=${ST_MASK_DIR}/MNI152_T1_1mm_brain_mask_dil.nii
 MASK=${MASK_DIR}/tempoccfusi_pHg_combined_epi_space.nii
-MASK_HIP=${MASK_DIR}/hippocampus_thr50_epi_space.nii
+MASK_HIP=${MASK_DIR}/JC_AMYHP_epi_space.nii
+MASK_2=${MASK_DIR}/tempoccfusi_pHg_LOC_combined_epi_space.nii 
 ###########################################
 #Create Middle Run Mean = this is your functional reference image fRI
 midrun_bold=${FUNC_DIR}/DF_encoding_1_ref_mcf
