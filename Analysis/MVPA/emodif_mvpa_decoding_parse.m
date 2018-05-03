@@ -42,13 +42,13 @@ elseif strcmp(test_phase, 'preview') == true
     class_perf = load(sprintf('emodif_%s_preview_class_perf.txt',subjNum));
     regressors = load(sprintf('emodif_%s_preview_regressors.txt',subjNum));
 cat = regressors(1,:);
-RT = regressors(2,:);
-emo = regressors(3,:);
-instr = regressors(4,:);
-runs = regressors(5,:);
-subacc = regressors(6,:);
-TR = regressors(7,:);
-trial = regressors(8,:);
+% RT = regressors(2,:);
+emo = regressors(2,:);
+instr = regressors(3,:);
+runs = regressors(4,:);
+subacc = regressors(5,:);
+TR = regressors(6,:);
+trial = regressors(7,:);
 end
 
 face_acts = class_perf(1,:);
@@ -65,8 +65,8 @@ if strcmp(test_phase, 'DFencode') == true
     instr_remember_idx = find(instr == 1);
     instr_forget_idx = find(instr == 0);
     
-    for k = 1:length(args.DF.trialn)
-        remember_reg.trials(:,k:) 
+%     for k = 1:length(args.DF.trialn)
+%         remember_reg.face(1,(k-1):() 
 
     %this is where we should put the rest of the regressors as a sanity
     %check

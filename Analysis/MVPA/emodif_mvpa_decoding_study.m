@@ -108,7 +108,7 @@ function emodif_mvpa_decoding_study(subjNum,maskName,classifier,categories,penal
   % read in subject-specific regressors
   start_dir = pwd;
   cd(args.regs_dir);
-  the_regressors = 'EmoDiF_MVPA_regsall.mat';
+  the_regressors = 'EmoDiF_mvpa_allregs.mat';
   %the_regressors = sprintf('/work/03034/twang04/Dropbox/studydata/imdif/data/sub_%s/IMDIF_MVPA_REGS.mat', args.subjNum);
   
   load(the_regressors);
@@ -658,7 +658,7 @@ end
   all_DF_TR = mvpa_regs.DFEncode.TR;
   all_DF_instr = mvpa_regs.DFEncode.instr;
   all_DF_emo = mvpa_regs.DFEncode.emo;
-  all_DF_subacc = mvpa_regs.DFEncode.subacc;
+  all_DF_subresp = mvpa_regs.DFEncode.subresp;
   
   
   
@@ -812,7 +812,7 @@ end
 
       
       
-      trial_info_test_perf=[all_DF_cat; all_DF_emo; all_DF_instr; all_DF_runs; all_DF_subacc; all_DF_TR; all_DF_trial];
+      trial_info_test_perf=[all_DF_cat; all_DF_emo; all_DF_instr; all_DF_runs; all_DF_subresp; all_DF_TR; all_DF_trial];
       
       dlmwrite(sprintf('%s/%s_%s_class_perf.txt', args.output_dir, args.subjID, args.test_phase),results.iterations.acts);
       dlmwrite(sprintf('%s/%s_%s_regressors.txt', args.output_dir, args.subjID, args.test_phase),trial_info_test_perf);
@@ -835,8 +835,8 @@ end
       all_preview_cat = mvpa_regs.preview.cat;
       all_preview_trial = mvpa_regs.preview.trial;
       all_preview_instr = mvpa_regs.preview.instr;
-      all_preview_subacc = mvpa_regs.preview.subacc;
-      all_preview_rt = mvpa_regs.preview.rt;
+      all_preview_subresp = mvpa_regs.preview.subresp;
+%       all_preview_rt = mvpa_regs.preview.rt;
       all_preview_TR = mvpa_regs.preview.TR;
       all_preview_emo = mvpa_regs.preview.emo;
       %put in preview regressors here. 
@@ -994,7 +994,7 @@ end
 
       
       
-      trial_info_test_perf=[all_preview_cat; all_preview_rt; all_preview_emo; all_preview_instr; all_preview_runs; all_preview_subacc; all_preview_TR; all_preview_trial];
+      trial_info_test_perf=[all_preview_cat; all_preview_emo; all_preview_instr; all_preview_runs; all_preview_subresp; all_preview_TR; all_preview_trial];
       
       dlmwrite(sprintf('%s/%s_%s_class_perf.txt', args.output_dir, args.subjID, args.test_phase),results.iterations.acts);
       dlmwrite(sprintf('%s/%s_%s_regressors.txt', args.output_dir, args.subjID, args.test_phase),trial_info_test_perf);
