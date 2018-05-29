@@ -34,7 +34,7 @@ cat = regressors(1,:);
 emo = regressors(2,:); %1 negative, 0 neutral
 instr = regressors(3,:); %1 remember, 0 forget
 runs = regressors(4,:);
-subacc = regressors(5,:);
+subresp = regressors(5,:);
 TR = regressors(6,:);
 trial = regressors(7,:);
 
@@ -46,7 +46,7 @@ cat = regressors(1,:);
 emo = regressors(2,:);
 instr = regressors(3,:);
 runs = regressors(4,:);
-subacc = regressors(5,:);
+subresp = regressors(5,:);
 TR = regressors(6,:);
 trial = regressors(7,:);
 end
@@ -69,6 +69,7 @@ if strcmp(test_phase, 'DFencode') == true
 %         remember_reg.face(1,(k-1):() 
 
     %this is where we should put the rest of the regressors as a sanity
+    %cut regressors for 1 ST 
     %check
     for i = 1:length(instr_remember_idx)
             remember_acts(:,i)=class_perf(:,instr_remember_idx(i));
