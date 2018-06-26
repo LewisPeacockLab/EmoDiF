@@ -244,6 +244,9 @@ function emodif_mvpa_decoding_study(subjNum,maskName,classifier,categories,penal
 for k = 1:length(conds_to_use)
     count_conds(k)=sum(all_conds(k,:));
 end
+  
+
+      
     
 
 %  % IF rest is used
@@ -285,6 +288,17 @@ end
         
         all_conds(6,:)=new_rest;
  end
+ 
+   %%% SPECIAL CASES - EXTRA TRS and SUCH ***
+  
+  if subjNum == '101'
+      %TR 218 has nothing in it. 
+     all_conds(:,218) = nan;
+     my_conds(:,218) = nan;
+      
+      %this is a special case, 
+  end
+  
         
  %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%
  
