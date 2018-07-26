@@ -282,7 +282,7 @@ forget_hiconf_NEW_n = length(instr_forget_hiconf_NEW_idx)/7;
 forget.highconf.acts.NEW.num = forget_hiconf_NEW_n;
 forget_hiconf_NEW_face = reshape(forget_hiconf_NEW_acts(1,:),7,forget_hiconf_NEW_n)';
 forget.highconf.acts.NEW.face = forget_hiconf_NEW_face;
-forget_hiconf_NEW_scene = reshape(forget_hiconf_NEW_acts(2,:),7,forget_hiconf_NEW_n');
+forget_hiconf_NEW_scene = reshape(forget_hiconf_NEW_acts(2,:),7,forget_hiconf_NEW_n)';
 forget.highconf.acts.NEW.scene = forget_hiconf_NEW_scene;
 forget_hiconf_NEW_object = reshape(forget_hiconf_NEW_acts(3,:),7,forget_hiconf_NEW_n)';
 forget.highconf.acts.NEW.object = forget_hiconf_NEW_object;
@@ -477,29 +477,29 @@ rem.highconf.mean.NEW.object= mean(rem_hiconf_NEW_object);
 rem.highconf.mean.NEW.word= mean(rem_hiconf_NEW_word);
 rem.highconf.mean.NEW.rest= mean(rem_hiconf_NEW_rest);
 
-forget.merged.mean.OLD.face = mean(forget_hiconf_OLD_face);
-forget.merged.mean.OLD.scene= mean(forget_hiconf_OLD_scene);
-forget.merged.mean.OLD.object= mean(forget_hiconf_OLD_object);
-forget.merged.mean.OLD.word= mean(forget_hiconf_OLD_word);
-forget.merged.mean.OLD.rest= mean(forget_hiconf_OLD_rest);
+forget.merged.mean.OLD.face = mean(forget_merged_OLD_face);
+forget.merged.mean.OLD.scene= mean(forget_merged_OLD_scene);
+forget.merged.mean.OLD.object= mean(forget_merged_OLD_object);
+forget.merged.mean.OLD.word= mean(forget_merged_OLD_word);
+forget.merged.mean.OLD.rest= mean(forget_merged_OLD_rest);
 
-forget.merged.mean.NEW.face = mean(forget_hiconf_NEW_face);
-forget.merged.mean.NEW.scene= mean(forget_hiconf_NEW_scene);
-forget.merged.mean.NEW.object= mean(forget_hiconf_NEW_object);
-forget.merged.mean.NEW.word= mean(forget_hiconf_NEW_word);
-forget.merged.mean.NEW.rest= mean(forget_hiconf_NEW_rest);
+forget.merged.mean.NEW.face = mean(forget_merged_NEW_face);
+forget.merged.mean.NEW.scene= mean(forget_merged_NEW_scene);
+forget.merged.mean.NEW.object= mean(forget_merged_NEW_object);
+forget.merged.mean.NEW.word= mean(forget_merged_NEW_word);
+forget.merged.mean.NEW.rest= mean(forget_merged_NEW_rest);
 
-rem.merged.mean.OLD.face = mean(rem_hiconf_OLD_face);
-rem.merged.mean.OLD.scene= mean(rem_hiconf_OLD_scene);
-rem.merged.mean.OLD.object= mean(rem_hiconf_OLD_object);
-rem.merged.mean.OLD.word= mean(rem_hiconf_OLD_word);
-rem.merged.mean.OLD.rest= mean(rem_hiconf_OLD_rest);
+rem.merged.mean.OLD.face = mean(rem_merged_OLD_face);
+rem.merged.mean.OLD.scene= mean(rem_merged_OLD_scene);
+rem.merged.mean.OLD.object= mean(rem_merged_OLD_object);
+rem.merged.mean.OLD.word= mean(rem_merged_OLD_word);
+rem.merged.mean.OLD.rest= mean(rem_merged_OLD_rest);
 
-rem.merged.mean.NEW.face = mean(rem_hiconf_NEW_face);
-rem.merged.mean.NEW.scene= mean(rem_hiconf_NEW_scene);
-rem.merged.mean.NEW.object= mean(rem_hiconf_NEW_object);
-rem.merged.mean.NEW.word= mean(rem_hiconf_NEW_word);
-rem.merged.mean.NEW.rest= mean(rem_hiconf_NEW_rest);
+rem.merged.mean.NEW.face = mean(rem_merged_NEW_face);
+rem.merged.mean.NEW.scene= mean(rem_merged_NEW_scene);
+rem.merged.mean.NEW.object= mean(rem_merged_NEW_object);
+rem.merged.mean.NEW.word= mean(rem_merged_NEW_word);
+rem.merged.mean.NEW.rest= mean(rem_merged_NEW_rest);
 
 
 
@@ -568,29 +568,29 @@ rem.highconf.std.NEW.object= std(rem_hiconf_NEW_object);
 rem.highconf.std.NEW.word= std(rem_hiconf_NEW_word);
 rem.highconf.std.NEW.rest= std(rem_hiconf_NEW_rest);
 
-forget.merged.std.OLD.face = std(forget_hiconf_OLD_face);
-forget.merged.std.OLD.scene= std(forget_hiconf_OLD_scene);
-forget.merged.std.OLD.object= std(forget_hiconf_OLD_object);
-forget.merged.std.OLD.word= std(forget_hiconf_OLD_word);
-forget.merged.std.OLD.rest= std(forget_hiconf_OLD_rest);
+forget.merged.std.OLD.face = std(forget_merged_OLD_face);
+forget.merged.std.OLD.scene= std(forget_merged_OLD_scene);
+forget.merged.std.OLD.object= std(forget_merged_OLD_object);
+forget.merged.std.OLD.word= std(forget_merged_OLD_word);
+forget.merged.std.OLD.rest= std(forget_merged_OLD_rest);
 
-forget.merged.std.NEW.face = std(forget_hiconf_NEW_face);
-forget.merged.std.NEW.scene= std(forget_hiconf_NEW_scene);
-forget.merged.std.NEW.object= std(forget_hiconf_NEW_object);
-forget.merged.std.NEW.word= std(forget_hiconf_NEW_word);
-forget.merged.std.NEW.rest= std(forget_hiconf_NEW_rest);
+forget.merged.std.NEW.face = std(forget_merged_NEW_face);
+forget.merged.std.NEW.scene= std(forget_merged_NEW_scene);
+forget.merged.std.NEW.object= std(forget_merged_NEW_object);
+forget.merged.std.NEW.word= std(forget_merged_NEW_word);
+forget.merged.std.NEW.rest= std(forget_merged_NEW_rest);
 
-rem.merged.std.OLD.face = std(rem_hiconf_OLD_face);
-rem.merged.std.OLD.scene= std(rem_hiconf_OLD_scene);
-rem.merged.std.OLD.object= std(rem_hiconf_OLD_object);
-rem.merged.std.OLD.word= std(rem_hiconf_OLD_word);
-rem.merged.std.OLD.rest= std(rem_hiconf_OLD_rest);
+rem.merged.std.OLD.face = std(rem_merged_OLD_face);
+rem.merged.std.OLD.scene= std(rem_merged_OLD_scene);
+rem.merged.std.OLD.object= std(rem_merged_OLD_object);
+rem.merged.std.OLD.word= std(rem_merged_OLD_word);
+rem.merged.std.OLD.rest= std(rem_merged_OLD_rest);
 
-rem.merged.std.NEW.face = std(rem_hiconf_NEW_face);
-rem.merged.std.NEW.scene= std(rem_hiconf_NEW_scene);
-rem.merged.std.NEW.object= std(rem_hiconf_NEW_object);
-rem.merged.std.NEW.word= std(rem_hiconf_NEW_word);
-rem.merged.std.NEW.rest= std(rem_hiconf_NEW_rest);
+rem.merged.std.NEW.face = std(rem_merged_NEW_face);
+rem.merged.std.NEW.scene= std(rem_merged_NEW_scene);
+rem.merged.std.NEW.object= std(rem_merged_NEW_object);
+rem.merged.std.NEW.word= std(rem_merged_NEW_word);
+rem.merged.std.NEW.rest= std(rem_merged_NEW_rest);
 
 results.remember = rem;
 results.forget = forget;
