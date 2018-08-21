@@ -8,7 +8,7 @@
 #MIDRUN = name of the middle run (include localizer, preview  and study together)
 #read in middle run (reference run) from the second argument in the script
 #SUBNO=$1
-SUBNO='101'
+SUBNO='104'
 # base directory where experiments are located on SCRATCH
 BASEDIR='/Users/tw24955/emodif_data'
 SOFTWAREDIR='/Users/tw24955/EmoDiF'

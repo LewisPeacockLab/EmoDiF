@@ -1,4 +1,4 @@
-function emodif_mvpa_decoding_bar_compare(subjNum,test_phase,test_date)
+function emodif_mvpa_decoding_bar_compare(subjNum,test_phase, maskName, test_date)
 %emodif_mvpa_decoding_bar_compare('101','DFencode','25-Jun-2018')
 %emodif_mvpa_decoding_bar_compare('102','DFencode','03-May-2018')
 %emodif_mvpa_decoding_bar_compare('103','DFencode','07-May-2018')
@@ -17,7 +17,7 @@ function emodif_mvpa_decoding_bar_compare(subjNum,test_phase,test_date)
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.output_dir = sprintf('%s/results/%s/%s',args.subj_dir, test_phase, test_date);
+  args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, test_phase, maskName, test_date);
   
   cd(args.output_dir)
 if strcmp(test_phase, 'DFencode') == true

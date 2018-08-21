@@ -1,5 +1,5 @@
-function emodif_mvpa_decoding_parse(subjNum,test_phase,test_date)
-%*emodif_mvpa_decoding_parse('101','DFencode','30-Apr-2018')
+function emodif_mvpa_decoding_parse(subjNum,test_phase, maskName, test_date)
+%*emodif_mvpa_decoding_parse('101','DFencode', 'JC_AMYHP_epi_space', '30-Apr-2018')
 %test_phase can be 'DFencode' OR 'preview'
 %SM can be 'hiconf', 'merged'
 %doesn't need conditions or mask name 
@@ -28,7 +28,7 @@ function emodif_mvpa_decoding_parse(subjNum,test_phase,test_date)
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.output_dir = sprintf('%s/results/%s/%s',args.subj_dir, test_phase, test_date);
+  args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, test_phase, maskName, test_date);
 
 cd(args.output_dir)
 if strcmp(test_phase, 'DFencode') == true
