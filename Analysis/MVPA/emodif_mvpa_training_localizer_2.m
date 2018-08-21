@@ -74,7 +74,7 @@ function emodif_mvpa_training_localizer_2(subjNum,maskName,classifier,categories
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.output_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.phase, date);
+  args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, args.test_phase, maskName, date);
   mkdir(args.output_dir);   
 
 

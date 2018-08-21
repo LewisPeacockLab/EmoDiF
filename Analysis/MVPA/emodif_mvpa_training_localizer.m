@@ -4,7 +4,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   %----------------------------------------------------------------------
   % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
   % * for development -
-  % emodif_mvpa_training_localizer('103','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02', 2, 'yes')
+  % emodif_mvpa_training_localizer('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsowr', '50','02', 2, 'yes')
   % * subjNum     = subject ID (e.g., '110915')
   % * maskName    = name of mask to use to read in data (no SUBJID)
   % * featSel     = 1|0: do voxelwise ANOVA feature selection, p=0.05
@@ -74,7 +74,7 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.output_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.phase, date);
+  args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, args.phase, maskName, date);
   mkdir(args.output_dir);   
 
 
@@ -160,12 +160,14 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   all_TRs = mvpa_regs.localizer.TR;
   
   
-
+%%%%%%%%%%%%%%%%%%%%% SPECIAL CONDITIONS %%%%%%%%%%%%%%%%%
+if subjNum == '101'; %101 had an extra TR
+    my_conds(218)=6;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   
 
-  
-  
 % %   %% build the regressors and selectors and add to subj structure and
 % %   evenly sample rest
 %   %build an ID for all rest blocks
@@ -233,13 +235,16 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   end
 
   %sanity check
-for k = 1:length(conds_to_use)
+for k = 1:sum(conds_to_use)
     count_conds(k)=sum(all_conds(k,:));
 end
     
 
 %  % IF rest is used
  if conds_to_use(6) == 1; %6 is REST
+     
+
+    
      
      
      

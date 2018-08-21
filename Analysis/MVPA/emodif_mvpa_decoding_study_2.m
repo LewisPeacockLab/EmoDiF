@@ -83,7 +83,7 @@ function emodif_mvpa_decoding_study_2(subjNum,maskName,classifier,categories,pen
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.output_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.test_phase, date);
+  args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, args.test_phase, maskName, date);
   mkdir(args.output_dir);   
 
 
@@ -167,6 +167,12 @@ function emodif_mvpa_decoding_study_2(subjNum,maskName,classifier,categories,pen
   all_runs = mvpa_regs.localizer.run;
   all_trials = mvpa_regs.localizer.trial;
   all_TRs = mvpa_regs.localizer.TR;
+  
+  %%%%%%%%%%%%%%%%%%%%% SPECIAL CONDITIONS %%%%%%%%%%%%%%%%%
+if subjNum == '101'; %101 had an extra TR
+    my_conds(218)=6;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   
 
@@ -557,7 +563,7 @@ end
   shifted_trials = get_mat(subj, 'regressors', sh_trials_name);
   shifted_TRs = get_mat(subj, 'regressors', sh_TRs_name);
   subj = set_mat(subj, 'regressors', sh_conds_name, shifted_regs);
-  fprintf('\n\n## # of regressors in each condition: %s\n\n',mat2str(sum(shifted_regs,2)'));
+  fprintf('\n\n## # of regressors in each condition: %s\n\n',mat2str(nansum(shifted_regs,2)'));
  
 %% exclude rest timepoints
   %-----------------------------------------------------------------------%

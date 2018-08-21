@@ -82,7 +82,7 @@ function emodif_mvpa_decoding_study(subjNum,maskName,classifier,categories,penal
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.output_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.test_phase, date);
+  args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, args.test_phase, maskName, date);
   mkdir(args.output_dir);   
 
 
@@ -167,7 +167,11 @@ function emodif_mvpa_decoding_study(subjNum,maskName,classifier,categories,penal
   all_trials = mvpa_regs.localizer.trial;
   all_TRs = mvpa_regs.localizer.TR;
   
-  
+    %%%%%%%%%%%%%%%%%%%%% SPECIAL CONDITIONS %%%%%%%%%%%%%%%%%
+if subjNum == '101'; %101 had an extra TR
+    my_conds(218)=6;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   
   
@@ -564,7 +568,7 @@ end
   shifted_trials = get_mat(subj, 'regressors', sh_trials_name);
   shifted_TRs = get_mat(subj, 'regressors', sh_TRs_name);
   subj = set_mat(subj, 'regressors', sh_conds_name, shifted_regs);
-  fprintf('\n\n## # of regressors in each condition: %s\n\n',mat2str(sum(shifted_regs,2)'));
+  fprintf('\n\n## # of regressors in each condition: %s\n\n',mat2str(nansum(shifted_regs,2)'));
  
 %% exclude rest timepoints
   %-----------------------------------------------------------------------%
@@ -829,7 +833,7 @@ end
       trial_info_test_perf=[all_DF_cat; all_DF_emo; all_DF_instr; all_DF_runs; all_DF_subresp; all_DF_TR; all_DF_trial];
       
       dlmwrite(sprintf('%s/%s_%s_class_perf.txt', args.output_dir, args.subjID, args.test_phase),results.iterations.acts);
-      dlmwrite(sprintf('%s/%s_%s_regressors.txt', args.output_dir, args.subjID, args.test_phase),trial_info_test_perf);
+      dlmwrite(sprintf('%s/%s_%s.txt', args.output_dir, args.subjID, args.test_phase),trial_info_test_perf);
       
       fn = sprintf( '%s/%s_%s_parameters.txt', args.output_dir, args.subjID, args.test_phase);
       fid=fopen(fn,'w');
