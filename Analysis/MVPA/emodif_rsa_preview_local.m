@@ -1,4 +1,5 @@
-function [rsa_stuff] = emodif_rsa_preview_local(dir)
+function [rsa_stuff] = emodif_rsa_preview_local(subjNum,maskName, train_date, test_date)
+%  [rsa_stuff] = emodif_rsa_preview_local('104','tempoccfusi_pHg_LOC_combined_epi_space','21-Aug-2018', '21-Aug-2018')
 %RSA set up script based off of hyojeong's clearmem matlab RSA script. ***
 %requires princeton toolbox ***
 
@@ -6,24 +7,17 @@ function [rsa_stuff] = emodif_rsa_preview_local(dir)
 %related activity following the same word presentation. 
 
 %Experiment:EmoDF
-%Type : Emotional Directed Forgetting with Scene taggs
+%Type : Emotional Directed Forgetting with Scene tags
 %Phase: Preview to Study
 % Date      : August 2018
 % Version   : 1
 % Author    : Tracy Wang
 % Contact   : tracy.wang@utexas.edu
 
-%argument checking
 
-  verify_string(subjNum);
   
   %%% parameters %%%
   args.experiment = 'emodif';
-  
-  
-  %%% end parameters %%%
-  
-  
   args.train_phase = 'preview';
   args.test_phase = 'DFencode';
   args.preview.nTRs = 366;
@@ -32,6 +26,13 @@ function [rsa_stuff] = emodif_rsa_preview_local(dir)
   args.preview.trial_length = 6;
   args.study.trial_length = 7;
   args.preview.trial_break = 3;
+  args.study.trial_break = 3;
+  args.trialnum = 60;
+  
+  %adjustable parameters
+  args.preview.meanTR_length = 3;
+  args.study.meanTR_length = 2; % last TR goes into DF instruction, so could be 3TRs, must try empirically
+  args.shiftTR = 2;
   
   %for astoria
   args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
@@ -42,8 +43,11 @@ function [rsa_stuff] = emodif_rsa_preview_local(dir)
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.output_dir = sprintf('%s/rsa_results/%s/%s',args.subj_dir, args.test_phase, date);
+  args.DFencode_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.test_phase, test_date);
+  args.preview_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.train_phase, train_date);
+  args.output_dir = sprintf('%s/results/rsa_results/',args.subj_dir);
   mkdir(args.output_dir);
+  args.subjNum = subjNum;
   
   %----------------------------------------------------------------------
   % turn on diary to capture analysis output
@@ -73,19 +77,40 @@ rsa.preview.preview2study = RSA_params.preview2study;
 
 firstblocktrialnum = [];
 secondblocktrialnum = [];
+for i = 1:(args.trialnum/2)
+    x = repmat(i,args.preview.trial_length,1)';
+    firstblocktrialnum = horzcat(firstblocktrialnum, x);
+end
+
+for j = ((args.trialnum/2)+1):args.trialnum
+    x = repmat(j,args.preview.trial_length,1)';
+    secondblocktrialnum = horzcat(secondblocktrialnum, x);
+end
+
+previewtrialbreak = zeros(args.preview.trial_break,1)';
+
+rsa.preview.trialnum = horzcat(firstblocktrialnum,previewtrialbreak,secondblocktrialnum,previewtrialbreak);
+
+%DFencode trial numbers
+
+firstblocktrialnum = [];
+secondblocktrialnum = [];
+
 for i = 1:30
-    x = repmat(i,6,1)';
+    x = repmat(i,7,1)';
     firstblocktrialnum = horzcat(firstblocktrialnum, x);
 end
 
 for i = 31:60
-    x = repmat(i,6,1)';
+    x = repmat(i,7,1)';
     secondblocktrialnum = horzcat(secondblocktrialnum, x);
 end
 
 previewtrialbreak = zeros(3,1)';
 
 rsa.preview.trialnum = horzcat(firstblocktrialnum,previewtrialbreak,secondblocktrialnum,previewtrialbreak);
+
+
 % bring DFencode category and responses into preview regressors
 for i = 1:args.preview.nTRs
     if rsa.preview.preview2study(i) == 0
@@ -113,15 +138,84 @@ for i = 1:args.DFencode.nTRs
     rsa.DFencode.resp(i) = trial_resp;
 end
         
-
-%%%%% Making filtered Masks FOR RSA %%%%%%
-%apply masks from MVPA - use EPI masks
 %load masks
 
-mask_name 
+mvpa_mask = fullfile(args.mask_dir, sprintf('%s.nii',maskName));
+
+%% ============= Initializing subj. structure:start by creating an empty subj structure
+% summarize(subj): summarize all info in subj structure
+% get_object/set_object/set_objfield/set_objsubfield
+% get_mat/set_mat
+
+subj = init_subj(args.experiment, args.subjID);%identifier of the subj
+fprintf('\n(+) %s phase data\n\n', args.train_phase);
 
 
-%%% extract PATTERNS %%%%
+%% ============= 01: EPI PATTERNS
+%*************** load mask + read in epis
+
+subj = load_spm_mask(subj,maskName,mvpa_mask);
+
+mask_voxel = get_mat(subj,'mask', maskName);
+
+fprintf('\n(+) load epi data under mask with %s voxels\n', num2str(count(mask_voxel)));
+
+cd(args.bold_dir)
+
+Preview_raw_filenames = {'Preview1_corr_dt_mcf_brain.nii','Preview2_corr_dt_mcf_brain.nii'};
+DFencode_raw_filenames={'DF_encoding_1_corr_dt_mcf_brain.nii', 'DF_encoding_2_corr_dt_mcf_brain.nii'};
+
+subj = load_spm_pattern(subj, 'Preview_epis', maskName, Preview_raw_filenames);
+subj = load_spm_pattern(subj, 'DFencode_epis', maskName, DFencode_raw_filenames);
+
+summarize(subj)
+
+%*************** zsoring epis
+
+%create selector to zscore across ALL runs - use full 'runs' selector
+
+for x = 1:length(rsa.preview.trialnum);
+    if x > args.preview.nTRs/2 
+        all_preview_runs_selector(x) = 2;
+    else all_preview_runs_selector(x) = 1;
+    end
+end
+
+subj = initset_object(subj, 'selector', 'all_preview_runs', all_preview_runs_selector);
+
+fprintf('[+] z-scoring Preview data\n\n');
+subj = zscore_runs(subj,'Preview_epis', 'all_preview_runs');
+
+for x = 1:length(rsa.DFencode.trialnum);
+    if x >   args.DFencode.nTRs/2
+        all_DFencode_runs_selector(x) = 2;
+    else all_DFencode_runs_selector(x) = 1;
+    end
+end
+
+subj = initset_object(subj, 'selector', 'all_DFencode_runs', all_DFencode_runs_selector);
+
+  fprintf('[+] z-scoring DFencode data\n\n');
+  subj = zscore_runs(subj,'DFencode_epis', 'all_DFencode_runs');
+  
+
+%*************** option: read epis in mask | wholebrain - NOT DONE
+%currently everything is done through mask
+ %*************** define: args.wholebrain '0 | 1' - NOT DONE
+ 
+ 
+%% ============= 01: Regressors + Selectors
+
+%create item-related selector based off of a selector that creates train
+%and test items. 
+
+%expand trial number as selectors 
+
+
+
+
+
+
 
 
 
