@@ -1,4 +1,4 @@
-function [rsa_stuff] = emodif_rsa_preview_local(subjNum,maskName, train_date, test_date)
+function [rsa_stuff] = emodif_rsa_preview_local(subjNum,maskName, train_date, test_date, rsa_type)
 %  [rsa_stuff] = emodif_rsa_preview_local('104','tempoccfusi_pHg_LOC_combined_epi_space','21-Aug-2018', '21-Aug-2018')
 %RSA set up script based off of hyojeong's clearmem matlab RSA script. ***
 %requires princeton toolbox ***
@@ -30,9 +30,15 @@ function [rsa_stuff] = emodif_rsa_preview_local(subjNum,maskName, train_date, te
   args.trialnum = 60;
   
   %adjustable parameters
+  args.rsatype = rsa_type;
+  %1 = mean (preview) x mean (DFencode) uses meanTR_length
+  %2 = mean (preview) x TR (DF encode) uses only meanTR_length of preview
+  
   args.preview.meanTR_length = 3;
-  args.study.meanTR_length = 2; % last TR goes into DF instruction, so could be 3TRs, must try empirically
-  args.shiftTR = 2;
+  args.preview.meanTR_start = 2;
+  args.study.meanTR_length = 3; % last TR goes into DF instruction, so could be 3TRs, must try empirically
+  args.study.meanTR_start = 1;
+  args.shiftTR = 2; %TR train shift. 
   
   %for astoria
   args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
@@ -106,9 +112,9 @@ for i = 31:60
     secondblocktrialnum = horzcat(secondblocktrialnum, x);
 end
 
-previewtrialbreak = zeros(3,1)';
+studytrialbreak = zeros(args.study.trial_break,1)';
 
-rsa.preview.trialnum = horzcat(firstblocktrialnum,previewtrialbreak,secondblocktrialnum,previewtrialbreak);
+rsa.DFencode.trialnum = horzcat(firstblocktrialnum,previewtrialbreak,secondblocktrialnum,studytrialbreak);
 
 
 % bring DFencode category and responses into preview regressors
@@ -204,12 +210,8 @@ subj = initset_object(subj, 'selector', 'all_DFencode_runs', all_DFencode_runs_s
  %*************** define: args.wholebrain '0 | 1' - NOT DONE
  
  
-%% ============= 01: Regressors + Selectors
+%% ============= Shift regressors and average patterns
 
-%create item-related selector based off of a selector that creates train
-%and test items. 
-
-%expand trial number as selectors 
 
 
 
