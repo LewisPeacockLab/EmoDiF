@@ -217,10 +217,10 @@ subj = initset_object(subj, 'selector', 'all_DFencode_runs', all_DFencode_runs_s
 
 
 %% ============== Average Patterns for option 1 (rsa_type)
-%  if rsa_type = 1
-%      
-%      % take regressors and use training data to shift 2-3 TRs over
-%  else
+ if rsa_type = 1
+     
+     % take regressors and use training data to shift 2-3 TRs over
+ else
      
 
 
