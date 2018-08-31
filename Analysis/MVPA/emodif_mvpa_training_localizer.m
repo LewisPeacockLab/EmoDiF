@@ -282,7 +282,9 @@ end
         
         all_conds(6,:)=new_rest;
  end
-        
+ 
+ count_conds(end) = count(new_rest);
+ 
  %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%
  
  if strcmp(word_combine,'yes') == true; %4 is Words
