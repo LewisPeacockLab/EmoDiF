@@ -41,7 +41,7 @@ function [rsa] = emodif_rsa_preview_dfencode(subjNum,maskName, train_date, test_
   args.preview.meanTR_length = 3;
   args.preview.meanTR_start = 3;
   args.DFencode.meanTR_length = 3; % last TR goes into DF instruction, so could be 3TRs, must try empirically
-  args.DFencode.meanTR_start = 1;
+  args.DFencode.meanTR_start = 2;
   args.shiftTR = shift; %TR train shift. 
   args.preview.meanTR_end = (args.preview.meanTR_start+args.preview.meanTR_length)-1;
   args.DFencode.meanTR_end = (args.DFencode.meanTR_start+args.DFencode.meanTR_length)-1;
@@ -383,8 +383,8 @@ end
     
     
     rsa.parameters = args;
-    results_file = sprintf('%s/%s_rsa_results.mat',...
-           args.output_dir, args.subjID);
+    results_file = sprintf('%s/%s_%dto%d_rsa_results.mat',...
+           args.output_dir, args.subjID, args.DFencode.meanTR_start, args.DFencode.meanTR_length);
        save(results_file,'rsa')
        
     cd (start_dir); 
