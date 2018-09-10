@@ -6,7 +6,7 @@ function emodif_onset_creation_SPM (subjNum)
 subjID = sprintf('emodif_%s',num2str(subjNum));
 %subj_dir = sprintf('/corral-repl/utexas/lewpealab/imdif/%s', subjID);
 
-%SET names for IMDIF_onsets to be read out
+%SET names for emodif_onsets to be read out
 
 outfname_item = sprintf('~/emodif_data/emodif_%s/behav/EmoDif_SPM_item_onsets_%s.mat', subjID, subjID);
 outfname_item = sprintf('~/emodif_data/emodif_%s/behav/EmoDif_SPM_instr_onsets_%s.mat', subjID, subjID);
@@ -20,23 +20,25 @@ localizer_run_TR = 342; %426 in subject 1
 % preview_run_TR = 366;
 % DFencode_run_TR = 426;
 
-names = {'Face', 'Scene', 'Object', 'Word', 'Rest','sc_SR_FI', 'sc_SF_RI', 'sc_SR_RI'};
+names = {'Face', 'Scene', 'Object', 'Word', 'Rest'};
 
 % duration is 0 if we are modeling a delta - this goes up in number for
 % boxcar models etc.  1 duration for each condition.
 
-durations = {0 0 0 0 0 0 0 0};
+durations = {0 0 0 0 0};
 
 %%%%%%%% BUILDING our onsets %%%%%%%%%%%%%%
 % for each of these conditions:
-%'fa_SF_FI', 'fa_SR_FI', 'fa_SF_RI', 'fa_SR_RI', 'sc_SF_FI','sc_SR_FI',
-%'sc_SF_RI', 'sc_SR_RI'
-%
-% 
+%face scene object word rest
 %%% Start Massive Indexing Effort or SMIE %%%
 
-study_trials = mvpa_regs.study.trial;
+study_trials = EmoDif_mvpa_allregs.localizer.trial;
 % trial num WITHIN a run (will expand this out later)
+
+%%%%%% this is where i stopped. i can work on emodif_101 who has different
+%%%%%% localizer regressors and we have to take a random sample between
+%%%%%% neutral and negative - and the rest would go into noncrit regressor.
+%%%%%% 
 
 face_index = mvpa_regs.study.cat==1;
 scene_index = mvpa_regs.study.cat==2;
