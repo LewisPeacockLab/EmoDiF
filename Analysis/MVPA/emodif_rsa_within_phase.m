@@ -1,4 +1,4 @@
-function [rsa] = emodif_rsa_P_DF_bycue(subjNum,maskName, train_date, test_date, shift, dfencodeTRstart, dfencodeTRlength)
+function [rsa] = emodif_rsa_within_phase(subjNum,maskName, phase, result_date, shift, dfencodeTRstart, dfencodeTRlength)
 %  [rsa] = emodif_rsa_P_DF_bycue('103','tempoccfusi_pHg_LOC_combined_epi_space','29-Aug-2018', '29-Aug-2018', 2, 2, 3)
 %RSA set up script based off of hyojeong's clearmem matlab RSA script. ***
 %requires princeton toolbox ***
@@ -22,15 +22,17 @@ function [rsa] = emodif_rsa_P_DF_bycue(subjNum,maskName, train_date, test_date, 
   
   start_dir = pwd;
   args.experiment = 'emodif';
-  args.train_phase = 'preview';
-  args.test_phase = 'DFencode';
+  args.phase = phase;
   args.preview.nTRs = 366;
   args.DFencode.nTRs = 426;
+  args.Localizer.nTRs = 426; %342 for 104 and later
   args.subjID = sprintf('emodif_%s',num2str(subjNum));
   args.preview.trial_length = 6;
   args.DFencode.trial_length = 7;
+  args.Localizer.trial_length = 14; %9 TRs of miniblocks, 5 TRs of rest
   args.preview.trial_break = 3;
   args.DFencode.trial_break = 3;
+  args.Localizer.trial_break = 3;
   args.trialnum = 60;
   
   %adjustable parameters
