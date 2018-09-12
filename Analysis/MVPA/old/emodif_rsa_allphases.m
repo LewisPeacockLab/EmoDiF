@@ -1,5 +1,5 @@
-function [rsa] = emodif_rsa_allphases(subjNum,maskName, train_date, test_date, shift)
-%  [rsa] = emodif_rsa_preview_dfencode('103','tempoccfusi_pHg_LOC_combined_epi_space','29-Aug-2018', '29-Aug-2018', 2)
+function [rsa] = emodif_rsa_allphases(subjNum,maskName, train_date, test_date, shift, dfencodeTRstart, dfencodeTRlength)
+%  [rsa] = emodif_rsa_allphases('103','tempoccfusi_pHg_LOC_combined_epi_space','29-Aug-2018', '29-Aug-2018', 2, 2, 3)
 %RSA set up script based off of hyojeong's clearmem matlab RSA script. ***
 %requires princeton toolbox ***
 
@@ -40,9 +40,9 @@ function [rsa] = emodif_rsa_allphases(subjNum,maskName, train_date, test_date, s
   
   args.preview.meanTR_length = 3;
   args.preview.meanTR_start = 3;
-  args.DFencode.meanTR_length = 3; % last TR goes into DF instruction, so could be 3TRs, must try empirically
-  args.DFencode.meanTR_start = 2;
-  args.shiftTR = shift; %TR train shift. 
+  args.DFencode.meanTR_length = dfencodeTRlength; % last TR goes into DF instruction, so could be 3TRs, must try empirically
+  args.DFencode.meanTR_start = dfencodeTRstart;
+  args.previewshiftTR = shift; %TR train shift. 
   args.preview.meanTR_end = (args.preview.meanTR_start+args.preview.meanTR_length)-1;
   args.DFencode.meanTR_end = (args.DFencode.meanTR_start+args.DFencode.meanTR_length)-1;
   
@@ -57,7 +57,7 @@ function [rsa] = emodif_rsa_allphases(subjNum,maskName, train_date, test_date, s
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
   args.DFencode_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.test_phase, test_date);
   args.preview_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.train_phase, train_date);
-  args.output_dir = sprintf('%s/results/rsa_results/%s/%s',args.subj_dir,maskName,shift);
+  args.output_dir = sprintf('%s/results/rsa_results/%s/%d/%s',args.subj_dir,maskName,args.previewshiftTR, date);
   mkdir(args.output_dir);
   args.subjNum = subjNum;
   
@@ -225,33 +225,41 @@ subj = initset_object(subj, 'selector', 'all_DFencode_runs', all_DFencode_runs_s
 %      
 %      % take regressors and use training data to shift 2-3 TRs over
 %  else
-     
 
-%identifying the first TR of each trial for preview
+%% recoding Preview to DFencoding phase to match preview mean to DF encoding phase(as opposed to other way around
+
+%identifying the first TR of each trial for DF encoding phase
 for k = 1:args.trialnum
-    trialTR_idx = find(rsa.preview.trialnum == k);
+    DF_trialTR_idx = find(rsa.DFencode.trialnum == k); %finds trial number
     %for shift
-    trialTR_idx_sh = trialTR_idx+args.shiftTR;
-    trialTR_mean = trialTR_idx_sh(args.preview.meanTR_start:(args.preview.meanTR_start+args.preview.meanTR_length-1));
-    trial_patt = mean(subj.patterns{1,3}.mat(:,trialTR_mean(1):(trialTR_mean(args.preview.meanTR_length))),2);
-    rsa.preview.mean.patterns(:,k) = trial_patt;
+    DF_trialTR_idx_sh = DF_trialTR_idx+args.previewshiftTR;
+    DF_trialTR_idx_sh_TRsOI = DF_trialTR_idx_sh(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1)); %TRs of interest
+    DF_trial_patt_mean = mean(subj.patterns{1,4}.mat(:,(DF_trialTR_idx_sh_TRsOI(1)):DF_trialTR_idx_sh_TRsOI(args.DFencode.meanTR_length)),2);
+    rsa.DFencode.mean.patterns(:,k) = DF_trial_patt_mean;
 end
 
+% %identifying the first TR of each trial for preview
+% for k = 1:args.trialnum
+%     trialTR_idx = find(rsa.preview.trialnum == k);
+%     %for shift
+%     trialTR_idx_sh = trialTR_idx+args.previewshiftTR;
+%     trialTR_mean = trialTR_idx_sh(args.preview.meanTR_start:(args.preview.meanTR_start+args.preview.meanTR_length-1));
+%     trial_patt = mean(subj.patterns{1,3}.mat(:,trialTR_mean(1):(trialTR_mean(args.preview.meanTR_length))),2);
+%     rsa.preview.mean.patterns(:,k) = trial_patt;
 
 
     for m = 1:args.trialnum
 %         trialTR_idx = find(rsa.DFencode.trialnum == m);
 %         %for shift
-%         trialTR_idx_sh = trialTR_idx+args.shiftTR;
+%         trialTR_idx_sh = trialTR_idx+args.previewshiftTR;
 %         trialTR_mean = trialTR_idx_sh(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1));
 %         trial_patt = mean(subj.patterns{1,4}.mat(:,trialTR_mean(1):(trialTR_mean(args.DFencode.meanTR_length))),2);
 %         rsa.DFencode.mean.patterns(:,m) = trial_patt;
         
-            trialTR_idx_match = find(rsa.DFencode.DFencode2preview == m);
-            trialTR_idx_match_sh = trialTR_idx_match+args.shiftTR;
-            trialTR_mean_match = trialTR_idx_match_sh(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1));
-            trial_patt_match = mean(subj.patterns{1,4}.mat(:,trialTR_mean_match(1):(trialTR_mean_match(args.DFencode.meanTR_length))),2);
-           rsa.DFencode.mean.patterns_match(:,rsa.DFencode.DFencode2preview_nonexpanded(m)) = trial_patt_match;
+            P_trialTR_idx_match = find(rsa.preview.preview2DFencode == m);
+            P_trialTR_idx_TRsOI = P_trialTR_idx_match(args.preview.meanTR_start:(args.preview.meanTR_start+args.preview.meanTR_length-1));
+            P_trial_patt_mean_match = mean(subj.patterns{1,3}.mat(:,P_trialTR_idx_TRsOI(1):(P_trialTR_idx_TRsOI(args.preview.meanTR_length))),2);
+            rsa.preview.mean.patterns_match(:,rsa.preview.preview2DFencode_nonexpanded(m)) = P_trial_patt_mean_match;
         
         %     trialTR_idx_match = find(rsa.DFencode.DFencode2preview == m);
         %     trialTR_mean_match = trialTR_idx_match(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1));
@@ -260,25 +268,25 @@ end
     end
     
     
-    % corr_matrix_match = zeros(args.trialnum, args.trialnum);
-    corr_matrix_match_r1 = zeros(args.trialnum/2,args.trialnum/2);
-    for x = 1:args.trialnum/2 %trial number
-        for y = 1:args.trialnum/2 %trial number
-            corr_matrix_match_r1(x, y) = corr2(rsa.preview.mean.patterns(:,x), rsa.DFencode.mean.patterns_match(:,y));
-            rsa.DFencode.mean.smatrix.corr_matrix_match_r1 = corr_matrix_match_r1;
-        end
-    end
-    
-    %run 2
-    corr_matrix_match_r2 = zeros(args.trialnum/2,args.trialnum/2);
-    for x = 1:args.trialnum/2 %trial number
-        a = x+args.trialnum/2;
-        for y = 1:args.trialnum/2 %trial number
-            b = y + args.trialnum/2;
-            corr_matrix_match_r2(x, y) = corr2(rsa.preview.mean.patterns(:,a), rsa.DFencode.mean.patterns_match(:,b));
-            rsa.DFencode.mean.smatrix.corr_matrix_match_r2 = corr_matrix_match_r2;
-        end
-    end
+%     % corr_matrix_match = zeros(args.trialnum, args.trialnum);
+%     corr_matrix_match_r1 = zeros(args.trialnum/2,args.trialnum/2);
+%     for x = 1:args.trialnum/2 %trial number
+%         for y = 1:args.trialnum/2 %trial number
+%             corr_matrix_match_r1(x, y) = corr2(rsa.preview.mean.patterns(:,x), rsa.DFencode.mean.patterns_match(:,y));
+%             rsa.DFencode.mean.smatrix.corr_matrix_match_r1 = corr_matrix_match_r1;
+%         end
+%     end
+%     
+%     %run 2
+%     corr_matrix_match_r2 = zeros(args.trialnum/2,args.trialnum/2);
+%     for x = 1:args.trialnum/2 %trial number
+%         a = x+args.trialnum/2;
+%         for y = 1:args.trialnum/2 %trial number
+%             b = y + args.trialnum/2;
+%             corr_matrix_match_r2(x, y) = corr2(rsa.preview.mean.patterns(:,a), rsa.DFencode.mean.patterns_match(:,b));
+%             rsa.DFencode.mean.smatrix.corr_matrix_match_r2 = corr_matrix_match_r2;
+%         end
+%     end
     
     %full
     
@@ -287,79 +295,81 @@ end
         
         for y = 1:args.trialnum %trial number
             
-            corr_matrix_match_full(x, y) = corr2(rsa.preview.mean.patterns(:,x), rsa.DFencode.mean.patterns_match(:,y));
-            rsa.DFencode.mean.smatrix.corr_matrix_match_full = corr_matrix_match_full;
+            corr_matrix_match_full(x, y) = corr2(rsa.DFencode.mean.patterns(:,x), rsa.preview.mean.patterns_match(:,y));
+            rsa.results.smatrix.corr_matrix_match_full = corr_matrix_match_full;
         end
     end
     
     cd(args.output_dir)
-    run1_fig = figure;
-    set(run1_fig, 'Position', [0 0 1500 1500])
-    
-    subplot(1,1,1)
-    imagesc(corr_matrix_match_r1); colormap('jet'); colorbar;
-    
-    
-    xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
-    ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
-    
-    saveas(run1_fig, sprintf('emodif%s_run1',subjNum),'png')
-    
-    run2_fig = figure;
-    set(run2_fig, 'Position', [0 0 1500 1500])
-    
-    subplot(1,1,1)
-    imagesc(corr_matrix_match_r2); colormap('jet'); colorbar;
-    
-    
-    xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
-    ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
-    saveas(run2_fig, sprintf('emodif%s_run2',subjNum),'png')
+%     run1_fig = figure;
+%     set(run1_fig, 'Position', [0 0 1500 1500])
+%     
+%     subplot(1,1,1)
+%     imagesc(corr_matrix_match_r1); colormap('jet'); colorbar;
+%     
+%     
+%     xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
+%     ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
+%     
+%     saveas(run1_fig, sprintf('emodif%s_run1',subjNum),'png')
+%     
+%     run2_fig = figure;
+%     set(run2_fig, 'Position', [0 0 1500 1500])
+%     
+%     subplot(1,1,1)
+%     imagesc(corr_matrix_match_r2); colormap('jet'); colorbar;
+%     
+%     
+%     xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
+%     ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
+%     saveas(run2_fig, sprintf('emodif%s_run2',subjNum),'png')
     
     full_fig = figure;
     set(full_fig, 'Position', [0 0 1500 1500])
     
     subplot(1,1,1)
-    imagesc(corr_matrix_match_full); colormap('jet'); colorbar;
+    imagesc(corr_matrix_match_full); colormap('jet'); colorbar; 
+    args.confplot.origcoloraxis = caxis;
+    caxis([-.35 .35]);
+    args.confplot.finalcoloraxis = caxis;
     
-    
-    xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
-    ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
-    saveas(full_fig, sprintf('emodif%s_runfull',subjNum),'png')
+    ylabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start,args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
+    xlabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
+    saveas(full_fig, sprintf('emodif%s_runfull_TRstart%d_mean%d',subjNum,args.DFencode.meanTR_start,args.DFencode.meanTR_length),'png')
 
 
-
-    %for each DFencode TR
-    for m = 1:args.trialnum
-        
-        trialTR_idx_match = find(rsa.DFencode.DFencode2preview == m);
-%         for shift
-        trialTR_idx_match_sh = trialTR_idx_match+args.shiftTR;
-        for trial_TR = 1:length(trialTR_idx_match_sh)
-            TR_patt_match = subj.patterns{1,4}.mat(:,trialTR_idx_match_sh(trial_TR));
-            
-
-%         for trial_TR = 1:length(trialTR_idx_match)
-%             TR_patt_match = subj.patterns{1,4}.mat(:,trialTR_idx_match(trial_TR));
-            
-            
-            rsa.DFencode.trial(m).patterns_match(:,trial_TR) = TR_patt_match;
-        end
-    end
-    
-    %for correlation
-        
-    
-    for trial_TR = 1:args.DFencode.trial_length
-        for x = 1:args.trialnum %trial number
-            
-            for y = 1:args.trialnum %trial number
-                
-                rsa.DFencode.bytrialTR.smatrixbytr(trial_TR).corr_matrix_match(x,y) = corr2(rsa.preview.mean.patterns(:,x), rsa.DFencode.trial(y).patterns_match(:,trial_TR));
-            end
-        end
-    end
-    
+% 
+%     %for each DFencode TR
+%     for m = 1:args.trialnum
+%         
+%         trialTR_idx_match = find(rsa.DFencode.DFencode2preview == m);
+% %         for shift
+%         trialTR_idx_match_sh = trialTR_idx_match+args.previewshiftTR;
+%         for trial_TR = 1:length(trialTR_idx_match_sh)
+%             TR_patt_match = subj.patterns{1,4}.mat(:,trialTR_idx_match_sh(trial_TR));
+%             
+% 
+% %         for trial_TR = 1:length(trialTR_idx_match)
+% %             TR_patt_match = subj.patterns{1,4}.mat(:,trialTR_idx_match(trial_TR));
+%             
+%             
+%             rsa.DFencode.trial(m).patterns_match(:,trial_TR) = TR_patt_match;
+%         end
+%     end
+%     
+%     %for correlation
+%         
+%     
+%     for trial_TR = 1:args.DFencode.trial_length
+%         for x = 1:args.trialnum %trial number
+%             
+%             for y = 1:args.trialnum %trial number
+%                 
+%                 rsa.DFencode.bytrialTR.smatrixbytr(trial_TR).corr_matrix_match(x,y) = corr2(rsa.preview.mean.patterns(:,x), rsa.DFencode.trial(y).patterns_match(:,trial_TR));
+%             end
+%         end
+%     end
+%     
 
     % elseif rsa_type == 2
     %
@@ -383,8 +393,8 @@ end
     
     
     rsa.parameters = args;
-    results_file = sprintf('%s/%s_%dto%d_rsa_results.mat',...
-           args.output_dir, args.subjID, args.DFencode.meanTR_start, args.DFencode.meanTR_length);
+    results_file = sprintf('%s/%s_TR%dto%d_rsa_results.mat',...
+           args.output_dir, args.subjID, args.DFencode.meanTR_start, args.DFencode.meanTR_end);
        save(results_file,'rsa')
        
     cd (start_dir); 
