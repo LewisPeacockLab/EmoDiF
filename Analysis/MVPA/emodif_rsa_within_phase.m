@@ -1,5 +1,6 @@
-function [rsa] = emodif_rsa_within_phase(subjNum,maskName, phase, result_date, shift, dfencodeTRstart, dfencodeTRlength)
-%  [rsa] = emodif_rsa_P_DF_bycue('103','tempoccfusi_pHg_LOC_combined_epi_space','29-Aug-2018', '29-Aug-2018', 2, 2, 3)
+function [rsa] = emodif_rsa_within_phase(subjNum,maskName, result_date, shift, dfencodeTRstart, dfencodeTRlength)
+%  [rsa] = emodif_rsa_within_phase('103','tempoccfusi_pHg_LOC_combined_epi_space', '29-Aug-2018', 2, 2, 3)
+% [rsa] = emodif_rsa_within_phase('101','scene-object_05', 'preview', '29-Aug-2018', 2, 2, 3)
 %RSA set up script based off of hyojeong's clearmem matlab RSA script. ***
 %requires princeton toolbox ***
 
@@ -22,10 +23,19 @@ function [rsa] = emodif_rsa_within_phase(subjNum,maskName, phase, result_date, s
   
   start_dir = pwd;
   args.experiment = 'emodif';
-  args.phase = phase;
   args.preview.nTRs = 366;
   args.DFencode.nTRs = 426;
-  args.Localizer.nTRs = 426; %342 for 104 and later
+  if subjNum == '101' 
+      args.Localizer.nTRs = 426;
+  elseif subjNum == '102'
+      args.Localizer.nTRs = 426;
+  elseif subjNum == '103'
+      args.Localizer.nTRs = 426;
+  else
+      args.Localizer.nTRs = 342; %426 in subject 1, 2 and 3.  %342 for everyone else.
+  end
+  
+  
   args.subjID = sprintf('emodif_%s',num2str(subjNum));
   args.preview.trial_length = 6;
   args.DFencode.trial_length = 7;
@@ -33,8 +43,18 @@ function [rsa] = emodif_rsa_within_phase(subjNum,maskName, phase, result_date, s
   args.preview.trial_break = 3;
   args.DFencode.trial_break = 3;
   args.Localizer.trial_break = 3;
-  args.trialnum = 60;
-  
+  args.preview.trialnum = 60;
+  args.DFencode.trialnum = 60;
+  if subjNum == '101'
+      args.Localizer.trialnum = 30;
+  elseif subjNum == '102'
+      args.Localizer.trialnum = 30;
+  elseif subjNum == '103'
+      args.Localizer.trialnum = 30;
+      
+  else
+      args.Localizer.trialnum = 24; %426 in subject 1, 2 and 3.  %342 for everyone else.
+  end
   %adjustable parameters
 %%%% now doing both %%%%
   %1 = mean (preview) x mean (DFencode) uses meanTR_length
@@ -42,11 +62,15 @@ function [rsa] = emodif_rsa_within_phase(subjNum,maskName, phase, result_date, s
   
   args.preview.meanTR_length = 3;
   args.preview.meanTR_start = 3;
+  args.Localizer.meanTR_start = 4;
+  args.Localizer.meanTR_length = 3;
   args.DFencode.meanTR_length = dfencodeTRlength; % last TR goes into DF instruction, so could be 3TRs, must try empirically
   args.DFencode.meanTR_start = dfencodeTRstart;
-  args.previewshiftTR = shift; %TR train shift. 
   args.preview.meanTR_end = (args.preview.meanTR_start+args.preview.meanTR_length)-1;
   args.DFencode.meanTR_end = (args.DFencode.meanTR_start+args.DFencode.meanTR_length)-1;
+  args.Localizer.meanTR_end = (args.Localizer.meanTR_start+args.Localizer.meanTR_length)-1;
+  
+  args.shiftTR = shift; %TR train shift. 
   
   %for astoria
   args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
@@ -57,9 +81,9 @@ function [rsa] = emodif_rsa_within_phase(subjNum,maskName, phase, result_date, s
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.DFencode_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.test_phase, test_date);
-  args.preview_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.train_phase, train_date);
-  args.output_dir = sprintf('%s/results/rsa_results/%s/%d/%s',args.subj_dir,maskName,args.previewshiftTR, date);
+  args.DFencode_dir = sprintf('%s/results/%s/%s',args.subj_dir, maskName, result_date);
+  args.preview_dir = sprintf('%s/results/%s/%s',args.subj_dir, maskName, result_date);
+  args.output_dir = sprintf('%s/results/rsa_results/intraphase/%s/%d/%s',args.subj_dir,maskName,args.shiftTR, date);
   mkdir(args.output_dir);
   args.subjNum = subjNum;
   
@@ -84,27 +108,23 @@ load(sprintf('/Users/tw24955/emodif_data/RSA_params.mat')); % just the same for 
 
 %%% expanding RSA parameters with mvpa_regs %%%
 
-rsa.preview.preview2DFencode = RSA_params.preview2study;
-rsa.preview.preview2DFencode_nonexpanded = RSA_params.NonExpandedPrv2Sty;
-rsa.DFencode.DFencode2preview_nonexpanded = RSA_params.NonExpandedSty2Prv;
 rsa.DFencode.instr = mvpa_regs.DFEncode.instr;
 
 %preview trial numbers
 
 firstblocktrialnum = [];
 secondblocktrialnum = [];
-for i = 1:(args.trialnum/2)
+for i = 1:(args.preview.trialnum/2)
     x = repmat(i,args.preview.trial_length,1)';
     firstblocktrialnum = horzcat(firstblocktrialnum, x);
 end
 
-for j = ((args.trialnum/2)+1):args.trialnum
+for j = ((args.preview.trialnum/2)+1):args.preview.trialnum
     x = repmat(j,args.preview.trial_length,1)';
     secondblocktrialnum = horzcat(secondblocktrialnum, x);
 end
 
 previewtrialbreak = zeros(args.preview.trial_break,1)';
-
 rsa.preview.trialnum = horzcat(firstblocktrialnum,previewtrialbreak,secondblocktrialnum,previewtrialbreak);
 
 %DFencode trial numbers
@@ -112,13 +132,13 @@ rsa.preview.trialnum = horzcat(firstblocktrialnum,previewtrialbreak,secondblockt
 firstblocktrialnum = [];
 secondblocktrialnum = [];
 
-for i = 1:30
-    x = repmat(i,7,1)';
+for i = 1:(args.DFencode.trialnum/2)
+    x = repmat(i,args.DFencode.trial_length,1)';
     firstblocktrialnum = horzcat(firstblocktrialnum, x);
 end
 
-for i = 31:60
-    x = repmat(i,7,1)';
+for i = ((args.DFencode.trialnum/2)+1):args.DFencode.trialnum
+    x = repmat(i,args.DFencode.trial_length,1)';
     secondblocktrialnum = horzcat(secondblocktrialnum, x);
 end
 
@@ -126,34 +146,26 @@ DFencodetrialbreak = zeros(args.DFencode.trial_break,1)';
 
 rsa.DFencode.trialnum = horzcat(firstblocktrialnum,previewtrialbreak,secondblocktrialnum,DFencodetrialbreak);
 
+%Localizer trial numbers
 
-% bring DFencode category and responses into preview regressors
-for i = 1:args.preview.nTRs
-    if rsa.preview.preview2DFencode(i) == 0
-        trial_cat = NaN;
-    else trial_dfencode_num = find(mvpa_regs.DFEncode.trial == rsa.preview.preview2DFencode(i));
-     trial_cat = mvpa_regs.DFEncode.cat(1,trial_dfencode_num(1));
-     trial_resp = mvpa_regs.DFEncode.subresp(1,trial_dfencode_num(1));
-    end
-    rsa.preview.DFencodecat(i) = trial_cat;
-    rsa.preview.DFencodeResp(i) = trial_resp;
+firstblocktrialnum = [];
+secondblocktrialnum = [];
+
+for i = 1:(args.Localizer.trialnum/2)
+    x = repmat(i,args.Localizer.trial_length,1)';
+    firstblocktrialnum = horzcat(firstblocktrialnum, x);
 end
 
-%complete DFencode regressors for RSA
-rsa.DFencode.DFencode2preview = RSA_params.study2preview;
-
-for i = 1:args.DFencode.nTRs
-    if rsa.DFencode.DFencode2preview(i) == 0
-        trial_cat = NaN;
-    else trial_DFencode = find(mvpa_regs.preview.trial == rsa.DFencode.DFencode2preview(i));
-        trial_cat = mvpa_regs.DFEncode.cat(1,trial_DFencode(1));
-        trial_resp = mvpa_regs.DFEncode.subresp(1,trial_DFencode(1));
-        
-    end
-    rsa.DFencode.cat(i) = trial_cat;
-    rsa.DFencode.resp(i) = trial_resp;
+for i = ((args.Localizer.trialnum/2)+1):args.Localizer.trialnum
+    x = repmat(i,args.Localizer.trial_length,1)';
+    secondblocktrialnum = horzcat(secondblocktrialnum, x);
 end
-        
+
+Localizertrialbreak = zeros(args.Localizer.trial_break,1)';
+
+rsa.Localizer.trialnum = horzcat(firstblocktrialnum,Localizertrialbreak,secondblocktrialnum,Localizertrialbreak);
+
+
 %load masks
 
 mvpa_mask = fullfile(args.mask_dir, sprintf('%s.nii',maskName));
@@ -164,7 +176,6 @@ mvpa_mask = fullfile(args.mask_dir, sprintf('%s.nii',maskName));
 % get_mat/set_mat
 
 subj = init_subj(args.experiment, args.subjID);%identifier of the subj
-fprintf('\n(+) %s phase data\n\n', args.train_phase);
 
 
 %% ============= 01: EPI PATTERNS
@@ -180,9 +191,11 @@ cd(args.bold_dir)
 
 Preview_raw_filenames = {'Preview1_corr_dt_mcf_brain.nii','Preview2_corr_dt_mcf_brain.nii'};
 DFencode_raw_filenames={'DF_encoding_1_corr_dt_mcf_brain.nii', 'DF_encoding_2_corr_dt_mcf_brain.nii'};
+Localizer_raw_filenames = {'MVPA_training_1_corr_dt_mcf_brain.nii', 'MVPA_training_2_corr_dt_mcf_brain.nii'};
 
 subj = load_spm_pattern(subj, 'Preview_epis', maskName, Preview_raw_filenames);
 subj = load_spm_pattern(subj, 'DFencode_epis', maskName, DFencode_raw_filenames);
+subj = load_spm_pattern(subj, 'Localizer_epis', maskName, Localizer_raw_filenames);
 
 summarize(subj)
 
@@ -214,6 +227,22 @@ subj = initset_object(subj, 'selector', 'all_DFencode_runs', all_DFencode_runs_s
   fprintf('[+] z-scoring DFencode data\n\n');
   subj = zscore_runs(subj,'DFencode_epis', 'all_DFencode_runs');
   
+  
+
+for x = 1:length(rsa.Localizer.trialnum);
+    if x >   args.Localizer.nTRs/2
+        all_Localizer_runs_selector(x) = 2;
+    else all_Localizer_runs_selector(x) = 1;
+    end
+end
+
+
+subj = initset_object(subj, 'selector', 'all_Localizer_runs', all_Localizer_runs_selector);
+
+fprintf('[+] z-scoring Localizer data\n\n');
+subj = zscore_runs(subj,'Localizer_epis', 'all_Localizer_runs');
+
+  
 
 %*************** option: read epis in mask | wholebrain - NOT DONE
 %currently everything is done through mask
@@ -229,98 +258,71 @@ subj = initset_object(subj, 'selector', 'all_DFencode_runs', all_DFencode_runs_s
 %      % take regressors and use training data to shift 2-3 TRs over
 %  else
 
-%% recoding Preview to DFencoding phase to match preview mean to DF encoding phase(as opposed to other way around
+%% %finding intraphrase patterns. 
 
-%DFencoding phase
+%phase patterns
+for m = 1:args.preview.trialnum
+    preview_trialTR_idx = find(rsa.preview.trialnum == m);
+    preview_trialTR_mean = preview_trialTR_idx(args.preview.meanTR_start:(args.preview.meanTR_start+args.preview.meanTR_length-1));
+    preview_trial_patt = mean(subj.patterns{1,4}.mat(:,preview_trialTR_mean(1):(preview_trialTR_mean(args.preview.meanTR_length))),2);
+    rsa.preview.mean.patterns(:,m) = preview_trial_patt;
+end
 
 
-    for m = 1:args.trialnum
-        trialTR_idx = find(rsa.DFencode.trialnum == m);
-        trialTR_mean = trialTR_idx(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1));
-        trial_patt = mean(subj.patterns{1,4}.mat(:,trialTR_mean(1):(trialTR_mean(args.DFencode.meanTR_length))),2);
-        rsa.DFencode.mean.patterns(:,m) = trial_patt;
-    end
 
-    %Preview phase
 
-    for m = 1:args.trialnum
-%         trialTR_idx = find(rsa.DFencode.trialnum == m);
-%         %for shift
-%         trialTR_idx_sh = trialTR_idx+args.previewshiftTR;
-%         trialTR_mean = trialTR_idx_sh(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1));
-%         trial_patt = mean(subj.patterns{1,4}.mat(:,trialTR_mean(1):(trialTR_mean(args.DFencode.meanTR_length))),2);
-%         rsa.DFencode.mean.patterns(:,m) = trial_patt;
-        
-            P_trialTR_idx_match = find(rsa.preview.preview2DFencode == m);
-            P_trialTR_idx_match_sh = P_trialTR_idx_match+args.previewshiftTR;
-            P_trialTR_idx_TRsOI = P_trialTR_idx_match_sh(args.preview.meanTR_start:(args.preview.meanTR_start+args.preview.meanTR_length-1));
-            P_trial_patt_mean_match = mean(subj.patterns{1,3}.mat(:,P_trialTR_idx_TRsOI(1):(P_trialTR_idx_TRsOI(args.preview.meanTR_length))),2);
-            rsa.preview.mean.patterns_match(:,rsa.preview.preview2DFencode_nonexpanded(m)) = P_trial_patt_mean_match;
-    end
-    
-% R and F
-rsa.DFencode.mean.Rpatterns = [];
-rsa.DFencode.mean.Fpatterns = [];
-rsa.preview.mean.Fpatterns = [];
-rsa.preview.mean.Rpatterns = [];
+for m = 1:args.DFencode.trialnum
+    DFencode_trialTR_idx = find(rsa.DFencode.trialnum == m);
+    DFencode_trialTR_mean = DFencode_trialTR_idx(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1));
+    DFencode_trial_patt = mean(subj.patterns{1,5}.mat(:,DFencode_trialTR_mean(1):(DFencode_trialTR_mean(args.DFencode.meanTR_length))),2);
+    rsa.DFencode.mean.patterns(:,m) = DFencode_trial_patt;
+end
 
-for k = 1:args.trialnum
-    DF_trialTR_idx = find(rsa.DFencode.trialnum == k);
-    if rsa.DFencode.instr(DF_trialTR_idx(1)) == 0 %if the 1st TR shows that it's Forget
-        %for shift
-        DF_trialTR_Fidx_TRsOI = DF_trialTR_idx(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1)); %TRs of interest
-        DF_trial_patt_Fmean = mean(subj.patterns{1,4}.mat(:,(DF_trialTR_Fidx_TRsOI(1)):DF_trialTR_Fidx_TRsOI(args.DFencode.meanTR_length)),2);
-        rsa.DFencode.mean.Fpatterns = horzcat(rsa.DFencode.mean.Fpatterns,DF_trial_patt_Fmean);
-        
-        %now for preview trials
-        
-        rsa.preview.mean.Fpatterns = horzcat(rsa.preview.mean.Fpatterns,rsa.preview.mean.patterns_match(:,k)); %taking the pattern from the preview matched matrix
-               
-        
-    elseif rsa.DFencode.instr(DF_trialTR_idx(1)) == 1
-        DF_trialTR_Ridx_TRsOI = DF_trialTR_idx(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1)); %TRs of interest
-        DF_trial_patt_Rmean = mean(subj.patterns{1,4}.mat(:,(DF_trialTR_Ridx_TRsOI(1)):DF_trialTR_Ridx_TRsOI(args.DFencode.meanTR_length)),2);
-        rsa.DFencode.mean.Rpatterns = horzcat(rsa.DFencode.mean.Rpatterns,DF_trial_patt_Rmean);
-        %now for preview trials
-        rsa.preview.mean.Rpatterns = horzcat(rsa.preview.mean.Rpatterns,rsa.preview.mean.patterns_match(:,k)); %taking the pattern from the preview matched matrix
-        
-    end
+
+
+for m = 1:args.Localizer.trialnum
+    Localizer_trialTR_idx = find(rsa.Localizer.trialnum == m);
+    Localizer_trialTR_mean = Localizer_trialTR_idx(args.Localizer.meanTR_start:(args.Localizer.meanTR_start+args.Localizer.meanTR_length-1));
+    Localizer_trial_patt = mean(subj.patterns{1,6}.mat(:,Localizer_trialTR_mean(1):(Localizer_trialTR_mean(args.Localizer.meanTR_length))),2);
+    rsa.Localizer.mean.patterns(:,m) = Localizer_trial_patt;
 end
 
     
     %full
     
-    corr_matrix_match_full = zeros(args.trialnum,args.trialnum);
-    for x = 1:args.trialnum %trial number
+    corr_matrix_match_preview = zeros(args.preview.trialnum,args.preview.trialnum);
+    for x = 1:args.preview.trialnum %trial number
         
-        for y = 1:args.trialnum %trial number
+        for y = 1:args.preview.trialnum %trial number
             
-            corr_matrix_match_full(x, y) = corr2(rsa.DFencode.mean.patterns(:,x), rsa.preview.mean.patterns_match(:,y));
-            rsa.results.smatrix.corr_matrix_match_full = corr_matrix_match_full;
+            corr_matrix_match_preview(x, y) = corr2(rsa.preview.mean.patterns(:,x), rsa.preview.mean.patterns(:,y));
+            rsa.results.smatrix.corr_matrix_match_preview = corr_matrix_match_preview;
         end
     end
     
-    corr_matrix_match_F = zeros(args.trialnum/2,args.trialnum/2);
-    
-    for x = 1:args.trialnum/2 %trial number
+    corr_matrix_match_DFencode = zeros(args.DFencode.trialnum,args.DFencode.trialnum);
+    for x = 1:args.DFencode.trialnum %trial number
         
-        for y = 1:args.trialnum/2 %trial number
+        for y = 1:args.DFencode.trialnum %trial number
             
-            corr_matrix_match_F(x, y) = corr2(rsa.DFencode.mean.Fpatterns(:,x), rsa.preview.mean.Fpatterns(:,y));
-            rsa.results.smatrix.corr_matrix_match_F = corr_matrix_match_F;
+            corr_matrix_match_DFencode(x, y) = corr2(rsa.DFencode.mean.patterns(:,x), rsa.DFencode.mean.patterns(:,y));
+            rsa.results.smatrix.corr_matrix_match_DFencode = corr_matrix_match_DFencode;
         end
     end
     
-    corr_matrix_match_R = zeros(args.trialnum/2,args.trialnum/2);
-    
-    for x = 1:args.trialnum/2 %trial number
+    corr_matrix_match_Localizer = zeros(args.Localizer.trialnum,args.Localizer.trialnum);
+    for x = 1:args.Localizer.trialnum %trial number
         
-        for y = 1:args.trialnum/2 %trial number
+        for y = 1:args.Localizer.trialnum %trial number
             
-            corr_matrix_match_R(x, y) = corr2(rsa.DFencode.mean.Rpatterns(:,x), rsa.preview.mean.Rpatterns(:,y));
-            rsa.results.smatrix.corr_matrix_match_R = corr_matrix_match_R;
+            corr_matrix_match_Localizer(x, y) = corr2(rsa.Localizer.mean.patterns(:,x), rsa.Localizer.mean.patterns(:,y));
+            rsa.results.smatrix.corr_matrix_match_Localizer = corr_matrix_match_Localizer;
         end
     end
+    
+    %%%%% added Localizer - extract out by category
+    
+    
     
     cd(args.output_dir)
 %     run1_fig = figure;
@@ -345,52 +347,12 @@ end
 %     xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
 %     ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
 %     saveas(run2_fig, sprintf('emodif%s_run2',subjNum),'png')
-    F_fig = figure;
-    set(F_fig, 'Position', [0 0 1500 1500])
+
+    preview_fig = figure;
+    set(preview_fig, 'Position', [0 0 1500 1500])
     
     subplot(1,1,1)
-    
-    imagesc(corr_matrix_match_F); colormap('jet'); colorbar; 
-    args.confplot.origcoloraxis = caxis;
-    if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
-        caxis([-.25 .25]);
-    else
-        caxis([-.35 .35]);
-    end
-    
-    args.confplot.finalcoloraxis = caxis;
-    
-    ylabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start,args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
-    xlabel(sprintf('DFencode raw Forget patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
-    saveas(F_fig, sprintf('emodif%s_run_Forget_TRstart%d_mean%d',subjNum,args.DFencode.meanTR_start,args.DFencode.meanTR_length),'png')    
-
-
-    R_fig = figure;
-    set(R_fig, 'Position', [0 0 1500 1500])
-    
-    subplot(1,1,1)
-    imagesc(corr_matrix_match_R); colormap('jet'); colorbar; 
-    args.confplot.origcoloraxis = caxis;
-    
-    if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
-        
-        caxis([-.25 .25]);
-    else
-        caxis([-.35 .35]);
-    end
-    
-    args.confplot.finalcoloraxis = caxis;
-    
-    ylabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start,args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
-    xlabel(sprintf('DFencode raw Remember patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
-    saveas(R_fig, sprintf('emodif%s_run_Rem_TRstart%d_mean%d',subjNum,args.DFencode.meanTR_start,args.DFencode.meanTR_length),'png')
-
-
-    full_fig = figure;
-    set(full_fig, 'Position', [0 0 1500 1500])
-    
-    subplot(1,1,1)
-    imagesc(corr_matrix_match_full); colormap('jet'); colorbar; 
+    imagesc(corr_matrix_match_preview); colormap('jet'); colorbar; 
     args.confplot.origcoloraxis = caxis;
     
     if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
@@ -400,10 +362,47 @@ end
     end
     args.confplot.finalcoloraxis = caxis;
     
-    ylabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start,args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
-    xlabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
-    saveas(full_fig, sprintf('emodif%s_run_full_TRstart%d_mean%d',subjNum,args.DFencode.meanTR_start,args.DFencode.meanTR_length),'png')
+    ylabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start,args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
+    xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
+    
+    saveas(preview_fig, sprintf('emodif%s_run_Preview_TRstart%d_mean%d',subjNum,args.preview.meanTR_start,args.preview.meanTR_length),'png')
 
+    DFencode_fig = figure;
+    set(DFencode_fig, 'Position', [0 0 1500 1500])
+    
+    subplot(1,1,1)
+    imagesc(corr_matrix_match_DFencode); colormap('jet'); colorbar; 
+    args.confplot.origcoloraxis = caxis;
+    
+    if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
+        caxis([-.25 .25]);
+    else
+        caxis([-.35 .35]);
+    end
+    args.confplot.finalcoloraxis = caxis;
+    
+    ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start,args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
+    xlabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
+    
+    saveas(DFencode_fig, sprintf('emodif%s_run_DFencode_TRstart%d_mean%d',subjNum,args.DFencode.meanTR_start,args.DFencode.meanTR_length),'png')
+    
+    Localizer_fig = figure;
+    set(Localizer_fig, 'Position', [0 0 1500 1500])
+    
+    subplot(1,1,1)
+    imagesc(corr_matrix_match_Localizer); colormap('jet'); colorbar; 
+    args.confplot.origcoloraxis = caxis;
+    
+    if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
+        caxis([-.25 .25]);
+    else
+        caxis([-.35 .35]);
+    end
+    args.confplot.finalcoloraxis = caxis;
+    
+    ylabel(sprintf('Localizer raw patterns averaged over TR %d: TR %d run 1',args.Localizer.meanTR_start,args.Localizer.meanTR_end),'FontSize',15,'FontWeight','bold');
+    xlabel(sprintf('Localizer raw patterns averaged over TR %d: TR %d run 1',args.Localizer.meanTR_start, args.Localizer.meanTR_end),'FontSize',15,'FontWeight','bold');
+    saveas(Localizer_fig, sprintf('emodif%s_run_Localizer_TRstart%d_mean%d',subjNum,args.Localizer.meanTR_start,args.Localizer.meanTR_length),'png')
 
 % 
 %     %for each DFencode TR

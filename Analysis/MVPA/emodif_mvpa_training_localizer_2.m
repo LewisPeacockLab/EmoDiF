@@ -65,10 +65,13 @@ function emodif_mvpa_training_localizer_2(subjNum,maskName,classifier,categories
   args.condNames_short = {'f','s','o','w','r'};
   args.impmapType = 'mcduff';
   
-  %for astoria
+%   for astoria
    args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
 % for tigger
 %    args.subj_dir = sprintf('/Users/TWang/emodif_data/%s', args.subjID);
+%for box synch
+% basedir = '/Users/tw24955/Box Sync/';
+% args.subj_dir = sprintf('%sEmoDF_LewPeaLab/emodif_data/%s', basedir,args.subjID);
    
   
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);

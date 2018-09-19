@@ -8,7 +8,7 @@
 #MIDRUN = name of the middle run (include localizer, preview  and study together)
 #read in middle run (reference run) from the second argument in the script
 #SUBNO=$1
-SUBNO='104'
+SUBNO='106'
 # base directory where experiments are located on SCRATCH
 BASEDIR='/Users/tw24955/emodif_data'
 SOFTWAREDIR='/Users/tw24955/EmoDiF'
@@ -76,7 +76,7 @@ T12MNI=${FUNC_AVG_DIR}/T12MNI
 ##### This is where the magic happens ####
 
 # to ventral temporal mask
-applywarp --ref=${fRI} --in=${ST_MASK} --warp=${MNI2T1} --postmat=${T12fRI} --out=${MASK}
+applywarp --ref=${fRI} --in=${ST_MASK_2} --warp=${MNI2T1} --postmat=${T12fRI} --out=${MASK_2}
 # to hippocampus mask
 #applywarp --ref=${fRI} --in=${ST_MASK_HIP} --warp=${MNI2T1} --postmat=${T12fRI} --out=${MASK_HIP}
 #unzip mask

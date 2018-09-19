@@ -32,6 +32,7 @@ names = mvpa_regs.localizer.cat_names; % easy %face scene object word rest, for 
 % durations = zeros(length(names),1)'; % easy
 
 durations = repmat(9,length(names),1);
+durations = num2cell(durations)';
 
 %%%%%%%% BUILDING our onsets %%%%%%%%%%%%%%
 % for each of these conditions:
@@ -166,6 +167,8 @@ onsets{3} = object_blocks;
 onsets{4} = word_blocks;
 names = {'face', 'scene', 'object', 'word'};
 end
+
+durations = durations(1:length(onsets));
 
 %redefine names to reflect onsets
 
