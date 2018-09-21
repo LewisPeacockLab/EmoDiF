@@ -282,9 +282,11 @@ end
 
 for m = 1:args.Localizer.trialnum
     Localizer_trialTR_idx = find(rsa.Localizer.trialnum == m);
+    Localizer_trialCAT = (mvpa_regs.localizer.cat(Localizer_trialTR_idx(1)));
     Localizer_trialTR_mean = Localizer_trialTR_idx(args.Localizer.meanTR_start:(args.Localizer.meanTR_start+args.Localizer.meanTR_length-1));
     Localizer_trial_patt = mean(subj.patterns{1,6}.mat(:,Localizer_trialTR_mean(1):(Localizer_trialTR_mean(args.Localizer.meanTR_length))),2);
     rsa.Localizer.mean.patterns(:,m) = Localizer_trial_patt;
+    rsa.Localizer.mean.category(:,m) = Localizer_trialCAT;
 end
 
     
@@ -296,7 +298,9 @@ end
         for y = 1:args.preview.trialnum %trial number
             
             corr_matrix_match_preview(x, y) = corr2(rsa.preview.mean.patterns(:,x), rsa.preview.mean.patterns(:,y));
+            corr_matrix_match_previewz(x,y) = 0.5*log((1+corr_matrix_match_preview(x, y))/(1-corr_matrix_match_preview(x, y)));
             rsa.results.smatrix.corr_matrix_match_preview = corr_matrix_match_preview;
+            rsa.results.smatrix.corr_matrix_match_previewz = corr_matrix_match_previewz;
         end
     end
     
@@ -306,7 +310,9 @@ end
         for y = 1:args.DFencode.trialnum %trial number
             
             corr_matrix_match_DFencode(x, y) = corr2(rsa.DFencode.mean.patterns(:,x), rsa.DFencode.mean.patterns(:,y));
+            corr_matrix_match_DFencodez(x,y) = 0.5*log((1+corr_matrix_match_DFencode(x, y))/(1-corr_matrix_match_DFencode(x, y)));
             rsa.results.smatrix.corr_matrix_match_DFencode = corr_matrix_match_DFencode;
+            rsa.results.smatrix.corr_matrix_match_DFencodez = corr_matrix_match_DFencodez;
         end
     end
     
@@ -316,11 +322,38 @@ end
         for y = 1:args.Localizer.trialnum %trial number
             
             corr_matrix_match_Localizer(x, y) = corr2(rsa.Localizer.mean.patterns(:,x), rsa.Localizer.mean.patterns(:,y));
+            corr_matrix_match_Localizerz(x,y) = 0.5*log((1+corr_matrix_match_Localizer(x, y))/(1-corr_matrix_match_Localizer(x, y)));
             rsa.results.smatrix.corr_matrix_match_Localizer = corr_matrix_match_Localizer;
+            rsa.results.smatrix.corr_matrix_match_Localizerz = corr_matrix_match_Localizerz;
         end
     end
     
-    %%%%% added Localizer - extract out by category
+    %%%%% added Localizer - extract out by category - by category
+    
+    rsa.Localizer.mean.patterns_tosort = vertcat(rsa.Localizer.mean.category,rsa.Localizer.mean.patterns)';
+    rsa.Localizer.mean.patterns_sorted = sortrows(rsa.Localizer.mean.patterns_tosort)';
+    rsa.Localizer.mean.patterns_bycategory = rsa.Localizer.mean.patterns_sorted(2:end, :);
+    
+    corr_matrix_match_Localizer_bycat = zeros(args.Localizer.trialnum,args.Localizer.trialnum);
+    
+        for x = 1:args.Localizer.trialnum %trial number
+        
+            for y = 1:args.Localizer.trialnum %trial number
+                
+                corr_matrix_match_Localizer_bycat(x, y) = corr2(rsa.Localizer.mean.patterns_bycategory (:,x), rsa.Localizer.mean.patterns_bycategory (:,y));
+                corr_matrix_match_Localizer_bycatz(x,y) = 0.5*log((1+corr_matrix_match_Localizer_bycat(x, y))/(1-corr_matrix_match_Localizer_bycat(x, y)));
+                rsa.results.smatrix.corr_matrix_match_Localizer_bycat = corr_matrix_match_Localizer_bycat;
+                rsa.results.smatrix.corr_matrix_match_Localizer_bycatz = corr_matrix_match_Localizer_bycatz;
+            end
+        end
+   
+    
+%     localizer_table = vertcat(rsa.Localizer.mean.category, rsa.results.smatrix.corr_matrix_match_Localizer)';
+%     localizer_table_sorted = sortrows(localizer_table)';
+%     localizer_corr_matrix_bycat = localizer_table_sorted(2:end, :);
+%     vert_cat = rsa.Localizer.mean.category';
+%     localizer_corr_matrix_bycat_vert = horzcat(vert_cat, localizer_corr_matrix_bycat);
+    
     
     
     
@@ -362,8 +395,8 @@ end
     end
     args.confplot.finalcoloraxis = caxis;
     
-    ylabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start,args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
-    xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
+    ylabel(sprintf('Preview raw patterns averaged over TR %d: TR %d ',args.preview.meanTR_start,args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
+    xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d ',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
     
     saveas(preview_fig, sprintf('emodif%s_run_Preview_TRstart%d_mean%d',subjNum,args.preview.meanTR_start,args.preview.meanTR_length),'png')
 
@@ -381,8 +414,8 @@ end
     end
     args.confplot.finalcoloraxis = caxis;
     
-    ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start,args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
-    xlabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d run 1',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
+    ylabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d ',args.DFencode.meanTR_start,args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
+    xlabel(sprintf('DFencode raw patterns averaged over TR %d: TR %d ',args.DFencode.meanTR_start, args.DFencode.meanTR_end),'FontSize',15,'FontWeight','bold');
     
     saveas(DFencode_fig, sprintf('emodif%s_run_DFencode_TRstart%d_mean%d',subjNum,args.DFencode.meanTR_start,args.DFencode.meanTR_length),'png')
     
@@ -400,10 +433,28 @@ end
     end
     args.confplot.finalcoloraxis = caxis;
     
-    ylabel(sprintf('Localizer raw patterns averaged over TR %d: TR %d run 1',args.Localizer.meanTR_start,args.Localizer.meanTR_end),'FontSize',15,'FontWeight','bold');
-    xlabel(sprintf('Localizer raw patterns averaged over TR %d: TR %d run 1',args.Localizer.meanTR_start, args.Localizer.meanTR_end),'FontSize',15,'FontWeight','bold');
+    ylabel(sprintf('Localizer raw patterns averaged over TR %d: TR %d ',args.Localizer.meanTR_start,args.Localizer.meanTR_end),'FontSize',15,'FontWeight','bold');
+    xlabel(sprintf('Localizer raw patterns averaged over TR %d: TR %d ',args.Localizer.meanTR_start, args.Localizer.meanTR_end),'FontSize',15,'FontWeight','bold');
     saveas(Localizer_fig, sprintf('emodif%s_run_Localizer_TRstart%d_mean%d',subjNum,args.Localizer.meanTR_start,args.Localizer.meanTR_length),'png')
-
+    
+    
+    Localizerbycat_fig = figure;
+    set(Localizerbycat_fig, 'Position', [0 0 1500 1500])
+    
+    subplot(1,1,1)
+    imagesc(rsa.results.smatrix.corr_matrix_match_Localizer_bycat); colormap('jet'); colorbar; 
+    args.confplot.origcoloraxis = caxis;
+    
+    if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
+        caxis([-.25 .25]);
+    else
+        caxis([-.35 .35]);
+    end
+    args.confplot.finalcoloraxis = caxis;
+    
+    ylabel(sprintf('Localizer raw patterns averaged over TR %d: TR %d bycat',args.Localizer.meanTR_start,args.Localizer.meanTR_end),'FontSize',15,'FontWeight','bold');
+    xlabel(sprintf('Localizer raw patterns averaged over TR %d: TR %d bycat',args.Localizer.meanTR_start, args.Localizer.meanTR_end),'FontSize',15,'FontWeight','bold');
+    saveas(Localizerbycat_fig, sprintf('emodif%s_run_Localizer_bycat_TRstart%d_mean%d',subjNum,args.Localizer.meanTR_start,args.Localizer.meanTR_length),'png')
 % 
 %     %for each DFencode TR
 %     for m = 1:args.trialnum

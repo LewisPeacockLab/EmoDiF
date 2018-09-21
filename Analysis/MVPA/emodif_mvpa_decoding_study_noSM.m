@@ -662,7 +662,7 @@ end
   
   %mvpa_regs - %**1 = negative, 0 = neutral; 1= remember, 0 = forget
   %%%% READING IN REGRESSORS
-  if strcmp(test_phase,'DFencode') == true
+  if strcmp(test_phase,'DFencode') == 1
       
   
   all_DF_runs = mvpa_regs.DFEncode.run;
@@ -842,7 +842,7 @@ end
   clear results 
   
   
-  elseif strcmp(test_phase,'preview') == true
+  elseif strcmp(test_phase,'Preview') == 1
  
       all_preview_runs = mvpa_regs.preview.run;
       all_preview_cat = mvpa_regs.preview.cat;
@@ -1021,8 +1021,10 @@ end
       
       fclose(fid);
   end
-  clear results 
-  
+  clear results
+  else
+      
+      disp('ERROR - no test_phase concurrance');
   end
       diary off
       cd(start_dir);

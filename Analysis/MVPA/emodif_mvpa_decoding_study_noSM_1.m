@@ -4,7 +4,7 @@ function emodif_mvpa_decoding_study_noSM_1(subjNum,maskName,classifier,categorie
   %----------------------------------------------------------------------
   % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
   % * for development -
-  % emodif_mvpa_decoding_study('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02', 'DFencode', 2, 'yes')
+  % emodif_mvpa_decoding_study('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02','DFencode', 2, 'yes')
   % * subjNum     = subject ID (e.g., '110915')
   % * maskName    = name of mask to use to read in data (no SUBJID)
   % * featSel     = 1|0: do voxelwise ANOVA feature selection, p=0.05
@@ -667,7 +667,7 @@ end
   
   %mvpa_regs - %**1 = negative, 0 = neutral; 1= remember, 0 = forget
   %%%% READING IN REGRESSORS
-  if strcmp(test_phase,'DFencode') == true
+  if strcmp(test_phase,'DFencode') == 1
       
   
   all_DF_runs = mvpa_regs.DFEncode.run;
@@ -847,7 +847,7 @@ end
   clear results 
   
   
-  elseif strcmp(test_phase,'preview') == true
+  elseif strcmp(test_phase,'Preview') == 1
  
       all_preview_runs = mvpa_regs.preview.run;
       all_preview_cat = mvpa_regs.preview.cat;
@@ -1008,10 +1008,6 @@ end
       save(results_file, 'results')
       %write output to xls
 
-      
-
-      
-      
       trial_info_test_perf=[all_preview_cat; all_preview_emo; all_preview_instr; all_preview_runs; all_preview_TR; all_preview_trial];
       
       dlmwrite(sprintf('%s/%s_%s_class_perf.txt', args.output_dir, args.subjID, args.test_phase),results.iterations.acts);
@@ -1027,7 +1023,10 @@ end
       fclose(fid);
   end
   clear results 
-  
+  else
+      
+   disp('ERROR - no test_phase concurrance');
+   
   end
       diary off
       cd(start_dir);

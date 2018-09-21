@@ -3,8 +3,8 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   
   %----------------------------------------------------------------------
   % [stuff] = emodif_mvpa_training_localizer(... ALL ARGS ARE STRINGS ...)
-  % * for development -
-  % emodif_mvpa_training_localizer('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsowr', '50','02', 2, 'yes')
+  % * for development - FOR 101, 102, 103
+  % emodif_mvpa_training_localizer('101','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsoner', '50','02', 2, 'yes')
   % * subjNum     = subject ID (e.g., '110915')
   % * maskName    = name of mask to use to read in data (no SUBJID)
   % * featSel     = 1|0: do voxelwise ANOVA feature selection, p=0.05
@@ -543,6 +543,7 @@ end
   sh_TRs_name = sprintf('%s_sh%d',TRs_name,args.shiftTRs);
   
   
+  
   %shift regressors
   shifted_regs = get_mat(subj,'regressors',sh_conds_name);
   shifted_trials = get_mat(subj, 'regressors', sh_trials_name);
@@ -741,7 +742,7 @@ end
     
     fn = sprintf('%s/%s_%s_parameters.txt',  args.output_dir, args.subjID, args.phase);
     fid=fopen(fn,'w');
-    fprintf(fid,sprintf('%s %s %s %s %s %s %s %s %s %s',args.subjID, args.phase, maskName,  classifier, categories, penalty, shiftTRs, rest_shift_string, word_combine));
+    fprintf(fid,sprintf('%s %s %s %s %s %s %s %s %s %s',args.subjID, args.phase, maskName,  classifier, categories, penalty, shiftTRs, rest_shift_string));
 %     [rows cols] = size (concat_perf);
 %     x= repmat('%.4f\t',1,(cols-1));
 %     fprintf(fid,[x,'%.4f\n'],concat_perf);
