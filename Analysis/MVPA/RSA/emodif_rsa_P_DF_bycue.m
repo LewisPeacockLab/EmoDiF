@@ -296,7 +296,7 @@ end
         for y = 1:args.trialnum %trial number
             
             corr_matrix_match_full(x, y) = corr2(rsa.DFencode.mean.patterns(:,x), rsa.preview.mean.patterns_match(:,y));
-            corr_matrix_match_fullz(x, y) = 0.5*log((1+corr_matrix_match_full(x, y))/(corr_matrix_match_full(x, y)));
+            corr_matrix_match_fullz(x, y) = 0.5*log((1+corr_matrix_match_full(x, y))/(1-corr_matrix_match_full(x, y)));
             rsa.results.smatrix.corr_matrix_match_full = corr_matrix_match_full;
             rsa.results.smatrix.corr_matrix_match_fullz = corr_matrix_match_fullz;
         end
@@ -310,7 +310,7 @@ end
         for y = 1:args.trialnum/2 %trial number
             
             corr_matrix_match_F(x, y) = corr2(rsa.DFencode.mean.Fpatterns(:,x), rsa.preview.mean.Fpatterns(:,y));
-            corr_matrix_match_Fz(x, y) = 0.5*log((1+corr_matrix_match_F(x, y))/(corr_matrix_match_F(x, y)));
+            corr_matrix_match_Fz(x, y) = 0.5*log((1+corr_matrix_match_F(x, y))/(1-corr_matrix_match_F(x, y)));
             
             rsa.results.smatrix.corr_matrix_match_F = corr_matrix_match_F;
             rsa.results.smatrix.corr_matrix_match_Fz = corr_matrix_match_Fz;
@@ -325,7 +325,7 @@ end
         for y = 1:args.trialnum/2 %trial number
             
             corr_matrix_match_R(x, y) = corr2(rsa.DFencode.mean.Rpatterns(:,x), rsa.preview.mean.Rpatterns(:,y));
-            corr_matrix_match_Rz(x, y) = 0.5*log((1+corr_matrix_match_R(x, y))/(corr_matrix_match_R(x, y)));
+            corr_matrix_match_Rz(x, y) = 0.5*log((1+corr_matrix_match_R(x, y))/(1-corr_matrix_match_R(x, y)));
             rsa.results.smatrix.corr_matrix_match_R = corr_matrix_match_R;
             rsa.results.smatrix.corr_matrix_match_Rz = corr_matrix_match_Rz;
         end
