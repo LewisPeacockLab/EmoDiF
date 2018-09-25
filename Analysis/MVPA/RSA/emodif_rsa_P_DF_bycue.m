@@ -1,5 +1,5 @@
-function [rsa] = emodif_rsa_P_DF_bycue(subjNum,maskName, train_date, test_date, shift, dfencodeTRstart, dfencodeTRlength)
-%  [rsa] = emodif_rsa_P_DF_bycue('103','tempoccfusi_pHg_LOC_combined_epi_space','29-Aug-2018', '29-Aug-2018', 2, 2, 3)
+function [rsa] = emodif_rsa_P_DF_bycue(subjNum,maskName, shift, dfencodeTRstart, dfencodeTRlength)
+%  [rsa] = emodif_rsa_P_DF_bycue('103','tempoccfusi_pHg_LOC_combined_epi_space', 2, 2, 3)
 %RSA set up script based off of hyojeong's clearmem matlab RSA script. ***
 %requires princeton toolbox ***
 
@@ -55,9 +55,9 @@ function [rsa] = emodif_rsa_P_DF_bycue(subjNum,maskName, train_date, test_date, 
   args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
-  args.DFencode_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.test_phase, test_date);
-  args.preview_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.train_phase, train_date);
-  args.output_dir = sprintf('%s/results/rsa_results/%s/%d/%s',args.subj_dir,maskName,args.previewshiftTR, date);
+%   args.DFencode_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.test_phase, test_date);
+%   args.preview_dir = sprintf('%s/results/%s/%s',args.subj_dir, args.train_phase, train_date);
+  args.output_dir = sprintf('%s/results/rsa_results/preview_dfencode/%s/%d/%s',args.subj_dir,maskName,args.previewshiftTR, date);
   mkdir(args.output_dir);
   args.subjNum = subjNum;
   
@@ -289,34 +289,45 @@ end
     %full
     
     corr_matrix_match_full = zeros(args.trialnum,args.trialnum);
+    corr_matrix_match_fullz= zeros(args.trialnum,args.trialnum);
+    
     for x = 1:args.trialnum %trial number
         
         for y = 1:args.trialnum %trial number
             
             corr_matrix_match_full(x, y) = corr2(rsa.DFencode.mean.patterns(:,x), rsa.preview.mean.patterns_match(:,y));
+            corr_matrix_match_fullz(x, y) = 0.5*log((1+corr_matrix_match_full(x, y))/(corr_matrix_match_full(x, y)));
             rsa.results.smatrix.corr_matrix_match_full = corr_matrix_match_full;
+            rsa.results.smatrix.corr_matrix_match_fullz = corr_matrix_match_fullz;
         end
     end
     
     corr_matrix_match_F = zeros(args.trialnum/2,args.trialnum/2);
+    corr_matrix_match_Fz = zeros(args.trialnum/2,args.trialnum/2);
     
     for x = 1:args.trialnum/2 %trial number
         
         for y = 1:args.trialnum/2 %trial number
             
             corr_matrix_match_F(x, y) = corr2(rsa.DFencode.mean.Fpatterns(:,x), rsa.preview.mean.Fpatterns(:,y));
+            corr_matrix_match_Fz(x, y) = 0.5*log((1+corr_matrix_match_F(x, y))/(corr_matrix_match_F(x, y)));
+            
             rsa.results.smatrix.corr_matrix_match_F = corr_matrix_match_F;
+            rsa.results.smatrix.corr_matrix_match_Fz = corr_matrix_match_Fz;
         end
     end
     
     corr_matrix_match_R = zeros(args.trialnum/2,args.trialnum/2);
+    corr_matrix_match_Rz = zeros(args.trialnum/2,args.trialnum/2);
     
     for x = 1:args.trialnum/2 %trial number
         
         for y = 1:args.trialnum/2 %trial number
             
             corr_matrix_match_R(x, y) = corr2(rsa.DFencode.mean.Rpatterns(:,x), rsa.preview.mean.Rpatterns(:,y));
+            corr_matrix_match_Rz(x, y) = 0.5*log((1+corr_matrix_match_R(x, y))/(corr_matrix_match_R(x, y)));
             rsa.results.smatrix.corr_matrix_match_R = corr_matrix_match_R;
+            rsa.results.smatrix.corr_matrix_match_Rz = corr_matrix_match_Rz;
         end
     end
     

@@ -29,6 +29,7 @@ function emodif_mvpa_decoding_parse(subjNum,test_phase, maskName, test_date)
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
   args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, test_phase, maskName, test_date);
+  args.script_dir = pwd;
 
 cd(args.output_dir)
 if strcmp(test_phase, 'DFencode') == true
@@ -42,7 +43,7 @@ if strcmp(test_phase, 'DFencode') == true
     TR = regressors(6,:);
     trial = regressors(7,:);
 
-elseif strcmp(test_phase, 'preview') == true
+elseif strcmp(test_phase, 'Preview') == true
     class_perf = load(sprintf('emodif_%s_preview_class_perf.txt',subjNum));
     regressors = load(sprintf('emodif_%s_preview_regressors.txt',subjNum));
     cat = regressors(1,:);
@@ -660,12 +661,13 @@ results.preview.neutral = neutral;
 filename = sprintf('results_%s.mat',test_phase);
 save(filename,'results');
 
+
 end
 
 
 
 
-
+cd(args.script_dir);
 
 
 end

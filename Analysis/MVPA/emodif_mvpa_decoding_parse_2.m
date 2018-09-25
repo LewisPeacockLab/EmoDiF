@@ -1,5 +1,5 @@
-function emodif_mvpa_decoding_parse_2(subjNum,test_phase,maskName, test_date)
-%*emodif_mvpa_decoding_parse('101','DFencode','30-Apr-2018')
+function emodif_mvpa_decoding_parse_2(subjNum, test_phase, maskName, test_date)
+%*emodif_mvpa_decoding_parse('101','DFencode',tempoccfusi_pHg_LOC_combined_epi_space', '30-Apr-2018')
 %parse 2 which involves subsequent memory analysis
 
   version = '2018Jun26';
@@ -16,6 +16,7 @@ function emodif_mvpa_decoding_parse_2(subjNum,test_phase,maskName, test_date)
   args.preview.runs = 2;
   args.subjNum = subjNum;
   args.subjID = sprintf('emodif_%s',num2str(subjNum));
+  args.script_dir = pwd;
   
   
     %for astoria
@@ -29,9 +30,32 @@ function emodif_mvpa_decoding_parse_2(subjNum,test_phase,maskName, test_date)
   args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, test_phase, maskName, test_date);
 
 cd(args.output_dir)
-if strcmp(test_phase, 'DFencode') == true
+if strcmp(test_phase, 'DFencode') == 1
 class_perf = load(sprintf('emodif_%s_DFencode_class_perf.txt',subjNum));
 regressors = load(sprintf('emodif_%s_DFencode_regressors.txt',subjNum));
+regressors(2,:) = Replace(regressors(2,:),-1,1); %this fixes an issue with emotion where it's appearing as -1
+
+%this is to set the between break rest points to NaN
+
+%Exceptions:
+if strcmp(subjNum,'116') == 1
+    
+            break1_start = (args.DF.nTRs/2)-(args.break-1);
+            break2_start = (args.DF.nTRs-(args.break-1)) +1 ;
+else
+   
+        break1_start = (args.DF.nTRs/2)-(args.break-1);
+break2_start = args.DF.nTRs-(args.break-1);
+end
+
+regressors(1:3,break1_start:(args.DF.nTRs/2)) = NaN;
+regressors(4:7,break1_start:(args.DF.nTRs/2)) = NaN;
+
+regressors(1:3,break2_start:args.DF.nTRs) = NaN;
+regressors(5:7,break2_start:args.DF.nTRs) = NaN;
+
+
+
 cat = regressors(1,:);
 emo = regressors(2,:); %1 negative, 0 neutral
 instr = regressors(3,:); %1 remember, 0 forget
@@ -42,9 +66,37 @@ trial = regressors(7,:);
 
 %subresp - which 
 
-elseif strcmp(test_phase, 'preview') == true
+elseif strcmp(test_phase, 'Preview') == 1
+    
     class_perf = load(sprintf('emodif_%s_preview_class_perf.txt',subjNum));
     regressors = load(sprintf('emodif_%s_preview_regressors.txt',subjNum));
+    
+    %this is to set the between break rest points to NaN
+    regressors(2,:) = Replace(regressors(2,:),-1,1); %this fixes an issue with emotion where it's appearing as -1
+    
+    %exception
+    if strcmp(subjNum,'107') == 1
+        break1_start = ((args.preview.nTRs/2)+1)-(args.break-1);
+    else
+        
+        break1_start = (args.preview.nTRs/2)-(args.break-1);
+    end
+    
+    if strcmp(subjNum,'111') == 1
+        break2_start = ((args.preview.nTRs)+1)-(args.break-1);
+    else
+        break2_start = args.preview.nTRs-(args.break-1);
+    end
+
+
+
+regressors(1:3,break1_start:(args.preview.nTRs/2)) = NaN;
+regressors(5:7,break1_start:(args.preview.nTRs/2)) = NaN;
+
+regressors(1:3,break2_start:args.preview.nTRs) = NaN;
+regressors(5:7,break2_start:args.preview.nTRs) = NaN;
+ 
+    
 cat = regressors(1,:);
 % RT = regressors(2,:);
 emo = regressors(2,:);
@@ -65,7 +117,7 @@ all_regressors = vertcat(class_perf,regressors);
 
 %start breaking everything up by trial 
 
-if strcmp(test_phase, 'DFencode') == true
+if strcmp(test_phase, 'DFencode') == 1
     instr_remember_idx = find(instr == 1);
     instr_forget_idx = find(instr == 0);
     instr_remember_neu_idx = find(instr == 1 & emo == 0);
@@ -273,6 +325,21 @@ end
 
 forget_hiconf_NEW_n = length(instr_forget_hiconf_NEW_idx)/7;
 forget.highconf.acts.NEW.num = forget_hiconf_NEW_n;
+
+if forget.highconf.acts.NEW.num == 0
+forget_hiconf_NEW_face = NaN;
+forget.highconf.acts.NEW.face = NaN;
+forget_hiconf_NEW_scene = NaN;
+forget.highconf.acts.NEW.scene = NaN;
+forget_hiconf_NEW_object = NaN;
+forget.highconf.acts.NEW.object = NaN;
+forget_hiconf_NEW_word = NaN;
+forget.highconf.acts.NEW.word = NaN;
+forget_hiconf_NEW_rest = NaN;
+forget.highconf.acts.NEW.rest = NaN;
+instr_forget_hiconf_NEW_check = NaN;
+forget.highconf.acts.NEW.check = NaN;
+else 
 forget_hiconf_NEW_face = reshape(forget_hiconf_NEW_acts(1,:),7,forget_hiconf_NEW_n)';
 forget.highconf.acts.NEW.face = forget_hiconf_NEW_face;
 forget_hiconf_NEW_scene = reshape(forget_hiconf_NEW_acts(2,:),7,forget_hiconf_NEW_n)';
@@ -285,6 +352,7 @@ forget_hiconf_NEW_rest = reshape(forget_hiconf_NEW_acts(5,:),7,forget_hiconf_NEW
 forget.highconf.acts.NEW.rest = forget_hiconf_NEW_rest;
 instr_forget_hiconf_NEW_check = reshape(instr_forget_hiconf_NEW_idx,7,forget_hiconf_NEW_n)';
 forget.highconf.acts.NEW.check = instr_forget_hiconf_NEW_check;
+end
 
 rem_hiconf_OLD_acts=[];
 for i = 1:length(instr_rem_hiconf_OLD_idx)
@@ -644,7 +712,7 @@ filename = sprintf('results_%s.mat',test_phase);
 save(filename,'results');
 
 %%%% back to preview %%%%%%
-elseif strcmp(test_phase, 'preview') == true;
+elseif strcmp(test_phase, 'Preview') == 1;
     emo_negative_idx = find(emo == 1);
     emo_neutral_idx = find(emo == 0);
     
@@ -705,7 +773,7 @@ save(filename,'results');
 
 end
 
-
+cd(args.script_dir);
 
 
 

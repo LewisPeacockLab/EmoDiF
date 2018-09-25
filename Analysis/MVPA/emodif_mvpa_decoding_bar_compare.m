@@ -18,6 +18,7 @@ function emodif_mvpa_decoding_bar_compare(subjNum,test_phase, maskName, test_dat
   args.mask_dir = sprintf('%s/mask', args.subj_dir);
   args.regs_dir = sprintf('%s/behav', args.subj_dir);
   args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, test_phase, maskName, test_date);
+  args.script_dir = pwd;
   
   cd(args.output_dir)
 if strcmp(test_phase, 'DFencode') == true
@@ -591,6 +592,63 @@ if strcmp(test_phase, 'DFencode') == true
     results.forget.merged.bar.OLD.postcue.rest.std = std(results.forget.merged.bar.OLD.postcue.rest.bytrial);
     
         %forget - MERGED - NEW- PRECUE
+        
+        if subjNum == '105'
+            
+    results_for_merged_new_precue_acts_face = NaN;
+    results.forget.merged.bar.NEW.precue.face.bytrial =  NaN;
+    results.forget.merged.bar.NEW.precue.face.nanmean = NaN;
+    results.forget.merged.bar.NEW.precue.face.std = NaN;
+    
+    results_for_merged_new_precue_acts_scene =NaN;
+    results.forget.merged.bar.NEW.precue.scene.bytrial = NaN;
+    results.forget.merged.bar.NEW.precue.scene.nanmean = NaN;
+    results.forget.merged.bar.NEW.precue.scene.std = NaN;
+    
+    results_for_merged_new_precue_acts_object = NaN;
+    results.forget.merged.bar.NEW.precue.object.bytrial =  NaN;
+    results.forget.merged.bar.NEW.precue.object.nanmean = NaN;
+    results.forget.merged.bar.NEW.precue.object.std = NaN;
+    
+    results_for_merged_new_precue_acts_word = NaN;
+    results.forget.merged.bar.NEW.precue.word.bytrial =  NaN;
+    results.forget.merged.bar.NEW.precue.word.nanmean = NaN;
+    results.forget.merged.bar.NEW.precue.word.std = NaN;
+    
+    results_for_merged_new_precue_acts_rest =NaN;
+    results.forget.merged.bar.NEW.precue.rest.bytrial =  NaN;
+    results.forget.merged.bar.NEW.precue.rest.nanmean = NaN;
+    results.forget.merged.bar.NEW.precue.rest.std = NaN;
+  % 
+  
+  %forget - MERGED - NEW- POSTCUE
+  
+    results_for_merged_new_postcue_acts_face = NaN;
+    results.forget.merged.bar.NEW.postcue.face.bytrial = NaN;
+    results.forget.merged.bar.NEW.postcue.face.nanmean = NaN;
+    results.forget.merged.bar.NEW.postcue.face.std = NaN;
+    
+    results_for_merged_new_postcue_acts_scene= NaN;
+    results.forget.merged.bar.NEW.postcue.scene.bytrial = NaN;
+    results.forget.merged.bar.NEW.postcue.scene.nanmean = NaN;
+    results.forget.merged.bar.NEW.postcue.scene.std = NaN;
+    
+    results_for_merged_new_postcue_acts_object = NaN;
+    results.forget.merged.bar.NEW.postcue.object.bytrial = NaN;
+    results.forget.merged.bar.NEW.postcue.object.nanmean = NaN;
+    results.forget.merged.bar.NEW.postcue.object.std = NaN;
+    
+    results_for_merged_new_postcue_acts_word = NaN;
+    results.forget.merged.bar.NEW.postcue.word.bytrial = NaN;
+    results.forget.merged.bar.NEW.postcue.word.nanmean = NaN;
+    results.forget.merged.bar.NEW.postcue.word.std= NaN;
+    
+    results_for_merged_new_postcue_acts_rest= NaN;
+    results.forget.merged.bar.NEW.postcue.rest.bytrial = NaN;
+    results.forget.merged.bar.NEW.postcue.rest.nanmean = NaN;
+    results.forget.merged.bar.NEW.postcue.rest.std = NaN;
+        
+        else
     results_for_merged_new_precue_acts_face = nanmean(results.forget.merged.acts.NEW.face(:,1:3),2); %merging 1-3TR
     results.forget.merged.bar.NEW.precue.face.bytrial =  results_for_merged_new_precue_acts_face;
     results.forget.merged.bar.NEW.precue.face.nanmean = nanmean(results.forget.merged.bar.NEW.precue.face.bytrial);
@@ -619,7 +677,7 @@ if strcmp(test_phase, 'DFencode') == true
   
   %forget - MERGED - NEW- POSTCUE
   
-    results_for_merged_new_postcue_acts_face = nanmean(results.forget.merged.acts.NEW.face(:,5:7),2); %merging 1-3TR
+    results_for_merged_new_postcue_acts_face = nanmean(results.forget.merged.acts.NEW.face(:,5:7),2); %merging 5-7
     results.forget.merged.bar.NEW.postcue.face.bytrial =  results_for_merged_new_postcue_acts_face;
     results.forget.merged.bar.NEW.postcue.face.nanmean = nanmean(results.forget.merged.bar.NEW.postcue.face.bytrial);
     results.forget.merged.bar.NEW.postcue.face.std = std(results.forget.merged.bar.NEW.postcue.face.bytrial);
@@ -643,6 +701,7 @@ if strcmp(test_phase, 'DFencode') == true
     results.forget.merged.bar.NEW.postcue.rest.bytrial =  results_for_merged_new_postcue_acts_rest;
     results.forget.merged.bar.NEW.postcue.rest.nanmean = nanmean(results.forget.merged.bar.NEW.postcue.rest.bytrial);
     results.forget.merged.bar.NEW.postcue.rest.std = std(results.forget.merged.bar.NEW.postcue.rest.bytrial);
+        end
     
     %%%%%%%%% HIGH CONF %%%%%%%%%%%%%
   
@@ -701,6 +760,60 @@ if strcmp(test_phase, 'DFencode') == true
     results.forget.highconf.bar.OLD.postcue.rest.std = std(results.forget.highconf.bar.OLD.postcue.rest.bytrial);
     
         %forget - highconf - NEW- PRECUE
+        
+         if subjNum == '105'
+                
+    results.forget.highconf.bar.NEW.precue.face.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.precue.face.nanmean = NaN;
+    results.forget.highconf.bar.NEW.precue.face.std = NaN;
+    
+   
+    results.forget.highconf.bar.NEW.precue.scene.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.precue.scene.nanmean = NaN;
+    results.forget.highconf.bar.NEW.precue.scene.std = NaN;
+    
+   
+    results.forget.highconf.bar.NEW.precue.object.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.precue.object.nanmean = NaN;
+    results.forget.highconf.bar.NEW.precue.object.std = NaN;
+    
+  
+    results.forget.highconf.bar.NEW.precue.word.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.precue.word.nanmean = NaN;
+    results.forget.highconf.bar.NEW.precue.word.std = NaN;
+
+    results.forget.highconf.bar.NEW.precue.rest.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.precue.rest.nanmean = NaN;
+    results.forget.highconf.bar.NEW.precue.rest.std = NaN;
+  % 
+  
+  %forget - highconf - NEW- POSTCUE
+  
+
+    results.forget.highconf.bar.NEW.postcue.face.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.postcue.face.nanmean = NaN;
+    results.forget.highconf.bar.NEW.postcue.face.std = NaN;
+    
+
+    results.forget.highconf.bar.NEW.postcue.scene.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.postcue.scene.nanmean = NaN;
+    results.forget.highconf.bar.NEW.postcue.scene.std = NaN;
+    
+
+    results.forget.highconf.bar.NEW.postcue.object.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.postcue.object.nanmean = NaN;
+    results.forget.highconf.bar.NEW.postcue.object.std = NaN;
+
+    results.forget.highconf.bar.NEW.postcue.word.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.postcue.word.nanmean = NaN;
+    results.forget.highconf.bar.NEW.postcue.word.std = NaN;
+    
+
+    results.forget.highconf.bar.NEW.postcue.rest.bytrial =  NaN;
+    results.forget.highconf.bar.NEW.postcue.rest.nanmean = NaN;
+    results.forget.highconf.bar.NEW.postcue.rest.std = NaN;
+         else
+             
     results_for_highconf_new_precue_acts_face = nanmean(results.forget.highconf.acts.NEW.face(:,1:3),2); %merging 1-3TR
     results.forget.highconf.bar.NEW.precue.face.bytrial =  results_for_highconf_new_precue_acts_face;
     results.forget.highconf.bar.NEW.precue.face.nanmean = nanmean(results.forget.highconf.bar.NEW.precue.face.bytrial);
@@ -753,6 +866,7 @@ if strcmp(test_phase, 'DFencode') == true
     results.forget.highconf.bar.NEW.postcue.rest.bytrial =  results_for_highconf_new_postcue_acts_rest;
     results.forget.highconf.bar.NEW.postcue.rest.nanmean = nanmean(results.forget.highconf.bar.NEW.postcue.rest.bytrial);
     results.forget.highconf.bar.NEW.postcue.rest.std = std(results.forget.highconf.bar.NEW.postcue.rest.bytrial);
+         end
     
     %%%%%% BY EMOTION %%%%%
     
@@ -965,6 +1079,8 @@ if strcmp(test_phase, 'DFencode') == true
   save(filename,'results');
 
   %%%%%%%%%TBD extreme confidence
+end
+cd(args.script_dir);
 end
   
  

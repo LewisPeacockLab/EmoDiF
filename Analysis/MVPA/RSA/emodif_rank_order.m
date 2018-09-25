@@ -46,7 +46,7 @@ elseif type == 4
 end
 
 
-results.bysubject.name = sprintf('%s/emodif_%d_TR%dto%d_rsa_results_results.mat',args.data_dir, subjNum, TRstart, ((TRstart+TRlength)-1));
+results.bysubject.name = sprintf('%s/emodif_%d_TR%dto%d_rsa_results.mat',args.data_dir, subjNum, TRstart, ((TRstart+TRlength)-1));
 results.bysubject.data(i) = load(results.bysubject.name);
 results.bysubject.names{i} = results.bysubject.name;
 

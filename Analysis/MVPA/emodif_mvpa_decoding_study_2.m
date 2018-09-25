@@ -168,11 +168,11 @@ function emodif_mvpa_decoding_study_2(subjNum,maskName,classifier,categories,pen
   all_trials = mvpa_regs.localizer.trial;
   all_TRs = mvpa_regs.localizer.TR;
   
-  %%%%%%%%%%%%%%%%%%%%% SPECIAL CONDITIONS %%%%%%%%%%%%%%%%%
-if subjNum == '101'; %101 had an extra TR
-    my_conds(218)=6;
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   %%%%%%%%%%%%%%%%%%%%% SPECIAL CONDITIONS %%%%%%%%%%%%%%%%%
+% if subjNum == '101'; %101 had an extra TR
+%     my_conds(218)=6;
+% end
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   
 
@@ -284,20 +284,49 @@ end
   %maximum is 3.  
   
   rest_vector = zeros(1,block_size);
+    rest_vector_dummy = zeros(1,block_size);
 
-  
-  for i = 1:n_rest_block
-      rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift))))=1;
-      rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift))))=1;
-
-  end
-%         rest_vector(1,((n_trial_length*last_rest_block)+(((n_rest_length*last_rest_block)-n_rest_length)+(1+rest_shift))))=1;
+% %   if subjNum == '113'
+% %       
+% %       for i = 1:n_rest_block
+% %           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift)))+1)=1;
+% %           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift)))+1)=1;
+% %           
+% %       end
+% %   else
+      
+      for i = 1:n_rest_block
+          rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift))))=1;
+          rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift))))=1;
+          
+      end
+      
+% %       for i = 1:n_rest_block
+% %           rest_vector_dummy(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift)))+1)=1;
+% %           rest_vector_dummy(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift)))+1)=1;
+% %           
+% %       end
+% %       
+% %       if  subjNum == '115'
+% %           rest_vector(1,102:end) = rest_vector_dummy(1,102:end);
+% %           
+% %       elseif subjNum == '117'
+% %           rest_vector(1,119:end) = rest_vector_dummy(1,119:end);
+% %           
+% %       elseif subjNum == '118'
+% %           rest_vector(1,132:end) = rest_vector_dummy(1,132:end);
+% %       elseif subjNum == '124'
+% %           rest_vector(1,57:end) = rest_vector_dummy(1,57:end);
+% %    
+% %           
+% %       end
+      %         rest_vector(1,((n_trial_length*last_rest_block)+(((n_rest_length*last_rest_block)-n_rest_length)+(1+rest_shift))))=1;
       rest_vector(1,(length(rest_vector)-7):(length(rest_vector)-3))= 1;
-        
-        new_rest= horzcat(rest_vector,rest_vector);
-        
-        all_conds(5,:)=new_rest;
- end
+      
+      new_rest= horzcat(rest_vector,rest_vector);
+      
+      all_conds(5,:)=new_rest;
+  end
         
 %  %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%
 %  
@@ -310,7 +339,7 @@ end
 %      rand3 = rand(1,27);
 %      rand4 = rand(1,27);
 %      
-%      neu_word_ID_idx = find(my_conds == 4); %should be 54
+%      neu_word_ID_idx = find(my_conds == 4); %
 %      neg_word_ID_idx = find(my_conds == 5); %should be 54
 %      
 %      %needs to treat each run separately so pre 213 and post 214 would be the
@@ -662,7 +691,7 @@ end
   
   %mvpa_regs - %**1 = negative, 0 = neutral; 1= remember, 0 = forget
   %%%% READING IN REGRESSORS
-  if strcmp(test_phase,'DFencode') == true
+  if strcmp(test_phase,'DFencode') == 1
       
   
   all_DF_runs = mvpa_regs.DFEncode.run;
@@ -842,7 +871,7 @@ end
   clear results 
   
   
-  elseif strcmp(test_phase,'preview') == true
+  elseif strcmp(test_phase,'Preview') == 1
  
       all_preview_runs = mvpa_regs.preview.run;
       all_preview_cat = mvpa_regs.preview.cat;
