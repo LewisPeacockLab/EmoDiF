@@ -73,6 +73,8 @@ function [rsa] = emodif_rsa_preview_dfencode(subjNum,maskName, train_date, test_
 %%%% LOAD REGRESSORS & RSA Parameters %
 
 load(sprintf('%s/EmoDiF_mvpa_allregs.mat', args.regs_dir));
+
+if subjNum == 1 | subjNum == 2 | subjNum == 3 
 load(sprintf('/Users/tw24955/emodif_data/RSA_params.mat')); % just the same for the first 4 subjects
 
 %%%% 
@@ -82,10 +84,16 @@ load(sprintf('/Users/tw24955/emodif_data/RSA_params.mat')); % just the same for 
 
 %%% expanding RSA parameters with mvpa_regs %%%
 
+
 rsa.preview.preview2DFencode = RSA_params.preview2study;
 rsa.preview.preview2DFencode_nonexpanded = RSA_params.NonExpandedPrv2Sty;
 rsa.DFencode.DFencode2preview_nonexpanded = RSA_params.NonExpandedSty2Prv;
-
+else
+rsa.preview.preview2DFencode = mvpa_regs.preview.ExpandedStudyTrialMapping;
+rsa.preview.preview2DFencode_nonexpanded = mvpa_regs.preview.StudyTrialMapping;
+rsa.DFencode.DFencode2preview_nonexpanded = mvpa_regs.DFEncoding.PreviewTrialMapping;   
+    
+end
 %preview trial numbers
 
 firstblocktrialnum = [];

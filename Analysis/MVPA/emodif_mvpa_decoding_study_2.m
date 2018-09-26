@@ -90,11 +90,11 @@ function emodif_mvpa_decoding_study_2(subjNum,maskName,classifier,categories,pen
   %----------------------------------------------------------------------
   % turn on diary to capture analysis output
   %
-  diary on;
-  diary(sprintf('%s/%s_diary.txt',args.output_dir,args.subjNum));
-  fprintf('###########################################\n\n');
-  disp(args);
-  fprintf('###########################################\n');
+%   diary on;
+%   diary(sprintf('%s/%s_diary.txt',args.output_dir,args.subjNum));
+%   fprintf('###########################################\n\n');
+%   disp(args);
+%   fprintf('###########################################\n');
 
 
 %% initialize subject structure with 'study' and 'subject' info
@@ -252,6 +252,8 @@ for k = 1:length(conds_to_use)
     count_conds(k)=sum(all_conds(k,:));
 end
     
+%EXCEPTION SHIFTS
+
 
 %  % IF rest is used 
      
@@ -286,40 +288,34 @@ end
   rest_vector = zeros(1,block_size);
     rest_vector_dummy = zeros(1,block_size);
 
-% %   if subjNum == '113'
-% %       
-% %       for i = 1:n_rest_block
-% %           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift)))+1)=1;
-% %           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift)))+1)=1;
-% %           
-% %       end
-% %   else
-      
       for i = 1:n_rest_block
           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift))))=1;
           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift))))=1;
           
       end
       
-% %       for i = 1:n_rest_block
-% %           rest_vector_dummy(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift)))+1)=1;
-% %           rest_vector_dummy(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift)))+1)=1;
-% %           
-% %       end
-% %       
-% %       if  subjNum == '115'
-% %           rest_vector(1,102:end) = rest_vector_dummy(1,102:end);
-% %           
-% %       elseif subjNum == '117'
-% %           rest_vector(1,119:end) = rest_vector_dummy(1,119:end);
-% %           
-% %       elseif subjNum == '118'
-% %           rest_vector(1,132:end) = rest_vector_dummy(1,132:end);
-% %       elseif subjNum == '124'
-% %           rest_vector(1,57:end) = rest_vector_dummy(1,57:end);
-% %    
-% %           
-% %       end
+      for i = 1:n_rest_block
+          rest_vector_dummy(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift)))+1)=1;
+          rest_vector_dummy(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift)))+1)=1;
+          
+      end
+      
+      if  subjNum == '113'
+          rest_vector(1,5:end) = rest_vector_dummy(1,5:end);
+          
+      elseif subjNum == '115'
+          rest_vector(1,102:end) = rest_vector_dummy(1,102:end);
+          
+      elseif subjNum == '117'
+          rest_vector(1,119:end) = rest_vector_dummy(1,119:end);
+          
+      elseif subjNum == '118'
+          rest_vector(1,132:end) = rest_vector_dummy(1,132:end);
+      elseif subjNum == '124'
+          rest_vector(1,57:end) = rest_vector_dummy(1,57:end);
+   
+          
+      end
       %         rest_vector(1,((n_trial_length*last_rest_block)+(((n_rest_length*last_rest_block)-n_rest_length)+(1+rest_shift))))=1;
       rest_vector(1,(length(rest_vector)-7):(length(rest_vector)-3))= 1;
       

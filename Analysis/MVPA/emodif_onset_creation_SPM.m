@@ -59,6 +59,9 @@ study_trials = mvpa_regs.localizer.trial;
 %onsets are all expanded - we need to find the beginning of each miniblock
 %for the localizer 
 
+%for exceptions - identify by trial number
+
+
 miniblock_TR = 9;
 postblock_rest = 5;
 betweenrun_rest = 3;
@@ -69,19 +72,49 @@ else
 miniblock_run= 12;
 end
 
+
 trial_start_run1 = 1:(miniblock_TR+postblock_rest):(miniblock_TR+postblock_rest)*miniblock_run;
+trial_start_run2 = trial_start_run1(end)+ (miniblock_TR+postblock_rest) + betweenrun_rest:miniblock_TR+postblock_rest:(trial_start_run1(end)+betweenrun_rest)+((miniblock_TR+postblock_rest)*miniblock_run);
+
+
+%here are exceptions
 if subjNum == 101 %218 is 6 - extra TR
-    
-    trial_start_run2 = (trial_start_run1(end)+ (miniblock_TR+postblock_rest) + betweenrun_rest)+1:miniblock_TR+postblock_rest:((trial_start_run1(end)+betweenrun_rest)+((miniblock_TR+postblock_rest)*miniblock_run))+1;
-else
-    
-    trial_start_run2 = trial_start_run1(end)+ (miniblock_TR+postblock_rest) + betweenrun_rest:miniblock_TR+postblock_rest:(trial_start_run1(end)+betweenrun_rest)+((miniblock_TR+postblock_rest)*miniblock_run);
+    bigger = find(trial_start_run2 > 218);
+    for x = 1:length(bigger)
+        trial_start_run2(bigger(x)) = trial_start_run2(bigger(x))+1;
+    end
+elseif subjNum == 113
+        bigger = find(trial_start_run1 > 5);
+    for x = 1:length(bigger)
+        trial_start_run1(bigger(x)) = trial_start_run1(bigger(x))+1;
+    end
+elseif subjNum == 115
+            bigger = find(trial_start_run2> (213+102));
+    for x = 1:length(bigger)
+        trial_start_run2(bigger(x)) = trial_start_run2(bigger(x))+1;
+    end
+elseif subjNum == 117
+                bigger = find(trial_start_run1> 119);
+    for x = 1:length(bigger)
+        trial_start_run1(bigger(x)) = trial_start_run1(bigger(x))+1;
+    end
+elseif subjNum == 118 
+                bigger = find(trial_start_run2> (213+132));
+    for x = 1:length(bigger)
+        trial_start_run2(bigger(x)) = trial_start_run2(bigger(x))+1;
+    end
+elseif subjNum == 124   
+                bigger = find(trial_start_run1> 57);
+    for x = 1:length(bigger)
+        trial_start_run1(bigger(x)) = trial_start_run1(bigger(x))+1;
+    end
 end
 trials = horzcat(trial_start_run1, trial_start_run2);
 
 
 %for face blocks
 face_blocks = [];
+
 for x = 1:length(trials)
     if mvpa_regs.localizer.cat(trials(x)) == 1
         face_t = trials(x);

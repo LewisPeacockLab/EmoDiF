@@ -254,7 +254,7 @@ if strcmp(test_phase, 'DFencode') == true
     results.remember.merged.bar.OLD.postcue.rest.std = std(results.remember.merged.bar.OLD.postcue.rest.bytrial);
     
     %Remember - MERGED - NEW- PRECUE
-    if subjNum == '103' % has 0 here
+    if subjNum == '103' | subjNum == '113' | subjNum == '115' | subjNum == '114' | subjNum == '119';% has 0 here 
         
         results.remember.merged.bar.NEW.precue.face.bytrial =  NaN;
         results.remember.merged.bar.NEW.precue.face.nanmean = NaN;
@@ -423,7 +423,7 @@ if strcmp(test_phase, 'DFencode') == true
   results.remember.highconf.bar.OLD.postcue.rest.nanmean = nanmean(results.remember.highconf.bar.OLD.postcue.rest.bytrial);
   results.remember.highconf.bar.OLD.postcue.rest.std = std(results.remember.highconf.bar.OLD.postcue.rest.bytrial);
   
-  if subjNum == '103'
+  if subjNum == '103' | subjNum == '113'
       %Remember - highconf - NEW- PRECUE
       
       results.remember.highconf.bar.NEW.precue.face.bytrial =  NaN;
@@ -593,7 +593,7 @@ if strcmp(test_phase, 'DFencode') == true
     
         %forget - MERGED - NEW- PRECUE
         
-        if subjNum == '105'
+        if subjNum == '105' | subjNum == '113'
             
     results_for_merged_new_precue_acts_face = NaN;
     results.forget.merged.bar.NEW.precue.face.bytrial =  NaN;

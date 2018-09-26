@@ -73,6 +73,8 @@ function [rsa] = emodif_rsa_P_DF_bycue(subjNum,maskName, shift, dfencodeTRstart,
 %%%% LOAD REGRESSORS & RSA Parameters %
 
 load(sprintf('%s/EmoDiF_mvpa_allregs.mat', args.regs_dir));
+
+if subjNum == '101' | subjNum =='102'| subjNum == '103'| subjNum == '104'
 load(sprintf('/Users/tw24955/emodif_data/RSA_params.mat')); % just the same for the first 4 subjects
 
 %%%% 
@@ -82,9 +84,19 @@ load(sprintf('/Users/tw24955/emodif_data/RSA_params.mat')); % just the same for 
 
 %%% expanding RSA parameters with mvpa_regs %%%
 
+
 rsa.preview.preview2DFencode = RSA_params.preview2study;
 rsa.preview.preview2DFencode_nonexpanded = RSA_params.NonExpandedPrv2Sty;
 rsa.DFencode.DFencode2preview_nonexpanded = RSA_params.NonExpandedSty2Prv;
+rsa.DFencode.DFencode2preview = RSA_params.study2preview;
+else
+rsa.preview.preview2DFencode = mvpa_regs.preview.ExpandedStudyTrialMapping;
+rsa.preview.preview2DFencode_nonexpanded = mvpa_regs.preview.StudyTrialMapping;
+rsa.DFencode.DFencode2preview_nonexpanded = mvpa_regs.DFEncode.PreviewTrialMapping;  
+rsa.DFencode.DFencode2preview = mvpa_regs.DFEncode.ExpandedPreviewTrialMapping;
+    
+end
+
 rsa.DFencode.instr = mvpa_regs.DFEncode.instr;
 
 %preview trial numbers
@@ -138,7 +150,7 @@ for i = 1:args.preview.nTRs
 end
 
 %complete DFencode regressors for RSA
-rsa.DFencode.DFencode2preview = RSA_params.study2preview;
+
 
 for i = 1:args.DFencode.nTRs
     if rsa.DFencode.DFencode2preview(i) == 0
@@ -336,7 +348,7 @@ end
 %     set(run1_fig, 'Position', [0 0 1500 1500])
 %     
 %     subplot(1,1,1)
-%     imagesc(corr_matrix_match_r1); colormap('jet'); colorbar;
+%     imagesc(corr_matrix_match_r1); colormap('parula'); colorbar;
 %     
 %     
 %     xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
@@ -348,7 +360,7 @@ end
 %     set(run2_fig, 'Position', [0 0 1500 1500])
 %     
 %     subplot(1,1,1)
-%     imagesc(corr_matrix_match_r2); colormap('jet'); colorbar;
+%     imagesc(corr_matrix_match_r2); colormap('parula'); colorbar;
 %     
 %     
 %     xlabel(sprintf('Preview raw patterns averaged over TR %d: TR %d run 1',args.preview.meanTR_start, args.preview.meanTR_end),'FontSize',15,'FontWeight','bold');
@@ -359,7 +371,7 @@ end
     
     subplot(1,1,1)
     
-    imagesc(corr_matrix_match_F); colormap('jet'); colorbar; 
+    imagesc(corr_matrix_match_F); colormap('parula'); colorbar; 
     args.confplot.origcoloraxis = caxis;
     if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
         caxis([-.25 .25]);
@@ -378,7 +390,7 @@ end
     set(R_fig, 'Position', [0 0 1500 1500])
     
     subplot(1,1,1)
-    imagesc(corr_matrix_match_R); colormap('jet'); colorbar; 
+    imagesc(corr_matrix_match_R); colormap('parula'); colorbar; 
     args.confplot.origcoloraxis = caxis;
     
     if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
@@ -399,7 +411,7 @@ end
     set(full_fig, 'Position', [0 0 1500 1500])
     
     subplot(1,1,1)
-    imagesc(corr_matrix_match_full); colormap('jet'); colorbar; 
+    imagesc(corr_matrix_match_full); colormap('parula'); colorbar; 
     args.confplot.origcoloraxis = caxis;
     
     if strcmp(maskName,'JC_Combine_PHc_epi_space') == 1
@@ -462,7 +474,7 @@ end
     % set(heatmap_fig2, 'Position', [0 0 1500 500])
     %
     % subplot(1,2,1)
-    % imagesc(heatmap2); colormap('jet'); colorbar;
+    % imagesc(heatmap2); colormap('parula'); colorbar;
     % hold on
     
     

@@ -52,7 +52,7 @@ elseif type == 4
     
     args.data_dir = sprintf('%s/results/rsa_results/preview_dfencode/%s/%d/%s',args.subj_dir,args.maskName, args.previewshift, subj_preview_dfencode_folder);
 elseif type == 5
-    args.data_dir = sprintf('%s/results/rsa_results/preview_DF_local/%s/%d/%s',args.subj_dir,args.maskName, args.previewshift, subj_preview_DF_local_folder);
+    args.data.dir = sprintf('%s/results/rsa_results/preview_DF_local/%s/%d/%s',args.subj_dir,args.maskName, args.previewshift, subj_preview_DF_local_folder);
 end
 
 
@@ -411,8 +411,8 @@ mkdir(args.output_dir);
    
 
 %take the mean of the z-scored stack
-local_preview_stack_mz = nanmean(local_preview_stack_mz,3);
-local_DFstack_mz   = nanmean(local_DFstack_mz ,3);
+local_preview_stack_mz = nanmean(local_preview_stack_mz_mz,3);
+local_DFstack_mz   = nanmean(local_DFstack_mz  ,3);
 local_DFstack_F_mz  = nanmean(local_DFstack_F_mz ,3);
  local_DFstack_R_mz = nanmean( local_DFstack_R_mz,3);
  
@@ -465,7 +465,10 @@ results.groupmean.local_preview_stack_mz= local_preview_stack_mz;
 results.groupmean.local_DFstack_mz  = local_DFstack_mz;
 results.groupmean.local_DFstack_F_mz= local_DFstack_F_mz;
 results.groupmean.local_DFstack_R_mz= local_DFstack_R_mz;
-
+results.groupmean.local_preview_stack_m= local_preview_stack_m;
+results.groupmean.local_DFstack_m  = local_DFstack_m;
+results.groupmean.local_DFstack_F_m= local_DFstack_F_m;
+results.groupmean.local_DFstack_R_m= local_DFstack_R_m;
 
 
 cd(args.output_dir)
@@ -489,7 +492,7 @@ save(args.outfname,'results')
     set(local_DF_fig, 'Position', [0 0 1500 1500])
     
     subplot(1,1,1)
-    imagesc(results.groupmean.local_DFstack_m); colormap('parula'); colorbar; 
+    imagesc(results.groupmean.local_DF_stack_m); colormap('parula'); colorbar; 
     
     
     ylabel(sprintf('localizer raw patterns averaged over TR %d: TR %d', TRstart, TRlength), 'FontSize',15,'FontWeight','bold');
@@ -501,23 +504,23 @@ save(args.outfname,'results')
     set(local_DF_F_fig, 'Position', [0 0 1500 1500])
     
     subplot(1,1,1)
-    imagesc(results.groupmean.local_DFstack_F_m); colormap('parula'); colorbar; 
+    imagesc(results.groupmean.local_DF_stack_F_m); colormap('parula'); colorbar; 
     
     
     ylabel(sprintf('localizer raw patterns averaged over TR %d: TR %d', TRstart, TRlength), 'FontSize',15,'FontWeight','bold');
     xlabel(sprintf('DFencodeF raw patterns averaged over TR %d: TR %d', TRstart, TRlength),'FontSize',15,'FontWeight','bold');
-    saveas(local_DF_F_fig, sprintf('emodif_Local_DFencodeF_crossphase_avg_TRstart%d_mean%d', TRstart, TRlength),'png');
+    saveas(local_DF_fig, sprintf('emodif_Local_DFencodeF_crossphase_avg_TRstart%d_mean%d', TRstart, TRlength),'png');
     
-     local_DF_R_fig = figure;
-    set(local_DF_R_fig, 'Position', [0 0 1500 1500])
+     local_DF_F_fig = figure;
+    set(local_DF_F_fig, 'Position', [0 0 1500 1500])
     
     subplot(1,1,1)
-    imagesc(results.groupmean.local_DFstack_R_m); colormap('parula'); colorbar; 
+    imagesc(results.groupmean.local_DF_stack_F_m); colormap('parula'); colorbar; 
     
     
     ylabel(sprintf('localizer raw patterns averaged over TR %d: TR %d', TRstart, TRlength), 'FontSize',15,'FontWeight','bold');
-    xlabel(sprintf('DFencodeR raw patterns averaged over TR %d: TR %d', TRstart, TRlength),'FontSize',15,'FontWeight','bold');
-    saveas(local_DF_R_fig, sprintf('emodif_Local_DFencodeR_crossphase_avg_TRstart%d_mean%d', TRstart, TRlength),'png');
+    xlabel(sprintf('DFencodeF raw patterns averaged over TR %d: TR %d', TRstart, TRlength),'FontSize',15,'FontWeight','bold');
+    saveas(local_DF_fig, sprintf('emodif_Local_DFencodeF_crossphase_avg_TRstart%d_mean%d', TRstart, TRlength),'png');
     
 
 cd(args.script_dir)

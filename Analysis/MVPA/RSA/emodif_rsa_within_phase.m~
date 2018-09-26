@@ -1,6 +1,6 @@
 function [rsa] = emodif_rsa_within_phase(subjNum,maskName, result_date, shift, dfencodeTRstart, dfencodeTRlength)
 %  [rsa] = emodif_rsa_within_phase('103','tempoccfusi_pHg_LOC_combined_epi_space', '29-Aug-2018', 2, 2, 3)
-% [rsa] = emodif_rsa_within_phase('101','scene-all_005', '25-Sep-2018', 2, 2, 3)
+% [rsa] = emodif_rsa_within_phase('101','scene-object_05', 'preview', '29-Aug-2018', 2, 2, 3)
 %RSA set up script based off of hyojeong's clearmem matlab RSA script. ***
 %requires princeton toolbox ***
 
@@ -168,10 +168,15 @@ Localizertrialbreak = zeros(args.Localizer.trial_break,1)';
 rsa.Localizer.trialnum = horzcat(firstblocktrialnum,Localizertrialbreak,secondblocktrialnum,Localizertrialbreak);
 
 if subjNum == '101'
-    trialdummy = horzcat(0,rsa.Localizer.trialnum);
-    rsa.Localizer.trialnum(218:end) = trialdummy(218:length(rsa.Localizer.trialnum));
-
+    trialdummy = horzcat(0,rsa.Localizer.trialnum)
+    for i = 1:length(rsa.Localizer.trialnum);
+        if rsa.Localizer.trialnum(i) > 218
+            rsa.Localizer.trialnumber(i) = rsa.Localizer.trialnumber(i)+1;
+        end
+    end
 end
+
+
 
 %load masks
 

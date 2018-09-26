@@ -89,12 +89,12 @@ function emodif_mvpa_decoding_study(subjNum,maskName,classifier,categories,penal
   %----------------------------------------------------------------------
   % turn on diary to capture analysis output
   %
-  diary on;
-  diary(sprintf('%s/%s_diary.txt',args.output_dir,args.subjNum));
-  fprintf('###########################################\n\n');
-  disp(args);
-  fprintf('###########################################\n');
-
+%   diary on;
+%   diary(sprintf('%s/%s_diary.txt',args.output_dir,args.subjNum));
+%   fprintf('###########################################\n\n');
+%   disp(args);
+%   fprintf('###########################################\n');
+% 
 
 %% initialize subject structure with 'study' and 'subject' info
   %-----------------------------------------------------------------------%
@@ -833,7 +833,7 @@ end
       trial_info_test_perf=[all_DF_cat; all_DF_emo; all_DF_instr; all_DF_runs; all_DF_subresp; all_DF_TR; all_DF_trial];
       
       dlmwrite(sprintf('%s/%s_%s_class_perf.txt', args.output_dir, args.subjID, args.test_phase),results.iterations.acts);
-      dlmwrite(sprintf('%s/%s_%s.txt', args.output_dir, args.subjID, args.test_phase),trial_info_test_perf);
+      dlmwrite(sprintf('%s/%s_%s_regressors.txt', args.output_dir, args.subjID, args.test_phase),trial_info_test_perf);
       
       fn = sprintf( '%s/%s_%s_parameters.txt', args.output_dir, args.subjID, args.test_phase);
       fid=fopen(fn,'w');
@@ -847,7 +847,7 @@ end
   clear results 
   
   
-  elseif strcmp(test_phase,'preview') == true
+  elseif strcmp(test_phase,'Preview') == 1
  
       all_preview_runs = mvpa_regs.preview.run;
       all_preview_cat = mvpa_regs.preview.cat;

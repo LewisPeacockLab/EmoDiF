@@ -1,5 +1,5 @@
 function emodif_mvpa_decoding_parse_2(subjNum, test_phase, maskName, test_date)
-%*emodif_mvpa_decoding_parse('101','DFencode',tempoccfusi_pHg_LOC_combined_epi_space', '30-Apr-2018')
+%*emodif_mvpa_decoding_parse_2('115','DFencode',tempoccfusi_pHg_LOC_combined_epi_space', '25-Sep-2018')
 %parse 2 which involves subsequent memory analysis
 
   version = '2018Jun26';
@@ -44,7 +44,7 @@ if strcmp(subjNum,'116') == 1
             break2_start = (args.DF.nTRs-(args.break-1)) +1 ;
 else
    
-        break1_start = (args.DF.nTRs/2)-(args.break-1);
+break1_start = (args.DF.nTRs/2)-(args.break-1);
 break2_start = args.DF.nTRs-(args.break-1);
 end
 

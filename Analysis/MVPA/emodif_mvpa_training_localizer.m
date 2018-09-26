@@ -81,11 +81,11 @@ function emodif_mvpa_training_localizer(subjNum,maskName,classifier,categories,p
   %----------------------------------------------------------------------
   % turn on diary to capture analysis output
   %
-  diary on;
-  diary(sprintf('%s/%s_diary.txt',args.output_dir,args.subjNum));
-  fprintf('###########################################\n\n');
-  disp(args);
-  fprintf('###########################################\n');
+%   diary on;
+%   diary(sprintf('%s/%s_diary.txt',args.output_dir,args.subjNum));
+%   fprintf('###########################################\n\n');
+%   disp(args);
+%   fprintf('###########################################\n');
 
 
 %% initialize subject structure with 'study' and 'subject' info

@@ -314,9 +314,27 @@ instr_rem_hiconf_OLD_check = reshape(instr_rem_hiconf_OLD_idx,7,rem_hiconf_OLD_n
 rem.highconf.acts.OLD.check = instr_rem_hiconf_OLD_check;
 
     
+rem_hiconf_NEW_acts = [];   
 for i = 1:length(instr_rem_hiconf_NEW_idx)
     rem_hiconf_NEW_acts(:,i)=class_perf(:,instr_rem_hiconf_NEW_idx(i));
 end
+
+if isempty(rem_hiconf_NEW_acts)== 1
+    
+    rem.highconf.acts.NEW.num= 0;
+    rem_hiconf_NEW_face=NaN;
+    rem.highconf.acts.NEW.face = NaN;
+    rem_hiconf_NEW_scene=NaN;
+    rem.highconf.acts.NEW.scene = NaN;
+    rem_hiconf_NEW_object=NaN;
+    rem.highconf.acts.NEW.object = NaN;
+    rem_hiconf_NEW_word=NaN;
+    rem.highconf.acts.NEW.word = NaN;
+    rem_hiconf_NEW_rest=NaN;
+    rem.highconf.acts.NEW.rest = NaN;
+else
+    
+
 
 rem_hiconf_NEW_n = length(instr_rem_hiconf_NEW_idx)/7;
 rem.highconf.acts.NEW.num= rem_hiconf_NEW_n;
@@ -332,6 +350,7 @@ rem_hiconf_NEW_rest = reshape(rem_hiconf_NEW_acts(5,:),7,rem_hiconf_NEW_n)';
 rem.highconf.acts.NEW.rest = rem_hiconf_NEW_rest;
 instr_rem_hiconf_NEW_check = reshape(instr_rem_hiconf_NEW_idx,7,rem_hiconf_NEW_n)';
 rem.highconf.acts.NEW.check = instr_rem_hiconf_NEW_check;
+end
 
   % MERGED confidence SM
   
@@ -393,9 +412,24 @@ instr_rem_merged_OLD_check = reshape(instr_rem_merged_OLD_idx,7,rem_merged_OLD_n
 rem.merged.acts.OLD.check = instr_rem_merged_OLD_check;
 
 
+rem_merged_NEW_acts =[];
 for i = 1:length(instr_rem_merged_NEW_idx)
     rem_merged_NEW_acts(:,i)=class_perf(:,instr_rem_merged_NEW_idx(i));
 end
+
+if isempty(rem_merged_NEW_acts)== 1
+    
+    rem_merged_NEW_face=NaN;
+    rem.merged.acts.NEW.face = NaN;
+    rem_merged_NEW_scene=NaN;
+    rem.merged.acts.NEW.scene = NaN;
+    rem_merged_NEW_object=NaN;
+    rem.merged.acts.NEW.object = NaN;
+    rem_merged_NEW_word=NaN;
+    rem.merged.acts.NEW.word = NaN;
+    rem_merged_NEW_rest=NaN;
+    rem.merged.acts.NEW.rest = NaN;
+else
 
 rem_merged_NEW_n = length(instr_rem_merged_NEW_idx)/7;
 rem.merged.acts.NEW.num= rem_merged_NEW_n;
@@ -411,6 +445,7 @@ rem_merged_NEW_rest = reshape(rem_merged_NEW_acts(5,:),7,rem_merged_NEW_n)';
 rem.merged.acts.NEW.rest = rem_merged_NEW_rest;
 instr_rem_merged_NEW_check = reshape(instr_rem_merged_NEW_idx,7,rem_merged_NEW_n)';
 rem.merged.acts.NEW.check = instr_rem_merged_NEW_check;
+end
 
 
 
