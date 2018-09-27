@@ -1,5 +1,5 @@
 function [results] = emodif_rsa_aggregate(type, preview_shift, TRstart, TRlength, maskName)
-%emodif_rsa_aggregate(1, 2, 3, 'scene-all_005')
+%emodif_rsa_aggregate(4, 2, 5, 3, 'scene-all_005')
 %subj_list - mat file with subject numbers and folder analysis dates (for
 %identification of correct analysis)
 %type - intraphase, or preview_dfencode 
@@ -262,6 +262,14 @@ mkdir(args.output_dir);
         preview_DFencode_stack_R_mz  = cat(3, preview_DFencode_stack_R_mz , results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_Rz);
     end
     
+     for x = 1:length(subj_list)
+        preview_DFencode_summary_1 = mean(results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_full,1);
+        preview_DFencode_stack_F = cat(3, preview_DFencode_stack_F, results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_F);
+        preview_DFencode_stack_R = cat(3, preview_DFencode_stack_R, results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_R);
+        preview_DFencode_stack_mz = cat(3, preview_DFencode_stack_mz , results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_fullz);
+        preview_DFencode_stack_F_mz  = cat(3, preview_DFencode_stack_F_mz , results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_Fz);
+        preview_DFencode_stack_R_mz  = cat(3, preview_DFencode_stack_R_mz , results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_Rz);
+    end
    
 
 %take the mean of the z-scored stack

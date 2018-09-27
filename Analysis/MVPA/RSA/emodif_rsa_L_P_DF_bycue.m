@@ -414,7 +414,7 @@ end
     end
     
     corr_matrix_LDF_R = zeros(length(rsa.Localizer.mean.patterns_scenes(1,:)),args.DFencode.trialnum/2);
-    corr_matrix_LDF_Rz = corr_matrix_LDF_R
+    corr_matrix_LDF_Rz = corr_matrix_LDF_R;
     
     for x = 1:length(rsa.Localizer.mean.patterns_scenes(1,:))
         

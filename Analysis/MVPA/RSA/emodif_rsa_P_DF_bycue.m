@@ -1,5 +1,5 @@
 function [rsa] = emodif_rsa_P_DF_bycue(subjNum,maskName, shift, dfencodeTRstart, dfencodeTRlength)
-%  [rsa] = emodif_rsa_P_DF_bycue('103','tempoccfusi_pHg_LOC_combined_epi_space', 2, 2, 3)
+%  [rsa] = emodif_rsa_P_DF_bycue('105','scene-all_005', 2, 5, 3)
 %RSA set up script based off of hyojeong's clearmem matlab RSA script. ***
 %requires princeton toolbox ***
 
