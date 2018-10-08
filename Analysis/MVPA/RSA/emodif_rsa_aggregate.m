@@ -262,6 +262,19 @@ mkdir(args.output_dir);
         preview_DFencode_stack_R_mz  = cat(3, preview_DFencode_stack_R_mz , results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_Rz);
     end
     
+    preview_DFencode_stack_m = mean(preview_DFencode_stack_mz,1);
+    preview_DFencode_stack_m2 = mean(preview_DFencode_stack_m,2);
+    preview_DFencode_stack_summary = reshape(preview_DFencode_stack_m2,24,1);
+    
+        preview_DFencode_stack_Fm = mean(preview_DFencode_stack_F_mz,1);
+    preview_DFencode_stack_Fm2 = mean(preview_DFencode_stack_Fm,2);
+    preview_DFencode_stack_Fsummary = reshape(preview_DFencode_stack_Fm2,24,1);
+
+    
+    preview_DFencode_stack_Rm = mean(preview_DFencode_stack_R_mz,1);
+    preview_DFencode_stack_Rm2 = mean(preview_DFencode_stack_Rm,2);
+    preview_DFencode_stack_Rsummary = reshape(preview_DFencode_stack_Rm2,24,1);
+    
      for x = 1:length(subj_list)
         preview_DFencode_summary_1 = mean(results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_full,1);
         preview_DFencode_stack_F = cat(3, preview_DFencode_stack_F, results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_F);

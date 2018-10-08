@@ -276,7 +276,7 @@ rsa.preview.mean.Rpatterns = [];
 
 for k = 1:args.trialnum
     DF_trialTR_idx = find(rsa.DFencode.trialnum == k);
-    if rsa.DFencode.instr(DF_trialTR_idx(1)) == 0 %if the 1st TR shows that it's Forget
+    if rsa.DFencode.instr(DF_trialTR_idx(dfencodeTRstart)) == 0 %if the 1st TR shows that it's Forget
         %for shift
         DF_trialTR_Fidx_TRsOI = DF_trialTR_idx(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1)); %TRs of interest
         DF_trial_patt_Fmean = mean(subj.patterns{1,4}.mat(:,(DF_trialTR_Fidx_TRsOI(1)):DF_trialTR_Fidx_TRsOI(args.DFencode.meanTR_length)),2);
@@ -287,7 +287,7 @@ for k = 1:args.trialnum
         rsa.preview.mean.Fpatterns = horzcat(rsa.preview.mean.Fpatterns,rsa.preview.mean.patterns_match(:,k)); %taking the pattern from the preview matched matrix
                
         
-    elseif rsa.DFencode.instr(DF_trialTR_idx(1)) == 1
+    elseif rsa.DFencode.instr(DF_trialTR_idx(dfencodeTRstart)) == 1
         DF_trialTR_Ridx_TRsOI = DF_trialTR_idx(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1)); %TRs of interest
         DF_trial_patt_Rmean = mean(subj.patterns{1,4}.mat(:,(DF_trialTR_Ridx_TRsOI(1)):DF_trialTR_Ridx_TRsOI(args.DFencode.meanTR_length)),2);
         rsa.DFencode.mean.Rpatterns = horzcat(rsa.DFencode.mean.Rpatterns,DF_trial_patt_Rmean);

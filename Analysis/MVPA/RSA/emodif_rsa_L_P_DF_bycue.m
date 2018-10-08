@@ -310,7 +310,7 @@ subj = zscore_runs(subj,'Localizer_epis', 'all_Localizer_runs');
 
 for m = 1:args.Localizer.trialnum
     Localizer_trialTR_idx = find(rsa.Localizer.trialnum == m);
-    Localizer_trialCAT = (mvpa_regs.localizer.cat(Localizer_trialTR_idx(1)));
+    Localizer_trialCAT = (mvpa_regs.localizer.cat(Localizer_trialTR_idx(dfencodeTRstart)));
     Localizer_trialTR_mean = Localizer_trialTR_idx(args.Localizer.meanTR_start:(args.Localizer.meanTR_start+args.Localizer.meanTR_length-1));
     Localizer_trial_patt = mean(subj.patterns{1,6}.mat(:,Localizer_trialTR_mean(1):(Localizer_trialTR_mean(args.Localizer.meanTR_length))),2);
     rsa.Localizer.mean.patterns(:,m) = Localizer_trial_patt;
@@ -347,7 +347,7 @@ rsa.DFencode.mean.Fpatterns = [];
 
 for k = 1:args.DFencode.trialnum
     DF_trialTR_idx = find(rsa.DFencode.trialnum == k);
-    if rsa.DFencode.instr(DF_trialTR_idx(1)) == 0 %if the 1st TR shows that it's Forget
+    if rsa.DFencode.instr(DF_trialTR_idx(dfencodeTRstart)) == 0 %if the 1st TR shows that it's Forget
         %for shift
         DF_trialTR_Fidx_TRsOI = DF_trialTR_idx(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1)); %TRs of interest
         DF_trial_patt_Fmean = mean(subj.patterns{1,5}.mat(:,(DF_trialTR_Fidx_TRsOI(1)):DF_trialTR_Fidx_TRsOI(args.DFencode.meanTR_length)),2);
@@ -356,7 +356,7 @@ for k = 1:args.DFencode.trialnum
 
                
         
-    elseif rsa.DFencode.instr(DF_trialTR_idx(1)) == 1
+    elseif rsa.DFencode.instr(DF_trialTR_idx(dfencodeTRstart)) == 1
         DF_trialTR_Ridx_TRsOI = DF_trialTR_idx(args.DFencode.meanTR_start:(args.DFencode.meanTR_start+args.DFencode.meanTR_length-1)); %TRs of interest
         DF_trial_patt_Rmean = mean(subj.patterns{1,5}.mat(:,(DF_trialTR_Ridx_TRsOI(1)):DF_trialTR_Ridx_TRsOI(args.DFencode.meanTR_length)),2);
         rsa.DFencode.mean.Rpatterns = horzcat(rsa.DFencode.mean.Rpatterns,DF_trial_patt_Rmean);
