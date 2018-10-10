@@ -1,14 +1,15 @@
-function emodif_onset_creation_SPM (subjNum)
+function emodif_onset_creation_SPM (subjNum, phase)
 %%
 %this function converts the IMDiF onsets optimized for the Princeton MVPA toolbox
-%for SPM - for both item onsets and instruction onsets.
+%for SPM - for all phases - Preview, DFencode_instr, DFencode_item,
+%Localizer
 %%
 subjID = sprintf('emodif_%s',num2str(subjNum));
 %subj_dir = sprintf('/corral-repl/utexas/lewpealab/imdif/%s', subjID);
 
 %SET names for emodif_onsets to be read out
 
-outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_localizer_onsets_%s.mat', subjID, subjID);
+outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_onsets_%s.mat', subjID, phase, subjID);
 
 
 %read in old onsets
@@ -20,19 +21,20 @@ if subjID == 101 | subjID == 102 | subjID == 103
     localizer_run_TR = 426;
 else
 localizer_run_TR = 342; %426 in subject 1, 2 and 3.  %342 for everyone else.  
-% preview_run_TR = 366;
-% DFencode_run_TR = 426;
+preview_run_TR = 366;
+DFencode_run_TR = 426;
 end
 
-names = mvpa_regs.localizer.cat_names; % easy %face scene object word rest, for first three subjects - word is emotional and neutral
+names_local = mvpa_regs.localizer.cat_names; % easy %face scene object word rest, for first three subjects - word is emotional and neutral
+names_DFE = mvpa_regs.DFencode.cat_names;
+names_preview = mvpa_regs.preview.cat_names;
 
 % duration is 0 if we are modeling a delta - this goes up in number for
 % boxcar models etc.  1 duration for each condition.
-
 % durations = zeros(length(names),1)'; % easy
 
-durations = repmat(9,length(names),1);
-durations = num2cell(durations)';
+durations_lcoal = repmat(9,length(names_local),1);
+durations_local = num2cell(durations_local)';
 
 %%%%%%%% BUILDING our onsets %%%%%%%%%%%%%%
 % for each of these conditions:
@@ -77,7 +79,7 @@ trial_start_run1 = 1:(miniblock_TR+postblock_rest):(miniblock_TR+postblock_rest)
 trial_start_run2 = trial_start_run1(end)+ (miniblock_TR+postblock_rest) + betweenrun_rest:miniblock_TR+postblock_rest:(trial_start_run1(end)+betweenrun_rest)+((miniblock_TR+postblock_rest)*miniblock_run);
 
 
-%here are exceptions
+%here are exceptions for LOCALIZER
 if subjNum == 101 %218 is 6 - extra TR
     bigger = find(trial_start_run2 > 218);
     for x = 1:length(bigger)
@@ -181,7 +183,7 @@ onsets{3} = object_blocks;
 onsets{4} = word_blocks;
 onsets{5} = noncritword_blocks;
 
-names = {'face', 'scene', 'object', 'word', 'noncritword'};
+names_local = {'face', 'scene', 'object', 'word', 'noncritword'};
 
 else
 word_blocks = [];
@@ -198,7 +200,7 @@ onsets{1} = face_blocks;
 onsets{2} = scene_blocks;
 onsets{3} = object_blocks;
 onsets{4} = word_blocks;
-names = {'face', 'scene', 'object', 'word'};
+names_local = {'face', 'scene', 'object', 'word'};
 end
 
 durations = durations(1:length(onsets));
