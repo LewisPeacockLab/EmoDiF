@@ -47,8 +47,6 @@ durations_preview  = num2cell(durations_preview)';
 %face scene object word rest
 %%% Start Massive Indexing Effort or SMIE %%%
 loc_trials = mvpa_regs.localizer.trial;
-DFE_trials = mvpa_regs.DFEncoding.trial;
-preview_trials = mvpa_regs.preview.trial;
 
 % 
 % face_index = mvpa_regs.localizer.cat==1;
