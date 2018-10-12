@@ -76,7 +76,7 @@ postblock_rest = 5;
 betweenrun_rest = 3;
 
 if subjNum == 101 || subjNum == 102 || subjNum == 103
- miniblock_run = 15;
+miniblock_run = 15;
 else
 miniblock_run= 12;
 end
