@@ -236,8 +236,8 @@ durations = durations(1:length(onsets));
 
 elseif strcmp(phase,'DFencode') == 1
 
-    trial_start_run1 = 1:DFEncode_trialTR:(DFEncode_trialTR*DFEncode_trialN)/2;
-    trial_start_run2 = (DFEncode_trialTR*(DFEncode_trialN/2)+betweenrun_rest)+1:DFEncode_trialTR:(DFEncode_trialTR*DFEncode_trialN)+betweenrun_rest;
+    trial_start_run1 = 1:DFEncode_trialTR:DFEncode_trialTR*DFEncode_trialN;
+    trial_start_run2 = (DFEncode_trialTR*DFEncode_trialN+betweenrun_rest):DFEncode_trialTR:(DFEncode_trialTR+betweenrun_rest)*(DFEncode_trialN*2);
     
 elseif strcmp(phase,'preview') ==  1
     %EVERYTHING ELSE HERE

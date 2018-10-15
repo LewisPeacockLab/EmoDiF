@@ -40,8 +40,13 @@ durations = num2cell(durations)';
 %%% Start Massive Indexing Effort or SMIE %%%
 % 
 % study_trials = mvpa_regs.localizer.trial;
-DFencode_trials = mvpa_regs.DFencode.trial;
+DFencode_trials = mvpa_regs.DFEncode.trial;
 DFencode_subresp = mvpa_regs.DFEncode.subresp;
+
+preview_trials = mvpa_regs.preview.trial;
+preview_subresp = mvpa_regs.preview.subresp;
+
+
 
 % 
 % face_index = mvpa_regs.localizer.cat==1;
@@ -63,20 +68,14 @@ DFencode_subresp = mvpa_regs.DFEncode.subresp;
 
 %for exceptions - identify by trial number
 
-
-miniblock_TR = 9;
-postblock_rest = 5;
 betweenrun_rest = 3;
+if 
 
-if subjNum == 101 || subjNum == 102 || subjNum == 103
- miniblock_run = 15;
-else
-miniblock_run= 12;
-end
-
+%now split off for DFEncode and preview
 
 trial_start_run1 = 1:(miniblock_TR+postblock_rest):(miniblock_TR+postblock_rest)*miniblock_run;
 trial_start_run2 = trial_start_run1(end)+ (miniblock_TR+postblock_rest) + betweenrun_rest:miniblock_TR+postblock_rest:(trial_start_run1(end)+betweenrun_rest)+((miniblock_TR+postblock_rest)*miniblock_run);
+
 
 
 %here are exceptions
