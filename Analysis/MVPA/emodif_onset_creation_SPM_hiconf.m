@@ -1,4 +1,4 @@
-function emodif_onset_creation_SPM (subjNum, phase)
+function emodif_onset_creation_SPM_hiconf (subjNum, phase)
 %%
 %this function converts the IMDiF onsets optimized for the Princeton MVPA toolbox
 %for SPM - for all phases - Preview, DFencode_instr, DFencode_item,
@@ -310,6 +310,9 @@ for x = 1:length(forget)
     elseif mvpa_regs.DFEncode.subresp(forget(x)) == 4
         for_SF_t = forget(x);
         for_SF= horzcat(for_SF, for_SF_t);
+    elseif mvpa_regs.DFEncode.subresp(forget(x)) == 2
+        for_SF_t = forget(x);
+        for_SF= horzcat(for_SF, for_SF_t);
     else
         for_SF = for_SF;
     end
@@ -319,9 +322,6 @@ end
 for_SR = [];
 for x = 1:length(forget)
     if mvpa_regs.DFEncode.subresp(forget(x)) == 1
-        for_SR_t = forget(x);
-        for_SR= horzcat(for_SR, for_SR_t);
-    elseif mvpa_regs.DFEncode.subresp(forget(x)) == 2
         for_SR_t = forget(x);
         for_SR= horzcat(for_SR, for_SR_t);
     else
@@ -371,6 +371,9 @@ for x = 1:length(remember)
     elseif mvpa_regs.DFEncode.subresp(remember(x)) == 4
         rem_SF_t = remember(x);
         rem_SF= horzcat(rem_SF, rem_SF_t);
+    elseif mvpa_regs.DFEncode.subresp(remember(x)) == 2
+        rem_SF_t = remember(x);
+        rem_SF= horzcat(rem_SF, rem_SF_t);
     else
         rem_SF = rem_SF;
     end
@@ -382,9 +385,6 @@ for x = 1:length(remember)
     if mvpa_regs.DFEncode.subresp(remember(x)) == 1
         rem_SR_t = remember(x);
         rem_SR= horzcat(rem_SR, rem_SR_t);
-    elseif mvpa_regs.DFEncode.subresp(remember(x)) == 2
-        rem_SR_t = remember(x);
-        rem_SR= horzcat(rem_SR, rem_SR_t);
     else
         rem_SR = rem_SR;
     end
@@ -392,16 +392,16 @@ end
 
 %%%%%%% MODELS %%%%%%%%%%
 % Model 1 Main effects of memory instruction
-
-onsets{1} = forget;
-onsets{2} = remember;
-
-names = {'forget', 'remember'};
-durations = ones(length(onsets),1)';
-durations= num2cell(durations);
-
-outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RFonsets_%s.mat', subjID, phase, subjID);
-save(outfname,'names','onsets','durations');
+% 
+% onsets{1} = forget;
+% onsets{2} = remember;
+% 
+% names = {'forget', 'remember'};
+% durations = ones(length(onsets),1)';
+% durations= num2cell(durations);
+% 
+% outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RFonsets_%s.mat', subjID, phase, subjID);
+% save(outfname,'names','onsets','durations');
 
 % Model 2 SM effects of memory instruction
 
@@ -414,22 +414,22 @@ names = {'for_SF', 'for_SR', 'rem_SF', 'rem_SR'};
 durations = ones(length(onsets),1)';
 durations= num2cell(durations);
 
-outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RF_SM_onsets_%s.mat', subjID, phase, subjID);
+outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RF_SM_hiconf_onsets_%s.mat', subjID, phase, subjID);
 save(outfname,'names','onsets','durations');
 
 %Model 3 emotional effects of memory instruction
 
-onsets{1} = for_neg;
-onsets{2} = for_neu;
-onsets{3} = rem_neg;
-onsets{4} = rem_neu;
-
-names = {'for_neg', 'for_neu', 'rem_neg', 'rem_neu'};
-durations = ones(length(onsets),1)';
-durations= num2cell(durations);
-
-outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RF_emo_onsets_%s.mat', subjID, phase, subjID);
-save(outfname,'names','onsets','durations');
+% onsets{1} = for_neg;
+% onsets{2} = for_neu;
+% onsets{3} = rem_neg;
+% onsets{4} = rem_neu;
+% 
+% names = {'for_neg', 'for_neu', 'rem_neg', 'rem_neu'};
+% durations = ones(length(onsets),1)';
+% durations= num2cell(durations);
+% 
+% outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RF_emo_onsets_%s.mat', subjID, phase, subjID);
+% save(outfname,'names','onsets','durations');
 
 elseif strcmp(phase,'preview') ==  1
     
@@ -503,6 +503,9 @@ for x = 1:length(forget)
     elseif mvpa_regs.preview.subresp(forget(x)) == 4
         for_SF_t = forget(x);
         for_SF= horzcat(for_SF, for_SF_t);
+    elseif mvpa_regs.preview.subresp(forget(x)) == 2
+        for_SF_t = forget(x);
+        for_SF= horzcat(for_SF, for_SF_t);
     else
         for_SF = for_SF;
     end
@@ -512,9 +515,6 @@ end
 for_SR = [];
 for x = 1:length(forget)
     if mvpa_regs.preview.subresp(forget(x)) == 1
-        for_SR_t = forget(x);
-        for_SR= horzcat(for_SR, for_SR_t);
-    elseif mvpa_regs.preview.subresp(forget(x)) == 2
         for_SR_t = forget(x);
         for_SR= horzcat(for_SR, for_SR_t);
     else
@@ -564,6 +564,9 @@ for x = 1:length(remember)
     elseif mvpa_regs.preview.subresp(remember(x)) == 4
         rem_SF_t = remember(x);
         rem_SF= horzcat(rem_SF, rem_SF_t);
+    elseif mvpa_regs.preview.subresp(remember(x)) == 2
+        rem_SF_t = remember(x);
+        rem_SF= horzcat(rem_SF, rem_SF_t);
     else
         rem_SF = rem_SF;
     end
@@ -575,9 +578,6 @@ for x = 1:length(remember)
     if mvpa_regs.preview.subresp(remember(x)) == 1
         rem_SR_t = remember(x);
         rem_SR= horzcat(rem_SR, rem_SR_t);
-    elseif mvpa_regs.preview.subresp(remember(x)) == 2
-        rem_SR_t = remember(x);
-        rem_SR= horzcat(rem_SR, rem_SR_t);
     else
         rem_SR = rem_SR;
     end
@@ -586,15 +586,15 @@ end
 %%%%%%% MODELS %%%%%%%%%%
 % Model 1 Main effects of memory instruction
 
-onsets{1} = forget;
-onsets{2} = remember;
-
-names = {'face', 'remember'};
-durations = ones(length(onsets),1)';
-durations= num2cell(durations);
-
-outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RFonsets_%s.mat', subjID, phase, subjID);
-save(outfname,'names','onsets','durations');
+% onsets{1} = forget;
+% onsets{2} = remember;
+% 
+% % names = {'face', 'remember'};
+% % durations = ones(length(onsets),1)';
+% % durations= num2cell(durations);
+% % 
+% % outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RFonsets_%s.mat', subjID, phase, subjID);
+% % save(outfname,'names','onsets','durations');
 
 
 % Model 2 SM effects of memory instruction
@@ -608,23 +608,23 @@ names = {'for_SF', 'for_SR', 'rem_SF', 'rem_SR'};
 durations = ones(length(onsets),1)';
 durations= num2cell(durations);
 
-outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RF_SM_onsets_%s.mat', subjID, phase, subjID);
+outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RF_SM_hiconf_onsets_%s.mat', subjID, phase, subjID);
 save(outfname,'names','onsets','durations');
 
 
 %Model 3 emotional effects of memory instruction
 
-onsets{1} = for_neg;
-onsets{2} = for_neu;
-onsets{3} = rem_neg;
-onsets{4} = rem_neu;
-
-names = {'for_neg', 'for_neu', 'rem_neg', 'rem_neu'};
-durations = ones(length(onsets),1)';
-durations= num2cell(durations);
-
-outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RF_emo_onsets_%s.mat', subjID, phase, subjID);
-save(outfname,'names','onsets','durations');
+% onsets{1} = for_neg;
+% onsets{2} = for_neu;
+% onsets{3} = rem_neg;
+% onsets{4} = rem_neu;
+% 
+% names = {'for_neg', 'for_neu', 'rem_neg', 'rem_neu'};
+% durations = ones(length(onsets),1)';
+% durations= num2cell(durations);
+% 
+% outfname = sprintf('~/emodif_data/%s/behav/EmoDif_SPM_%s_RF_emo_onsets_%s.mat', subjID, phase, subjID);
+% save(outfname,'names','onsets','durations');
 %
 
 end

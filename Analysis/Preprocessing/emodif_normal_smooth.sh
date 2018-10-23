@@ -115,10 +115,10 @@ fslmaths DF_encoding_2_corr_mcf_brain_mni_4D -s ${S_kernal} DF_encoding_2_corr_m
 gunzip DF_encoding_2_corr_mcf_brain_mni_4D_s6.nii
 
 echo 'smoothing localizer'
-fslmaths MVPA_training_1_corr_mcf_brain_4D_mni -s ${S_kernal} MVPA_training_1_corr_mcf_brain_mni_4D_s6.nii
+fslmaths MVPA_training_1_corr_mcf_brain_mni_4D -s ${S_kernal} MVPA_training_1_corr_mcf_brain_mni_4D_s6.nii
 gunzip MVPA_training_1_corr_mcf_brain_mni_4D_s6.nii
 
-fslmaths MVPA_training_2_corr_mcf_brain_4D_mni -s ${S_kernal} MVPA_training_2_corr_mcf_brain_mni_4D_s6.nii
+fslmaths MVPA_training_2_corr_mcf_brain_mni_4D -s ${S_kernal} MVPA_training_2_corr_mcf_brain_mni_4D_s6.nii
 gunzip MVPA_training_2_corr_mcf_brain_mni_4D_s6.nii
 
 #return to launch
