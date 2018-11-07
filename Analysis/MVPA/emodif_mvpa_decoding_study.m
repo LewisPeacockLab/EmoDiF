@@ -245,7 +245,7 @@ end
   end
 
   %sanity check
-for k = 1:length(conds_to_use)
+for k = 1:sum(conds_to_use)
     count_conds(k)=sum(all_conds(k,:));
 end
   
@@ -254,7 +254,7 @@ end
     
 
 %  % IF rest is used
- if conds_to_use(6) == 1; %6 is REST
+ if conds_to_use(6) == 1 %6 is REST
      
      
      

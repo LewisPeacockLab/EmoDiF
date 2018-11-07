@@ -241,7 +241,7 @@ end
     
 
 %  % IF rest is used
- if conds_to_use(6) == 1; %6 is REST
+ if conds_to_use(6) == 1 %6 is REST
      
 
     

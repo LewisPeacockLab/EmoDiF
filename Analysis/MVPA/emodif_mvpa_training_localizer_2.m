@@ -236,13 +236,13 @@ function emodif_mvpa_training_localizer_2(subjNum,maskName,classifier,categories
   end
 
   %sanity check
-for k = 1:length(conds_to_use)
+for k = 1:sum(conds_to_use)
     count_conds(k)=sum(all_conds(k,:));
 end
     
 
 %  % IF rest is used
- if conds_to_use(5) == 1; %6 is REST
+ if conds_to_use(5) == 1 %6 is REST
      
      
      

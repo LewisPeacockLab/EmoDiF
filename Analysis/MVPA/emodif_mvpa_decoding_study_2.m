@@ -248,7 +248,7 @@ function emodif_mvpa_decoding_study_2(subjNum,maskName,classifier,categories,pen
   end
 
   %sanity check
-for k = 1:length(conds_to_use)
+for k = 1:sum(conds_to_use)
     count_conds(k)=sum(all_conds(k,:));
 end
     
@@ -261,7 +261,7 @@ end
   %one TR for the second to last rest block. This can shift Rest sampling
   %until we find the best Rest Sample. 
   
- if conds_to_use(5) == 1; %5 is REST
+ if conds_to_use(5) == 1 %5 is REST
      
      
      
