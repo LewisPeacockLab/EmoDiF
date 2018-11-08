@@ -260,7 +260,7 @@ end
        %NONRANDOMLY select rest - take  consistent 2 TRs of every rest block and
   %one TR for the second to last rest block. This can shift Rest sampling
   %until we find the best Rest Sample. 
-  
+   rest_num = strfind(categories,'r');
  if conds_to_use(5) == 1 %5 is REST
      
      
@@ -320,8 +320,7 @@ end
       rest_vector(1,(length(rest_vector)-7):(length(rest_vector)-3))= 1;
       
       new_rest= horzcat(rest_vector,rest_vector);
-      
-      all_conds(5,:)=new_rest;
+        all_conds(rest_num,:)=new_rest;
   end
         
 %  %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%

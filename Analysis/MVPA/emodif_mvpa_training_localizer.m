@@ -241,7 +241,9 @@ end
     
 
 %  % IF rest is used
- if conds_to_use(6) == 1 %6 is REST
+ rest_num = strfind(categories,'r');
+ if conds_to_use(6) ==  1 %rest
+     
      
 
     
@@ -280,16 +282,29 @@ end
         
         new_rest= horzcat(rest_vector,rest_vector);
         
-        all_conds(6,:)=new_rest;
+        all_conds(rest_num,:)=new_rest;
  end
  
+    %%% SPECIAL CASES - EXTRA TRS and SUCH ***
+  
+  if subjNum == '101'
+      %TR 218 has nothing in it. 
+     all_conds(:,218) = nan;
+     my_conds(:,218) = nan;
+      
+      %this is a special case, 
+  end
+  
  count_conds(end) = count(new_rest);
  
  %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%
  
- if strcmp(word_combine,'yes') == true; %4 is Words
-     
-     
+negative_present = strfind(categories,'n');
+neutral_present = strfind(categories,'e');
+ 
+ if strcmp(word_combine,'yes') == true && isempty(neutral_present) == 0 && isempty(negative_present) == 0
+    
+ 
      rand1 = rand(1,27);
      rand2 = rand(1,27);
      rand3 = rand(1,27);
@@ -350,7 +365,7 @@ end
   new_all_conds(2,:) = all_conds(2,:);
   new_all_conds(3,:) = all_conds(3,:);
   new_all_conds(4,:) = all_conds_words(1,:);
-  new_all_conds(5,:) = all_conds(6,:);
+  new_all_conds(5,:) = all_conds(rest_num,:); %new rest 
   
   all_conds = new_all_conds;
 end

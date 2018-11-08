@@ -242,6 +242,7 @@ end
     
 
 %  % IF rest is used
+ rest_num = strfind(categories,'r');
  if conds_to_use(5) == 1 %6 is REST
      
      
@@ -302,7 +303,7 @@ end
       
       new_rest= horzcat(rest_vector,rest_vector);
       
-      all_conds(5,:)=new_rest;
+        all_conds(rest_num,:)=new_rest;
   end
  
   

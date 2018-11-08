@@ -254,6 +254,7 @@ end
     
 
 %  % IF rest is used
+ rest_num = strfind(categories,'r');
  if conds_to_use(6) == 1 %6 is REST
      
      
@@ -290,7 +291,7 @@ end
         
         new_rest= horzcat(rest_vector,rest_vector);
         
-        all_conds(6,:)=new_rest;
+            all_conds(rest_num,:)=new_rest;
  end
  
    %%% SPECIAL CASES - EXTRA TRS and SUCH ***
@@ -306,8 +307,10 @@ end
         
  %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%
  
- if strcmp(word_combine,'yes') == true; %4 is Words
-     args.categories = 'fsowr';
+negative_present = strfind(categories,'n');
+neutral_present = strfind(categories,'e');
+ 
+ if strcmp(word_combine,'yes') == true && isempty(neutral_present) == 0 && isempty(negative_present) == 0
      
      
      rand1 = rand(1,27);
