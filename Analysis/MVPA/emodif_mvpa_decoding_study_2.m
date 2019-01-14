@@ -281,16 +281,25 @@ end
   % blocks that follow. 
   
   %rest will always sample two TRs, so a shift of 0 will give TRs 1 and 2
-  %of rest.  Shift of 1 will give TRs 2 and 3 or rest, Shift of 2 will give
+  %of rest.  Shift of 1 will give TRs 2 and 3 or rest, Shift of 2 will
+  %give
   %TRs 3 and 4 of rest, shift of 3 will give TRs 4 and 5 of rest. Shift
   %maximum is 3.  
   
-  rest_vector = zeros(1,block_size);
+ rest_vector = zeros(1,block_size);
     rest_vector_dummy = zeros(1,block_size);
+    rest_vector_new = zeros(1,block_size);
+  
 
       for i = 1:n_rest_block
           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift))))=1;
           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift))))=1;
+          
+      end
+      
+      for i = 1:n_rest_block
+          rest_vector_new(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift))))=1;
+          rest_vector_new(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift))))=1;
           
       end
       
@@ -300,27 +309,51 @@ end
           
       end
       
+      
       if  subjNum == '113'
-          rest_vector(1,5:end) = rest_vector_dummy(1,5:end);
+          rest_vector_new(1,5:end) = rest_vector_dummy(1,5:end);
           
       elseif subjNum == '115'
-          rest_vector(1,102:end) = rest_vector_dummy(1,102:end);
+          rest_vector_new(1,102:end) = rest_vector_dummy(1,102:end); %102 so minus 1
           
       elseif subjNum == '117'
-          rest_vector(1,119:end) = rest_vector_dummy(1,119:end);
+          rest_vector_new(1,119:end) = rest_vector_dummy(1,119:end);
           
       elseif subjNum == '118'
-          rest_vector(1,132:end) = rest_vector_dummy(1,132:end);
+          rest_vector_new(1,132:end) = rest_vector_dummy(1,132:end);
+          
       elseif subjNum == '124'
-          rest_vector(1,57:end) = rest_vector_dummy(1,57:end);
+          rest_vector_new(1,57:end) = rest_vector_dummy(1,57:end);
    
           
       end
       %         rest_vector(1,((n_trial_length*last_rest_block)+(((n_rest_length*last_rest_block)-n_rest_length)+(1+rest_shift))))=1;
-      rest_vector(1,(length(rest_vector)-7):(length(rest_vector)-3))= 1;
+      rest_vector(1,(length(rest_vector)-7):(length(rest_vector)-3))= 1; % setting the last rest vectors. 
+      rest_vector_new(1,((length(rest_vector_new)-6):(length(rest_vector_new)-2))) = 1;
       
-      new_rest= horzcat(rest_vector,rest_vector);
+      if  subjNum == '113'
+          new_rest = horzcat(rest_vector_new, rest_vector);
+          
+      elseif subjNum == '115'
+          new_rest = horzcat(rest_vector, rest_vector_new);
+          
+      elseif subjNum == '117'
+          new_rest = horzcat(rest_vector_new, rest_vector);
+          
+      elseif subjNum == '118'
+          new_rest = horzcat(rest_vector, rest_vector_new);
+          
+      elseif subjNum == '124'
+          new_rest = horzcat(rest_vector_new, rest_vector);
+      else
+          
+        new_rest = horzcat(rest_vector, rest_vector);
+          
+      end
+
+      
         all_conds(rest_num,:)=new_rest;
+
   end
         
 %  %%%%% COMBINING NEUTRAL AND NEGATIVE WORDS %%%%%
@@ -590,13 +623,13 @@ end
   fprintf('\n\n## # of regressors in each condition: %s\n\n',mat2str(nansum(shifted_regs,2)'));
  
 %% exclude rest timepoints
-  %-----------------------------------------------------------------------%
-  %
-  % need to exclude rest timepoints from the analysis
-  % want to set all 'baseline' timepoints to '0' so they are excluded
-  % create a new selector called 'no_rest' with rests points set to 0
-  % to exclude not used rest timepoints during testing*
-  
+%   %-----------------------------------------------------------------------%
+%   %
+%   % need to exclude rest timepoints from the analysis
+%   % want to set all 'baseline' timepoints to '0' so they are excluded
+%   % create a new selector called 'no_rest' with rests points set to 0
+%   % to exclude not used rest timepoints during testing*
+%   
   subj = create_norest_sel(subj,sh_conds_name);
   
   norest_sels_name = [sh_conds_name '_norest'];
@@ -646,7 +679,7 @@ end
   subj = load_spm_pattern(subj, 'localizer_epis', 'read_mask', raw_filenames);
   
   
-  % Special subject handling: DATA
+  % Special subject handling: DATAl
   
   %PAD Pattern here if missing volumes (e.g. 04_140626 is missing 60
   %volumes from the first localizer task) 1536 is hardcoded as the number
@@ -775,6 +808,8 @@ end
   
   % combine train & test phase selectors
   train_runs_name = norest_sels_name;
+
+
   combined_runs_name = sprintf('%s+%s',train_runs_name,test_runs_name);
   
   % set all testing runs to '2' for classifier decoding

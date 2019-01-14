@@ -1,5 +1,5 @@
 function emodif_mvpa_decoding_parse_2(subjNum, test_phase, maskName, test_date)
-%*emodif_mvpa_decoding_parse_2('115','DFencode',tempoccfusi_pHg_LOC_combined_epi_space', '25-Sep-2018')
+%*emodif_mvpa_decoding_parse_2('115','DFencode', 'tempoccfusi_pHg_LOC_combined_epi_space', '25-Sep-2018')
 %parse 2 which involves subsequent memory analysis
 
   version = '2018Jun26';
@@ -33,7 +33,11 @@ cd(args.output_dir)
 if strcmp(test_phase, 'DFencode') == 1
 class_perf = load(sprintf('emodif_%s_DFencode_class_perf.txt',subjNum));
 regressors = load(sprintf('emodif_%s_DFencode_regressors.txt',subjNum));
-regressors(2,:) = Replace(regressors(2,:),-1,1); %this fixes an issue with emotion where it's appearing as -1
+for x = 1:length(regressors(2,:));
+    if regressors(2,x) == -1;
+        regressors(2,x) = 1;
+    end
+end
 
 %this is to set the between break rest points to NaN
 

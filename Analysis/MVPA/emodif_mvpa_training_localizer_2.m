@@ -267,12 +267,19 @@ end
   %TRs 3 and 4 of rest, shift of 3 will give TRs 4 and 5 of rest. Shift
   %maximum is 3.  will sample last 5 TRs following last trial block. 
   
-  rest_vector = zeros(1,block_size);
+    rest_vector = zeros(1,block_size);
     rest_vector_dummy = zeros(1,block_size);
+    rest_vector_new = zeros(1,block_size);
 
       for i = 1:n_rest_block
           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift))))=1;
           rest_vector(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift))))=1;
+          
+      end
+      
+      for i = 1:n_rest_block
+          rest_vector_new(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(1+rest_shift))))=1;
+          rest_vector_new(1, ((n_trial_length*i)+(((n_rest_length*i)-n_rest_length)+(2+rest_shift))))=1;
           
       end
       
@@ -283,27 +290,49 @@ end
       end
       
       if  subjNum == '113'
-          rest_vector(1,5:end) = rest_vector_dummy(1,5:end);
+          rest_vector_new(1,5:end) = rest_vector_dummy(1,5:end);
           
       elseif subjNum == '115'
-          rest_vector(1,(171+102):end) = rest_vector_dummy(1,(171+102):end);
+          rest_vector_new(1,102:end) = rest_vector_dummy(1,102:end); %102 so minus 1
           
       elseif subjNum == '117'
-          rest_vector(1,119:end) = rest_vector_dummy(1,119:end);
+          rest_vector_new(1,119:end) = rest_vector_dummy(1,119:end);
           
       elseif subjNum == '118'
-          rest_vector(1,(171+132):end) = rest_vector_dummy(1,(171+132):end);
+          rest_vector_new(1,132:end) = rest_vector_dummy(1,132:end);
+          
       elseif subjNum == '124'
-          rest_vector(1,57:end) = rest_vector_dummy(1,57:end);
+          rest_vector_new(1,57:end) = rest_vector_dummy(1,57:end);
    
           
       end
       %         rest_vector(1,((n_trial_length*last_rest_block)+(((n_rest_length*last_rest_block)-n_rest_length)+(1+rest_shift))))=1;
-      rest_vector(1,(length(rest_vector)-7):(length(rest_vector)-3))= 1;
+      rest_vector(1,(length(rest_vector)-7):(length(rest_vector)-3))= 1; % setting the last rest vectors. 
+      rest_vector_new(1,((length(rest_vector_new)-6):(length(rest_vector_new)-2))) = 1;
       
-      new_rest= horzcat(rest_vector,rest_vector);
+      if  subjNum == '113'
+          new_rest = horzcat(rest_vector_new, rest_vector);
+          
+      elseif subjNum == '115'
+          new_rest = horzcat(rest_vector, rest_vector_new);
+          
+      elseif subjNum == '117'
+          new_rest = horzcat(rest_vector_new, rest_vector);
+          
+      elseif subjNum == '118'
+          new_rest = horzcat(rest_vector, rest_vector_new);
+          
+      elseif subjNum == '124'
+          new_rest = horzcat(rest_vector_new, rest_vector);
+      else
+          
+        new_rest = horzcat(rest_vector, rest_vector);
+          
+      end
+
       
         all_conds(rest_num,:)=new_rest;
+
   end
  
   

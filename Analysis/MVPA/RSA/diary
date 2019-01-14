@@ -1,0 +1,156 @@
+{Reference to non-existent field 'output_dir'.
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 36)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',36,0)">line 36</a>)
+  diary(sprintf('%s/%s_diary.txt',args.output_dir,args.subjNum));
+} 
+emodif_rsa_catcompare('tempoccfusi_pHg_LOC_combined_epi_space')
+{Undefined function or variable 'maskName'.
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 52)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',52,0)">line 52</a>)
+  args.output_dir = sprintf('%s/results/DFencode/%s/category_comp',args.subj_dir,maskName);
+} 
+emodif_rsa_catcompare('tempoccfusi_pHg_LOC_combined_epi_space')
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('load')" style="font-weight:bold">load</a>
+Unable to read file
+'/Users/tw24955/emodif_data/emodif_110/results/DFencode/tempoccfusi_pHg_LOC_combined_epi_space/25-Sep-2018/emodif_110_DFencode_results.mat'.
+No such file or directory.
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 63)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',63,0)">line 63</a>)
+  load(sprintf('%s/%s_DFencode_results.mat',args.data_FSOWR,subjNum));
+} 
+emodif_rsa_catcompare('tempoccfusi_pHg_LOC_combined_epi_space')
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_rsa_catcompare', '/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m', 56)" style="font-weight:bold">emodif_rsa_catcompare</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/RSA/emodif_rsa_catcompare.m',56,0)">line 56</a>)] 
+load('comp_compare_results.mat')
+emodif_mvpa_decoding_study_2('115','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsor', '50','02', 'DFencode', 2)
+
+
+## removing 0 TRs from localizer regressors
+
+
+## using stimulus categories: fsor
+
+
+## # of regressors in each condition: [54 54 54 54]
+
+Created norest_sel called localizer_conds_sh2_norest from localizer_conds_sh2 regressors
+
+
+## reading in localizer data from tempoccfusi_pHg_LOC_combined_epi_space.nii
+Setting all non-zero values in the mask to one
+Mask 'read_mask' created by load_analyze_pattern
+
+
+## loading localizer data using tempoccfusi_pHg_LOC_combined_epi_space.nii with 4000 voxels
+Starting to load pattern from 2 SPM files
+	1	2 
+Pattern 'localizer_epis' created by load_spm_pattern
+
+
+## z-scoring data
+Beginning zscore_runs (Mathworks) - max_runs = 2
+	...  100%  done
+
+ 
+Pattern 'localizer_epis_z' created by zscore_runs
+(+) study data for decoding
+(+) using study mask tempoccfusi_pHg_LOC_combined_epi_space.nii
+
+
+## loading DFencode data using tempoccfusi_pHg_LOC_combined_epi_space.nii with 4000 voxels
+Starting to load pattern from 2 SPM files
+	1	2{Operation terminated by user during <a href="matlab:matlab.internal.language.introspective.errorDocCallback('spm_read_vols', '/Applications/spm12/spm_read_vols.m', 34)" style="font-weight:bold">spm_read_vols</a> (<a href="matlab: opentoline('/Applications/spm12/spm_read_vols.m',34,0)">line 34</a>)
+
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('load_spm_pattern', '/Users/tw24955/princeton-mvpa-toolbox/core/io/load_spm_pattern.m', 158)" style="font-weight:bold">load_spm_pattern</a> (<a href="matlab: opentoline('/Users/tw24955/princeton-mvpa-toolbox/core/io/load_spm_pattern.m',158,0)">line 158</a>)
+     [Vdata] = spm_read_vols(curvol);
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_mvpa_decoding_study_2', '/Users/tw24955/EmoDiF/Analysis/MVPA/emodif_mvpa_decoding_study_2.m', 760)" style="font-weight:bold">emodif_mvpa_decoding_study_2</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/emodif_mvpa_decoding_study_2.m',760,0)">line 760</a>)
+  subj = load_spm_pattern(subj, 'DF_epis', 'read_mask', DF_raw_filenames);
+} 
+emodif_mvpa_decoding_study_2('115','tempoccfusi_pHg_LOC_combined_epi_space','L2logreg','fsowr', '50','02', 'DFencode', 2)
+[Warning: Directory already exists.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_mvpa_decoding_study_2', '/Users/tw24955/EmoDiF/Analysis/MVPA/emodif_mvpa_decoding_study_2.m', 87)" style="font-weight:bold">emodif_mvpa_decoding_study_2</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/emodif_mvpa_decoding_study_2.m',87,0)">line 87</a>)] 
+
+
+## removing 0 TRs from localizer regressors
+
+
+## using stimulus categories: fsowr
+
+
+## # of regressors in each condition: [54 54 54 54 54]
+
+Created norest_sel called localizer_conds_sh2_norest from localizer_conds_sh2 regressors
+
+
+## reading in localizer data from tempoccfusi_pHg_LOC_combined_epi_space.nii
+Setting all non-zero values in the mask to one
+Mask 'read_mask' created by load_analyze_pattern
+
+
+## loading localizer data using tempoccfusi_pHg_LOC_combined_epi_space.nii with 4000 voxels
+Starting to load pattern from 2 SPM files
+	1	2 
+Pattern 'localizer_epis' created by load_spm_pattern
+
+
+## z-scoring data
+Beginning zscore_runs (Mathworks) - max_runs = 2
+	...  100%  done
+
+ 
+Pattern 'localizer_epis_z' created by zscore_runs
+(+) study data for decoding
+(+) using study mask tempoccfusi_pHg_LOC_combined_epi_space.nii
+
+
+## loading DFencode data using tempoccfusi_pHg_LOC_combined_epi_space.nii with 4000 voxels
+Starting to load pattern from 2 SPM files
+	1	2 
+Pattern 'DF_epis' created by load_spm_pattern
+
+
+## loading DFencode data using tempoccfusi_pHg_LOC_combined_epi_space.nii with 4000 voxels
+[+] z-scoring data
+
+Beginning zscore_runs (Mathworks) - max_runs = 2
+	...  100%  done
+
+ 
+Pattern 'DF_epis_z' created by zscore_runs
+[Warning: The dimensions of the new DF_epis_z pattern mat are different] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('set_mat>sanity_check', '/Users/tw24955/princeton-mvpa-toolbox/core/subj/set_mat.m', 147)" style="font-weight:bold">set_mat>sanity_check</a> (<a href="matlab: opentoline('/Users/tw24955/princeton-mvpa-toolbox/core/subj/set_mat.m',147,0)">line 147</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('set_mat', '/Users/tw24955/princeton-mvpa-toolbox/core/subj/set_mat.m', 69)" style="font-weight:bold">set_mat</a> (<a href="matlab: opentoline('/Users/tw24955/princeton-mvpa-toolbox/core/subj/set_mat.m',69,0)">line 69</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_mvpa_decoding_study_2', '/Users/tw24955/EmoDiF/Analysis/MVPA/emodif_mvpa_decoding_study_2.m', 792)" style="font-weight:bold">emodif_mvpa_decoding_study_2</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/emodif_mvpa_decoding_study_2.m',792,0)">line 792</a>)] 
+(+) decoding DFencode using localizer (iter 1 of 1)
+Using the read_mask mask each time
+Starting 1 cross-validation classification iterations - train_L2_RLR
+	1[Warning: Not 1-of-n regressors] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('perfmet_maxclass>sanity_check', '/Users/tw24955/princeton-mvpa-toolbox/core/learn/perfmet_maxclass.m', 121)" style="font-weight:bold">perfmet_maxclass>sanity_check</a> (<a href="matlab: opentoline('/Users/tw24955/princeton-mvpa-toolbox/core/learn/perfmet_maxclass.m',121,0)">line 121</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('perfmet_maxclass', '/Users/tw24955/princeton-mvpa-toolbox/core/learn/perfmet_maxclass.m', 66)" style="font-weight:bold">perfmet_maxclass</a> (<a href="matlab: opentoline('/Users/tw24955/princeton-mvpa-toolbox/core/learn/perfmet_maxclass.m',66,0)">line 66</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('cross_validation', '/Users/tw24955/princeton-mvpa-toolbox/core/learn/cross_validation.m', 265)" style="font-weight:bold">cross_validation</a> (<a href="matlab: opentoline('/Users/tw24955/princeton-mvpa-toolbox/core/learn/cross_validation.m',265,0)">line 265</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('emodif_mvpa_decoding_study_2', '/Users/tw24955/EmoDiF/Analysis/MVPA/emodif_mvpa_decoding_study_2.m', 862)" style="font-weight:bold">emodif_mvpa_decoding_study_2</a> (<a href="matlab: opentoline('/Users/tw24955/EmoDiF/Analysis/MVPA/emodif_mvpa_decoding_study_2.m',862,0)">line 862</a>)] 
+	0.11
+ 
+04-Dec-2018 23:28:12: Cross-validation using train_L2_RLR and test_L2_RLR - got total_perfs - 0.11268
