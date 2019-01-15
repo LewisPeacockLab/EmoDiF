@@ -30,9 +30,22 @@ function emodif_mvpa_decoding_parse_2(subjNum, test_phase, maskName, test_date)
   args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, test_phase, maskName, test_date);
 
 cd(args.output_dir)
-if strcmp(test_phase, 'DFencode') == 1
-class_perf = load(sprintf('emodif_%s_DFencode_class_perf.txt',subjNum));
-regressors = load(sprintf('emodif_%s_DFencode_regressors.txt',subjNum));
+if strcmp(test_phase, 'DFencode') == true
+    class_perf = load(sprintf('emodif_%s_DFencode_class_perf.txt',subjNum));
+    regressors = load(sprintf('emodif_%s_DFencode_regressors.txt',subjNum));
+    fparameters = fopen(sprintf('emodif_%s_DFencode_parameters.txt',subjNum));
+    parameters = textscan(fparameters, '%s %s %s %s  %s %s  %d %d %s %s' );
+    fclose(fparameters);
+    categories = parameters{1,6};
+    cat = regressors(1,:);
+    emo = regressors(2,:); %1 negative, 0 neutral
+    instr = regressors(3,:); %1 remember, 0 forget
+    runs = regressors(4,:);
+    subresp = regressors(5,:);
+    TR = regressors(6,:);
+    trial = regressors(7,:);
+
+
 for x = 1:length(regressors(2,:));
     if regressors(2,x) == -1;
         regressors(2,x) = 1;
@@ -110,13 +123,39 @@ subresp = regressors(5,:);
 TR = regressors(6,:);
 trial = regressors(7,:);
 end
+    
+face_num = strfind(categories{1},'f');
+scene_num = strfind(categories{1},'s');
+obj_num = strfind(categories{1},'o');
+word_num = strfind(categories{1},'w');
+rest_num = strfind(categories{1},'r');
 
-face_acts = class_perf(1,:);
-scene_acts = class_perf(2,:);
-object_acts = class_perf(3,:);
-word_acts = class_perf(4,:);
-rest_acts = class_perf(5,:);
+if isempty(face_num) == 0
+    face_acts = class_perf(face_num,:);
+else
+end
 
+if isempty(scene_num) == 0
+    scene_acts = class_perf(scene_num,:);
+else
+end
+
+if isempty(obj_num) == 0
+    object_acts = class_perf(obj_num,:);
+else
+end
+
+if isempty(word_num) == 0
+    word_acts = class_perf(word_num,:);
+else
+end
+
+if isempty(rest_num) == 0
+    rest_acts = class_perf(rest_num,:);
+else
+end
+
+ 
 all_regressors = vertcat(class_perf,regressors);
 
 %start breaking everything up by trial 
@@ -199,40 +238,97 @@ if strcmp(test_phase, 'DFencode') == 1
     %this is where we should put the rest of the regressors as a sanity
     %cut regressors for 1 ST 
     %check
-  for i = 1:length(instr_remember_idx)
+ for i = 1:length(instr_remember_idx)
             remember_acts(:,i)=class_perf(:,instr_remember_idx(i));
+            remember_beh(:,i)=regressors(5,instr_remember_idx(i));
     end
-        
-rem_face = reshape(remember_acts(1,:),7,30)';
-rem.all.acts.face = rem_face;
-rem_scene =reshape(remember_acts(2,:),7,30)';
-rem.all.acts.scene = rem_scene;
-rem_object =reshape(remember_acts(3,:),7,30)';
-rem.all.acts.object = rem_object;
-rem_word =reshape(remember_acts(4,:),7,30)';
-rem.all.acts.word = rem_word;
-rem_rest =   reshape(remember_acts(5,:),7,30)';
-rem.all.acts.rest = rem_rest;
+    
+    
+    
+    if isempty(face_num) == 0
+        rem_face = reshape(remember_acts(1,:),7,30)';
+        rem.all.acts.face = rem_face;
+    else
+    end
+    
+    if isempty(scene_num) == 0
+        rem_scene =reshape(remember_acts(2,:),7,30)';
+        rem.all.acts.scene = rem_scene;
+    else
+    end
+    
+    if isempty(obj_num) == 0
+        rem_object =reshape(remember_acts(3,:),7,30)';
+        rem.all.acts.object = rem_object;
+    else
+    end
+    
+    if isempty(word_num) == 0
+        rem_word =reshape(remember_acts(4,:),7,30)';
+        rem.all.acts.word = rem_word;
+    else
+    end
+    
+    if isempty(rest_num) == 0
+        rem_rest =   reshape(remember_acts(5,:),7,30)';
+        rem.all.acts.rest = rem_rest;
+    else
+    end
+ 
+
 rem_check = reshape(instr_remember_idx,7,30)';
 rem.all.acts.check = rem_check;
 
+rem_beh = reshape(remember_beh,7,30)';
+rem.all.beh = rem_beh(:,1);
+rem.all.behcheck = rem_beh;
 
-    for i = 1:length(instr_forget_idx)
-            forget_acts(:,i)=class_perf(:,instr_forget_idx(i));
-    end
-        
-for_face = reshape(forget_acts(1,:),7,30)';
-forget.all.acts.face = for_face;
-for_scene =reshape(forget_acts(2,:),7,30)';
-forget.all.acts.scene = for_scene;
-for_object =reshape(forget_acts(3,:),7,30)';
-forget.all.acts.object = for_object;
-for_word =reshape(forget_acts(4,:),7,30)';
-forget.all.acts.word = for_word;
-for_rest =   reshape(forget_acts(5,:),7,30)';
-forget.all.acts.rest = for_rest;
+
+for i = 1:length(instr_forget_idx)
+    forget_acts(:,i)=class_perf(:,instr_forget_idx(i));
+    forget_beh(:,i)=regressors(5,instr_forget_idx(i));
+end
+
+if isempty(face_num) == 0
+    for_face = reshape(forget_acts(1,:),7,30)';
+    forget.all.acts.face = for_face;
+else
+end
+
+if isempty(scene_num) == 0
+    for_scene =reshape(forget_acts(2,:),7,30)';
+    forget.all.acts.scene = for_scene;
+else
+end
+
+if isempty(obj_num) == 0
+    for_object =reshape(forget_acts(3,:),7,30)';
+    forget.all.acts.object = for_object;
+else
+end
+
+if isempty(word_num) == 0
+    
+    for_word =reshape(forget_acts(4,:),7,30)';
+    forget.all.acts.word = for_word;
+    
+else
+end
+
+if isempty(rest_num) == 0
+    for_rest =   reshape(forget_acts(5,:),7,30)';
+    forget.all.acts.rest = for_rest;
+else
+end
+
 for_check = reshape(instr_remember_idx,7,30)';
 forget.all.acts.check = for_check;
+
+forget_beh = reshape(forget_beh,7,30)';
+forget.all.beh = forget_beh(:,1);
+forget.all.behcheck = forget_beh;
+
+
 
     for i = 1:length(instr_remember_neu_idx)
             remember_neu_acts(:,i)=class_perf(:,instr_remember_neu_idx(i));

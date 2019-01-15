@@ -1,5 +1,5 @@
 function emodif_mvpa_decoding_parse(subjNum,test_phase, maskName, test_date)
-%*emodif_mvpa_decoding_parse('101','DFencode', 'JC_AMYHP_epi_space', '30-Apr-2018')
+%emodif_mvpa_decoding_parse('101','DFencode', 'tempoccfusi_pHg_LOC_combined_epi_space', '21-Aug-2018')
 %test_phase can be 'DFencode' OR 'preview'
 %SM can be 'hiconf', 'merged'
 %doesn't need conditions or mask name 
@@ -61,38 +61,52 @@ elseif strcmp(test_phase, 'Preview') == true
     trial = regressors(7,:);
 end
 
+%note for first 3 subjects, this will won't apply. this also only works if
+%you're doing all categories  for the first 3
+ if subjNum == '101' | subjNum == '102' | subjNum == '103'
+     if categories{1} == 'fsoner'
+         categories{2} = 'fsowr';
+     elseif categories{1} == 'fsor'
+         categories{2} = 'fsor';
+     end
+     
+     face_num = strfind(categories{2},'f');
+     scene_num = strfind(categories{2},'s');
+     obj_num = strfind(categories{2},'o');
+     word_num = strfind(categories{2},'w');
+     rest_num = strfind(categories{2},'r');
+ else
+     
+     face_num = strfind(categories{1},'f');
+     scene_num = strfind(categories{1},'s');
+     obj_num = strfind(categories{1},'o');
+     word_num = strfind(categories{1},'w');
+     rest_num = strfind(categories{1},'r');
 
- face_num = strfind(categories,'f');
- scene_num = strfind(categories,'s');
- obj_num = strfind(categories,'o');
- word_num = strfind(categories,'w');
- rest_num = strfind(categories,'r');
-
- if isempty(face_num{1}) == 0
-     face_acts = class_perf(face_num{1},:);
+ if isempty(face_num) == 0
+     face_acts = class_perf(face_num,:);
  else
  end
  
- if isempty(scene_num{1}) == 0
-     scene_acts = class_perf(scene_num{1},:);
+ if isempty(scene_num) == 0
+     scene_acts = class_perf(scene_num,:);
  else
  end
  
- if isempty(obj_num{1}) == 0
-     object_acts = class_perf(obj_num{1},:);
+ if isempty(obj_num) == 0
+     object_acts = class_perf(obj_num,:);
  else
  end
  
- if isempty(word_num{1}) == 0
-     word_acts = class_perf(word_num{1},:);
+ if isempty(word_num) == 0
+     word_acts = class_perf(word_num,:);
  else
  end
  
- 
- 
- if isempty(rest_num{1}) == 0
-     rest_acts = class_perf(rest_num{1},:);
+  if isempty(rest_num) == 0
+     rest_acts = class_perf(rest_num,:);
  else
+  end
  end
  
 
@@ -189,35 +203,36 @@ if strcmp(test_phase, 'DFencode') == true
     
     for i = 1:length(instr_remember_idx)
             remember_acts(:,i)=class_perf(:,instr_remember_idx(i));
+            remember_beh(:,i)=regressors(5,instr_remember_idx(i));
     end
     
     
     
-    if isempty(face_num{1}) == 0
+    if isempty(face_num) == 0
         rem_face = reshape(remember_acts(1,:),7,30)';
         rem.all.acts.face = rem_face;
     else
     end
     
-    if isempty(scene_num{1}) == 0
+    if isempty(scene_num) == 0
         rem_scene =reshape(remember_acts(2,:),7,30)';
         rem.all.acts.scene = rem_scene;
     else
     end
     
-    if isempty(obj_num{1}) == 0
+    if isempty(obj_num) == 0
         rem_object =reshape(remember_acts(3,:),7,30)';
         rem.all.acts.object = rem_object;
     else
     end
     
-    if isempty(word_num{1}) == 0
+    if isempty(word_num) == 0
         rem_word =reshape(remember_acts(4,:),7,30)';
         rem.all.acts.word = rem_word;
     else
     end
     
-    if isempty(rest_num{1}) == 0
+    if isempty(rest_num) == 0
         rem_rest =   reshape(remember_acts(5,:),7,30)';
         rem.all.acts.rest = rem_rest;
     else
@@ -227,29 +242,37 @@ if strcmp(test_phase, 'DFencode') == true
 rem_check = reshape(instr_remember_idx,7,30)';
 rem.all.acts.check = rem_check;
 
+rem_beh = reshape(remember_beh,7,30)';
+rem.all.beh = rem_beh(:,1);
+rem.all.behcheck = rem_beh;
+
+
+
 
 for i = 1:length(instr_forget_idx)
     forget_acts(:,i)=class_perf(:,instr_forget_idx(i));
+    forget_beh(:,i)=regressors(5,instr_forget_idx(i));
 end
-if isempty(face_num{1}) == 0
+
+if isempty(face_num) == 0
     for_face = reshape(forget_acts(1,:),7,30)';
     forget.all.acts.face = for_face;
 else
 end
 
-if isempty(scene_num{1}) == 0
+if isempty(scene_num) == 0
     for_scene =reshape(forget_acts(2,:),7,30)';
     forget.all.acts.scene = for_scene;
 else
 end
 
-if isempty(obj_num{1}) == 0
+if isempty(obj_num) == 0
     for_object =reshape(forget_acts(3,:),7,30)';
     forget.all.acts.object = for_object;
 else
 end
 
-if isempty(word_num{1}) == 0
+if isempty(word_num) == 0
     
     for_word =reshape(forget_acts(4,:),7,30)';
     forget.all.acts.word = for_word;
@@ -257,7 +280,7 @@ if isempty(word_num{1}) == 0
 else
 end
 
-if isempty(rest_num{1}) == 0
+if isempty(rest_num) == 0
     for_rest =   reshape(forget_acts(5,:),7,30)';
     forget.all.acts.rest = for_rest;
 else
@@ -265,6 +288,10 @@ end
 
 for_check = reshape(instr_remember_idx,7,30)';
 forget.all.acts.check = for_check;
+
+forget_beh = reshape(forget_beh,7,30)';
+forget.all.beh = forget_beh(:,1);
+forget.all.behcheck = forget_beh;
 
 for i = 1:length(instr_remember_neu_idx)
     remember_neu_acts(:,i)=class_perf(:,instr_remember_neu_idx(i));
