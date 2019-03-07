@@ -5,35 +5,15 @@ function [] = emodif_run_net_importance_sampler_astoria()
 data_dir = '~/emodif_data/PCIT/data';
 
 %%% VARIABLES THAT CHANGE %%%%
-analysis_id = '190115a';
+analysis_id = '190116a';
 group = 'full_N20';
 %trial = 'F';
 %time = '10to18sec';
 run_num = 2;
 target = 'word';
 type = 'net';
-condition = 'remember';
-if condition == 'remember'
-    shortcon = 'rem';
-elseif condition == 'forget'
-    shortcon = 'for';
-end
+condition = 'forget';
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% [] = REPREF_RUN_IMPORTANCE_SAMPLER()
-% 
-% Purpose
-% 
-% This scripts sets up the data matrix (number of samples x 6 columns) and the 'analysis_settings' struct with algorithm parameters
-% 
-% Input
-%
-% --None
-% 
-% Output
-%
-% --None
 % 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
