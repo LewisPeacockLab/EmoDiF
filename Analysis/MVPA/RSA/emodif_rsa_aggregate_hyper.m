@@ -8,19 +8,17 @@ args.preview.TR = 366;
 args.DFencode.TR = 426;
 
 args.subjID = sprintf('emodif_%s',num2str(subjNum));
-args.maskName = maskName;
 args.script_dir = pwd;
 args.previewshift = preview_shift;
-
 args.preview.trialnum = 60;
 args.DFencode.trialnum = 60;
 
 args.subj_dir = sprintf('%s/%s', args.base_dir, args.subjID);
 
-args.data_dir = sprintf('%s/results/rsa_results/preview_DF_preview/%s',args.subj_dir,args.maskName);
+args.data_dir = sprintf('%s/results/rsa_results/preview_DF_preview/scene_200',args.subj_dir);
 
-args.output_dir = sprintf('%s/aggregate_results/RSA_preview_dfencode_results/%s', args.base_dir, maskName);
-args.outfname = sprintf('%s/rsa_preview_dfencode_%s_aggregate_%s', args.output_dir, maskName, date);
+args.output_dir = sprintf('%s/aggregate_results/RSA_preview_dfencode_results/scene_200', args.base_dir);
+args.outfname = sprintf('%s/rsa_preview_dfencode_scene_200_aggregate_%s', args.output_dir, date);
 
 cd(args.data_dir);
 results.bysubject.data(i) = load(sprintf('%s_TR2to4_Pagg_rsa_results.mat', args.subjID));

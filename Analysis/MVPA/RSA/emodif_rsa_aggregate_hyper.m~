@@ -8,10 +8,8 @@ args.preview.TR = 366;
 args.DFencode.TR = 426;
 
 args.subjID = sprintf('emodif_%s',num2str(subjNum));
-args.maskName = maskName;
 args.script_dir = pwd;
 args.previewshift = preview_shift;
-
 args.preview.trialnum = 60;
 args.DFencode.trialnum = 60;
 
