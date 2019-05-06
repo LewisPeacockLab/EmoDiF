@@ -14,7 +14,6 @@ args.preview.trialnum = 60;
 args.DFencode.trialnum = 60;
 
 args.subj_dir = sprintf('%s/%s', args.base_dir, args.subjID);
-
 args.data_dir = sprintf('%s/results/rsa_results/preview_DF_preview/scene_200',args.subj_dir);
 
 args.output_dir = sprintf('%s/aggregate_results/RSA_preview_dfencode_results/scene_200', args.base_dir);

@@ -1,27 +1,32 @@
-function [results] = emodif_rsa_aggregate_hyper(preview_shift)
-%hyperalignment from remy uses 200 voxels
-% preview TRs 3-5
-% DF encode TRs 2-4
-% preloaded data - the question is whether the regressors 
+function [results] = emodif_rsa_aggregate_aggP_hyper(preview_shift, maskName)
+%emodif_rsa_aggregate_aggP_hyper(2, 'scene_200')
+load('/Users/tw24955/EmoDif/Analysis/MVPA/RSA/subj_list_hyper.mat');
+
+%subj_list
+
+for i = 1:length(subj_list);
+subjNum = (subj_list{i});
+
+
 args.base_dir = '/Users/tw24955/emodif_data';
-args.preview.TR = 366;
-args.DFencode.TR = 426;
 
 args.subjID = sprintf('emodif_%s',num2str(subjNum));
+args.maskName = maskName;
 args.script_dir = pwd;
 args.previewshift = preview_shift;
+
 args.preview.trialnum = 60;
 args.DFencode.trialnum = 60;
 
 args.subj_dir = sprintf('%s/%s', args.base_dir, args.subjID);
 
-args.data_dir = sprintf('%s/results/rsa_results/preview_DF_preview/%s',args.subj_dir,args.maskName);
+args.data_dir = sprintf('%s/results/rsa_results/preview_dfencode/%s/%d',args.subj_dir,args.maskName, preview_shift);
 
 args.output_dir = sprintf('%s/aggregate_results/RSA_preview_dfencode_results/%s', args.base_dir, maskName);
-args.outfname = sprintf('%s/rsa_preview_dfencode_%s_aggregate_%s', args.output_dir, maskName, date);
+args.outfname = sprintf('%s/rsa_preview_dfencode_%s_aggregate_%d_%s', args.output_dir, maskName, preview_shift, date);
 
 cd(args.data_dir);
-results.bysubject.data(i) = load(sprintf('%s_TR2to4_Pagg_rsa_results.mat', args.subjID));
+results.bysubject.data(i) = load(sprintf('%s_TR2to4_aggP_DF_rsa_hyper_results.mat', args.subjID));
 end
 
 mkdir(args.output_dir);
@@ -44,16 +49,16 @@ mkdir(args.output_dir);
     
     preview_DFencode_stack_m = mean(preview_DFencode_stack_mz,1);
     preview_DFencode_stack_m2 = mean(preview_DFencode_stack_m,2);
-    preview_DFencode_stack_summary = reshape(preview_DFencode_stack_m2,24,1);
+    preview_DFencode_stack_summary = reshape(preview_DFencode_stack_m2,20,1);
     
     preview_DFencode_stack_Fm = mean(preview_DFencode_stack_F_mz,1);
     preview_DFencode_stack_Fm2 = mean(preview_DFencode_stack_Fm,2);
-    preview_DFencode_stack_Fsummary = reshape(preview_DFencode_stack_Fm2,24,1);
+    preview_DFencode_stack_Fsummary = reshape(preview_DFencode_stack_Fm2,20,1);
 
     
     preview_DFencode_stack_Rm = mean(preview_DFencode_stack_R_mz,1);
     preview_DFencode_stack_Rm2 = mean(preview_DFencode_stack_Rm,2);
-    preview_DFencode_stack_Rsummary = reshape(preview_DFencode_stack_Rm2,24,1);
+    preview_DFencode_stack_Rsummary = reshape(preview_DFencode_stack_Rm2,20,1);
     
      for x = 1:length(subj_list)
         preview_DFencode_summary_1 = mean(results.bysubject.data(x).rsa.results.smatrix.corr_matrix_match_full,1);
@@ -74,6 +79,15 @@ preview_DFencode_R_mz = nanmean(preview_DFencode_stack_R_mz,3);
 results.groupmean.preview_DFencode_mz= preview_DFencode_mz;
 results.groupmean.preview_DFencode_F_mz  = preview_DFencode_F_mz;
 results.groupmean.preview_DFencode_R_mz = preview_DFencode_R_mz;
+
+%summary
+results.summary.preview_DFencode_stack_summary = preview_DFencode_stack_summary;
+results.summary.preview_DFencode_stack_Fsummary =  preview_DFencode_stack_Fsummary;
+results.summary.preview_DFencode_stack_Rsummary = preview_DFencode_stack_Rsummary;
+results.summary.full = mean(preview_DFencode_stack_summary);
+results.summary.Fsummary = mean(preview_DFencode_stack_Fsummary);
+results.summary.Rsummary = mean(preview_DFencode_stack_Rsummary);
+
 
 %fisher z transform everything back to pearson's R
 

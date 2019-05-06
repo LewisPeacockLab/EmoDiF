@@ -1,0 +1,1 @@
+  diary(sprintf('%s/%s_diary.txt',args.output_dir,args.subjNum));

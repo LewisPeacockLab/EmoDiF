@@ -1,14 +1,11 @@
-function [results] = emodif_rsa_aggregate_aggP(preview_shift, maskName)
+function [results] = emodif_rsa_aggregate_aggP_hyper(preview_shift, maskName)
 %emodif_rsa_aggregate_aggP(2, 'scene100')
 load('/Users/tw24955/EmoDif/Analysis/MVPA/subj_list.mat');
 
 %subj_list
 
 for i = 1:length(subj_list);
-subjNum = (subj_list{i,1});
-subj_intraphase_folder = (subj_list{i,2});
-subj_preview_dfencode_folder = (subj_list{i,3});
-subj_preview_DF_local_folder = (subj_list{i,4});
+subjNum = (subj_list{i});
 
 
 args.base_dir = '/Users/tw24955/emodif_data';
@@ -23,13 +20,13 @@ args.DFencode.trialnum = 60;
 
 args.subj_dir = sprintf('%s/%s', args.base_dir, args.subjID);
 
-args.data_dir = sprintf('%s/results/rsa_results/preview_DF_preview/%s',args.subj_dir,args.maskName);
+args.data_dir = sprintf('%s/results/rsa_results/preview_DFencode/%s',args.subj_dir,args.maskName);
 
 args.output_dir = sprintf('%s/aggregate_results/RSA_preview_dfencode_results/%s', args.base_dir, maskName);
 args.outfname = sprintf('%s/rsa_preview_dfencode_%s_aggregate_%s', args.output_dir, maskName, date);
 
 cd(args.data_dir);
-results.bysubject.data(i) = load(sprintf('%s_TR2to4_Pagg_rsa_results.mat', args.subjID));
+results.bysubject.data(i) = load(sprintf('%s_TR2to4_aggP_DF_rsa_hyper_results.mat', args.subjID));
 end
 
 mkdir(args.output_dir);
