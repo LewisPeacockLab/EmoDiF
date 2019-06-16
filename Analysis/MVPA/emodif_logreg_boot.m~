@@ -24,23 +24,14 @@ for x = 1:24
 end
     R_behav_cat = categorical(R_behav);
     F_behav_cat = categorical(F_behav);
-    results(i).R_data = R_data;
-    results(i).R_behav_cat = R_behav_cat;
-    results(i).F_data = F_data;
-    results(i).F_behav_cat = F_behav_cat;
-    
-    
+    results(i).R_data = R_data
+    results(i).R_behav_cat = 
     
     [results(i).R_results,results(i).Rdev,results(i).Rstats] = mnrfit(R_data,R_behav_cat);
     [results(i).F_results,results(i).Fdev,results(i).Fstats] = mnrfit(F_data, F_behav_cat);
-    
-    results(i).R_results_beta = results(i).R_results(2,:);
-    results(i).F_results_beta = results(i).F_results(2,:);
-    
 end
 
-outfilename = sprintf('emodif_logreg_boot_%d.mat', num_boot);
-save(outfilename, 'results')
-end
+outfilename = 'emodif_logreg_boot.mat'
+    
     
 
