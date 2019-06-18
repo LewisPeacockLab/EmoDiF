@@ -82,10 +82,12 @@ end
         [results_tradeoff.F_ttest_chance,results_tradeoff.F_ttest_chanceP, results_tradeoff.F_ttest_chanceCI, ...
             results_tradeoff.aF_ttest_chanceSTATS] = ttest(results_tradeoff.Fcorrel(:,2),chance);
         
-        [results_tradeoff.RF_ttest,results_tradeoff.RF_ttestP, results_tradeoff.RF_ttestCI, ...
-            results_tradeoff.RF_ttestSTATS] = ttest(results_tradeoff.Fcorrel(:,2),results_tradeoff.Rcorrel(:,2));
+        [results_tradeoff.RF_ttest_chance,results_tradeoff.RF_ttest_chanceP, results_tradeoff.F_ttest_chanceCI, ...
+            results_tradeoff.aF_ttest_chanceSTATS] = ttest(results_tradeoff.Fcorrel(:,2),chance);
         
-       
+        
+
+    end
     
 outfilename = 'emodif_tradeoff_ana.mat';
 
