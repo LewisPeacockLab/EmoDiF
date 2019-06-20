@@ -135,7 +135,7 @@ function emodif_mvpa_localizer_parse(subjNum,phase, maskName, test_date)
   localizer.corr.corr_scene_wf = corr_scene_wf;
   localizer.corr.corrP_scene_wf = corrP_scene_wf;
   localizer.corr.corr_all_ws = corr_ws;
-  localizer.corr,corrP_all_ws = corrP_ws;
+  localizer.corr.corrP_all_ws = corrP_ws;
   localizer.corr.corr_all_wf = corr_wf;
   localizer.corr.corrP_all_wf = corrP_wf;
   
