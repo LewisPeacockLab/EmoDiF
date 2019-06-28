@@ -1,0 +1,1105 @@
+function emodif_mvpa_decoding_parse_2_v2(subjNum, test_phase, maskName, test_date)
+%*emodif_mvpa_decoding_parse_2_v2('115','DFencode', 'tempoccfusi_pHg_LOC_combined_epi_space', '25-Sep-2018')
+%parse 2 which involves subsequent memory analysis
+
+  version = '2018Jun26';
+  args.break = 3; %how many TRs are at the end of each run regardless of condition
+  args.local.nTRs = 342; % 135 trials per run, 5 TRs per rest, each post miniblock. each single run 145 stim TRs and 75 rest TRs.  
+  args.local.trialTR = 9;
+  args.DF.nTRs = 426;
+  args.DF.trialTR = 7; % word(1TR), blank(1TR), DFinstr(4TR), blank(1TR)
+  args.DF.trialn = 30;
+  args.DF.runs = 2;
+  args.preview.nTRs = 366;
+  args.preview.trialTR = 6; %word(1.5TR), scenes(1.5TRs), fixation(3TRs)
+  args.preview.trialn = 30;
+  args.preview.runs = 2;
+  args.subjNum = subjNum;
+  args.subjID = sprintf('emodif_%s',num2str(subjNum));
+  args.script_dir = pwd;
+  
+  
+    %for astoria
+   args.subj_dir = sprintf('/Users/tw24955/emodif_data/%s', args.subjID);
+% for tigger
+%    args.subj_dir = sprintf('/Users/TWang/emodif_data/%s', args.subjID);
+
+  args.bold_dir = sprintf('%s/BOLD', args.subj_dir);
+  args.mask_dir = sprintf('%s/mask', args.subj_dir);
+  args.regs_dir = sprintf('%s/behav', args.subj_dir);
+  args.output_dir = sprintf('%s/results/%s/%s/%s',args.subj_dir, test_phase, maskName, test_date);
+
+cd(args.output_dir)
+if strcmp(test_phase, 'DFencode') == true
+    class_perf = load(sprintf('emodif_%s_DFencode_class_perf.txt',subjNum));
+    regressors = load(sprintf('emodif_%s_DFencode_regressors.txt',subjNum));
+    fparameters = fopen(sprintf('emodif_%s_DFencode_parameters.txt',subjNum));
+    parameters = textscan(fparameters, '%s %s %s %s  %s %s  %d %d %s %s' );
+    fclose(fparameters);
+    categories = parameters{1,6};
+    cat = regressors(1,:);
+    emo = regressors(2,:); %1 negative, 0 neutral
+    instr = regressors(3,:); %1 remember, 0 forget
+    runs = regressors(4,:);
+    subresp = regressors(5,:);
+    TR = regressors(6,:);
+    trial = regressors(7,:);
+
+
+for x = 1:length(regressors(2,:));
+    if regressors(2,x) == -1;
+        regressors(2,x) = 1;
+    end
+end
+
+%this is to set the between break rest points to NaN
+
+%Exceptions:
+if strcmp(subjNum,'116') == 1
+    
+            break1_start = (args.DF.nTRs/2)-(args.break-1);
+            break2_start = (args.DF.nTRs-(args.break-1)) +1 ;
+else
+   
+break1_start = (args.DF.nTRs/2)-(args.break-1);
+break2_start = args.DF.nTRs-(args.break-1);
+end
+
+regressors(1:3,break1_start:(args.DF.nTRs/2)) = NaN;
+regressors(4:7,break1_start:(args.DF.nTRs/2)) = NaN;
+
+regressors(1:3,break2_start:args.DF.nTRs) = NaN;
+regressors(5:7,break2_start:args.DF.nTRs) = NaN;
+
+
+
+cat = regressors(1,:);
+emo = regressors(2,:); %1 negative, 0 neutral
+instr = regressors(3,:); %1 remember, 0 forget
+runs = regressors(4,:);
+subresp = regressors(5,:);
+TR = regressors(6,:);
+trial = regressors(7,:);
+
+%subresp - which 
+
+elseif strcmp(test_phase, 'Preview') == 1
+    
+    class_perf = load(sprintf('emodif_%s_preview_class_perf.txt',subjNum));
+    regressors = load(sprintf('emodif_%s_preview_regressors.txt',subjNum));
+    
+    %this is to set the between break rest points to NaN
+    regressors(2,:) = Replace(regressors(2,:),-1,1); %this fixes an issue with emotion where it's appearing as -1
+    
+    %exception
+    if strcmp(subjNum,'107') == 1
+        break1_start = ((args.preview.nTRs/2)+1)-(args.break-1);
+    else
+        
+        break1_start = (args.preview.nTRs/2)-(args.break-1);
+    end
+    
+    if strcmp(subjNum,'111') == 1
+        break2_start = ((args.preview.nTRs)+1)-(args.break-1);
+    else
+        break2_start = args.preview.nTRs-(args.break-1);
+    end
+
+
+
+regressors(1:3,break1_start:(args.preview.nTRs/2)) = NaN;
+regressors(5:7,break1_start:(args.preview.nTRs/2)) = NaN;
+
+regressors(1:3,break2_start:args.preview.nTRs) = NaN;
+regressors(5:7,break2_start:args.preview.nTRs) = NaN;
+ 
+    
+cat = regressors(1,:);
+% RT = regressors(2,:);
+emo = regressors(2,:);
+instr = regressors(3,:);
+runs = regressors(4,:);
+subresp = regressors(5,:);
+TR = regressors(6,:);
+trial = regressors(7,:);
+end
+    
+face_num = strfind(categories{1},'f');
+scene_num = strfind(categories{1},'s');
+obj_num = strfind(categories{1},'o');
+word_num = strfind(categories{1},'w');
+rest_num = strfind(categories{1},'r');
+
+if isempty(face_num) == 0
+    face_acts = class_perf(face_num,:);
+else
+end
+
+if isempty(scene_num) == 0
+    scene_acts = class_perf(scene_num,:);
+else
+end
+
+if isempty(obj_num) == 0
+    object_acts = class_perf(obj_num,:);
+else
+end
+
+if isempty(word_num) == 0
+    word_acts = class_perf(word_num,:);
+else
+end
+
+if isempty(rest_num) == 0
+    rest_acts = class_perf(rest_num,:);
+else
+end
+
+ 
+all_regressors = vertcat(class_perf,regressors);
+
+%start breaking everything up by trial 
+
+if strcmp(test_phase, 'DFencode') == 1
+    instr_remember_idx = find(instr == 1);
+    instr_forget_idx = find(instr == 0);
+    instr_remember_neu_idx = find(instr == 1 & emo == 0);
+    instr_remember_neg_idx = find(instr == 1 & emo == 1);
+    instr_forget_neu_idx = find(instr == 0 & emo == 0);
+    instr_forget_neg_idx = find(instr == 0 & emo == 1);
+    
+        %subsequent memory idx
+    
+    instr_forget_neu_1_idx = find(instr == 0 & emo == 0 & subresp == 1);
+    instr_forget_neu_2_idx = find(instr == 0 & emo == 0 & subresp == 2);
+    instr_forget_neu_3_idx = find(instr == 0 & emo == 0 & subresp == 3);
+    instr_forget_neu_4_idx = find(instr == 0 & emo == 0 & subresp == 4);
+    
+    instr_forget_neg_1_idx = find(instr == 0 & emo == 1 & subresp == 1);
+    instr_forget_neg_2_idx = find(instr == 0 & emo == 1 & subresp == 2);
+    instr_forget_neg_3_idx = find(instr == 0 & emo == 1 & subresp == 3);    
+    instr_forget_neg_4_idx = find(instr == 0 & emo == 1 & subresp == 4);
+    
+    instr_rem_neu_1_idx = find(instr == 1 & emo == 0 & subresp == 1);
+    instr_rem_neu_2_idx = find(instr == 1 & emo == 0 & subresp == 2);
+    instr_rem_neu_3_idx = find(instr == 1 & emo == 0 & subresp == 3);
+    instr_rem_neu_4_idx = find(instr == 1 & emo == 0 & subresp == 4);
+    
+    instr_rem_neg_1_idx = find(instr == 1 & emo == 1 & subresp == 1);
+    instr_rem_neg_2_idx = find(instr == 1 & emo == 1 & subresp == 2);
+    instr_rem_neg_3_idx = find(instr == 1 & emo == 1 & subresp == 3);    
+    instr_rem_neg_4_idx = find(instr == 1 & emo == 1 & subresp == 4);
+    
+    %check what type of subsequent memory
+    
+        %highconfidence
+        instr_forget_neu_hiconf_OLD_idx = instr_forget_neu_1_idx;
+        instr_forget_neg_hiconf_OLD_idx = instr_forget_neg_1_idx;
+        instr_forget_hiconf_OLD_idx = horzcat(instr_forget_neu_hiconf_OLD_idx, instr_forget_neg_hiconf_OLD_idx);
+        
+        instr_forget_neu_hiconf_NEW_idx = horzcat(instr_forget_neu_2_idx, instr_forget_neu_3_idx, instr_forget_neu_4_idx);
+        instr_forget_neg_hiconf_NEW_idx = horzcat(instr_forget_neg_2_idx, instr_forget_neg_3_idx, instr_forget_neg_4_idx);
+        instr_forget_hiconf_NEW_idx = horzcat(instr_forget_neu_hiconf_NEW_idx, instr_forget_neg_hiconf_NEW_idx);
+        
+        instr_rem_neu_hiconf_OLD_idx = instr_rem_neu_1_idx;
+        instr_rem_neg_hiconf_OLD_idx = instr_rem_neg_1_idx;
+        instr_rem_hiconf_OLD_idx = horzcat(instr_rem_neu_hiconf_OLD_idx, instr_rem_neg_hiconf_OLD_idx);
+        
+        instr_rem_neu_hiconf_NEW_idx = horzcat(instr_rem_neu_2_idx, instr_rem_neu_3_idx, instr_rem_neu_4_idx);
+        instr_rem_neg_hiconf_NEW_idx = horzcat(instr_rem_neg_2_idx, instr_rem_neg_3_idx, instr_rem_neg_4_idx);
+        instr_rem_hiconf_NEW_idx = horzcat(instr_rem_neu_hiconf_NEW_idx, instr_rem_neg_hiconf_NEW_idx);
+        
+        
+        
+        % high confidence means only high confidence old is counted as old,
+        % all other responses count as new
+        %merged
+        instr_forget_neu_merged_OLD_idx = horzcat(instr_forget_neu_1_idx, instr_forget_neu_2_idx);
+        instr_forget_neg_merged_OLD_idx = horzcat(instr_forget_neg_1_idx, instr_forget_neg_2_idx);
+        instr_forget_merged_OLD_idx = horzcat(instr_forget_neu_merged_OLD_idx, instr_forget_neg_merged_OLD_idx);
+        
+        instr_forget_neu_merged_NEW_idx = horzcat(instr_forget_neu_3_idx, instr_forget_neu_4_idx);
+        instr_forget_neg_merged_NEW_idx = horzcat(instr_forget_neg_3_idx, instr_forget_neg_4_idx);
+        instr_forget_merged_NEW_idx = horzcat(instr_forget_neu_merged_NEW_idx, instr_forget_neg_merged_NEW_idx);
+        
+        instr_rem_neu_merged_OLD_idx = horzcat(instr_rem_neu_1_idx, instr_rem_neu_2_idx);
+        instr_rem_neg_merged_OLD_idx = horzcat(instr_rem_neg_1_idx, instr_rem_neg_2_idx);
+        instr_rem_merged_OLD_idx = horzcat(instr_rem_neu_merged_OLD_idx, instr_rem_neg_merged_OLD_idx);
+        
+        instr_rem_neu_merged_NEW_idx = horzcat(instr_rem_neu_3_idx, instr_rem_neu_4_idx);
+        instr_rem_neg_merged_NEW_idx = horzcat(instr_rem_neg_3_idx, instr_rem_neg_4_idx);
+        instr_rem_merged_NEW_idx = horzcat(instr_rem_neu_merged_NEW_idx, instr_rem_neg_merged_NEW_idx);
+
+%     instr_remember_neu_idx = find(instr_remember_idx
+    
+%     for k = 1:length(args.DF.trialn)
+%         remember_reg.face(1,(k-1):() 
+
+    %this is where we should put the rest of the regressors as a sanity
+    %cut regressors for 1 ST 
+    %check
+ for i = 1:length(instr_remember_idx)
+            remember_acts(:,i)=class_perf(:,instr_remember_idx(i));
+            remember_beh(:,i)=regressors(5,instr_remember_idx(i));
+    end
+    
+    
+    
+    if isempty(face_num) == 0
+        rem_face = reshape(remember_acts(face_num,:),7,30)';
+        rem.all.acts.face = rem_face;
+    else
+    end
+    
+    if isempty(scene_num) == 0
+        rem_scene =reshape(remember_acts(scene_num,:),7,30)';
+        rem.all.acts.scene = rem_scene;
+    else
+    end
+    
+    if isempty(obj_num) == 0
+        rem_object =reshape(remember_acts(obj_num,:),7,30)';
+        rem.all.acts.object = rem_object;
+    else
+    end
+    
+    if isempty(word_num) == 0
+        rem_word =reshape(remember_acts(word_num,:),7,30)';
+        rem.all.acts.word = rem_word;
+    else
+    end
+    
+    if isempty(rest_num) == 0
+        rem_rest =   reshape(remember_acts(rest_num,:),7,30)';
+        rem.all.acts.rest = rem_rest;
+    else
+    end
+ 
+
+rem_check = reshape(instr_remember_idx,7,30)';
+rem.all.acts.check = rem_check;
+
+rem_beh = reshape(remember_beh,7,30)';
+rem.all.beh = rem_beh(:,1);
+rem.all.behcheck = rem_beh;
+
+
+for i = 1:length(instr_forget_idx)
+    forget_acts(:,i)=class_perf(:,instr_forget_idx(i));
+    forget_beh(:,i)=regressors(5,instr_forget_idx(i));
+end
+
+if isempty(face_num) == 0
+    for_face = reshape(forget_acts(face_num,:),7,30)';
+    forget.all.acts.face = for_face;
+else
+end
+
+if isempty(scene_num) == 0
+    for_scene =reshape(forget_acts(scene_num,:),7,30)';
+    forget.all.acts.scene = for_scene;
+else
+end
+
+if isempty(obj_num) == 0
+    for_object =reshape(forget_acts(obj_num,:),7,30)';
+    forget.all.acts.object = for_object;
+else
+end
+
+if isempty(word_num) == 0
+    
+    for_word =reshape(forget_acts(word_num,:),7,30)';
+    forget.all.acts.word = for_word;
+    
+else
+end
+
+if isempty(rest_num) == 0
+    for_rest =   reshape(forget_acts(rest_num,:),7,30)';
+    forget.all.acts.rest = for_rest;
+else
+end
+
+for_check = reshape(instr_remember_idx,7,30)';
+forget.all.acts.check = for_check;
+
+forget_beh = reshape(forget_beh,7,30)';
+forget.all.beh = forget_beh(:,1);
+forget.all.behcheck = forget_beh;
+
+
+
+    for i = 1:length(instr_remember_neu_idx)
+            remember_neu_acts(:,i)=class_perf(:,instr_remember_neu_idx(i));
+    end
+
+if isempty(face_num) == 0
+rem_neu_face = reshape(remember_neu_acts(face_num,:),7,15)';
+rem.neu.acts.face = rem_neu_face;
+end
+
+if isempty(scene_num) == 0
+rem_neu_scene =reshape(remember_neu_acts(scene_num,:),7,15)';
+rem.neu.acts.scene = rem_neu_scene;
+end
+
+if isempty(obj_num) == 0
+rem_neu_object =reshape(remember_neu_acts(obj_num,:),7,15)';
+rem.neu.acts.object = rem_neu_object;
+
+end
+
+if isempty(word_num) == 0
+rem_neu_word =reshape(remember_neu_acts(word_num,:),7,15)';
+rem.neu.acts.word = rem_neu_word;
+end
+
+if isempty(rest_num) == 0
+rem_neu_rest =   reshape(remember_neu_acts(rest_num,:),7,15)';
+rem.neu.acts.rest = rem_neu_rest;
+end
+
+rem_neu_check = reshape(instr_remember_neu_idx,7,15)';
+rem.neu.acts.check = rem_neu_check;
+
+    for i = 1:length(instr_remember_neg_idx)
+            remember_neg_acts(:,i)=class_perf(:,instr_remember_neg_idx(i));
+    end
+if isempty(face_num) == 0
+rem_neg_face = reshape(remember_neg_acts(face_num,:),7,15)';
+rem.neg.acts.face = rem_neg_face;
+end
+
+if isempty(scene_num) == 0
+rem_neg_scene =reshape(remember_neg_acts(scene_num,:),7,15)';
+rem.neg.acts.scene = rem_neg_scene;
+end
+
+if isempty(obj_num) == 0
+rem_neg_object =reshape(remember_neg_acts(obj_num,:),7,15)';
+rem.neg.acts.object = rem_neg_object;
+end
+
+if isempty(word_num) == 0
+rem_neg_word =reshape(remember_neg_acts(word_num,:),7,15)';
+rem.neg.acts.word = rem_neg_word;
+end
+
+if isempty(rest_num) == 0
+rem_neg_rest =   reshape(remember_neg_acts(rest_num,:),7,15)';
+rem.neg.acts.rest = rem_neg_rest;
+end
+
+
+rem_neg_check = reshape(instr_remember_neg_idx,7,15)';
+rem.neg.acts.check = rem_neg_check;
+
+    for i = 1:length(instr_forget_neu_idx)
+            forget_neu_acts(:,i)=class_perf(:,instr_forget_neu_idx(i));
+    end
+if isempty(face_num) == 0
+forget_neu_face = reshape(forget_neu_acts(face_num,:),7,15)';
+forget.neu.acts.face = forget_neu_face;
+end
+
+if isempty(scene_num) == 0
+forget_neu_scene =reshape(forget_neu_acts(scene_num,:),7,15)';
+forget.neu.acts.scene = forget_neu_scene;
+end
+
+if isempty(obj_num) == 0
+forget_neu_object =reshape(forget_neu_acts(obj_num,:),7,15)';
+forget.neu.acts.object = forget_neu_object;
+end
+
+if isempty(word_num) == 0
+forget_neu_word =reshape(forget_neu_acts(word_num,:),7,15)';
+forget.neu.acts.word = forget_neu_word;
+end
+
+if isempty(rest_num) == 0
+forget_neu_rest =   reshape(forget_neu_acts(rest_num,:),7,15)';
+forget.neu.acts.rest = forget_neu_rest;
+end
+
+forget_neu_check = reshape(instr_forget_neu_idx,7,15)';
+forget.neu.acts.check = forget_neu_check;
+
+    for i = 1:length(instr_forget_neg_idx)
+            forget_neg_acts(:,i)=class_perf(:,instr_forget_neg_idx(i));
+    end
+if isempty(face_num) == 0
+forget_neg_face = reshape(forget_neg_acts(face_num,:),7,15)';
+forget.neg.acts.face = forget_neg_face;
+end
+
+if isempty(scene_num) == 0
+forget_neg_scene =reshape(forget_neg_acts(scene_num,:),7,15)';
+forget.neg.acts.scene = forget_neg_scene;
+end
+
+if isempty(obj_num) == 0
+forget_neg_object =reshape(forget_neg_acts(obj_num,:),7,15)';
+forget.neg.acts.object = forget_neg_object;
+end
+
+if isempty(word_num) == 0
+forget_neg_word =reshape(forget_neg_acts(word_num,:),7,15)';
+forget.neg.acts.word = forget_neg_word;
+end
+
+if isempty(rest_num) == 0
+forget_neg_rest =   reshape(forget_neg_acts(rest_num,:),7,15)';
+forget.neg.acts.rest = forget_neg_rest;
+end
+
+forget_neg_check = reshape(instr_forget_neg_idx,7,15)';
+forget.neg.acts.check = forget_neg_check;
+
+ forget_hiconf_OLD_acts =[];
+    for i = 1:length(instr_forget_hiconf_OLD_idx)
+            forget_hiconf_OLD_acts(:,i)=class_perf(:,instr_forget_hiconf_OLD_idx(i));
+    end
+
+    %high confidence SM
+forget_hiconf_OLD_n = length(instr_forget_hiconf_OLD_idx)/7;
+forget.highconf.acts.OLD.num = forget_hiconf_OLD_n;
+
+if isempty(face_num) == 0
+forget_hiconf_OLD_face = reshape(forget_hiconf_OLD_acts(face_num,:),7,forget_hiconf_OLD_n)';
+forget.highconf.acts.OLD.face = forget_hiconf_OLD_face;
+end
+
+if isempty(scene_num) == 0
+forget_hiconf_OLD_scene = reshape(forget_hiconf_OLD_acts(scene_num,:),7,forget_hiconf_OLD_n)';
+forget.highconf.acts.OLD.scene = forget_hiconf_OLD_scene;
+end
+
+if isempty(obj_num) == 0
+forget_hiconf_OLD_object = reshape(forget_hiconf_OLD_acts(obj_num,:),7,forget_hiconf_OLD_n)';
+forget.highconf.acts.OLD.object = forget_hiconf_OLD_object;
+end
+
+if isempty(word_num) == 0
+forget_hiconf_OLD_word = reshape(forget_hiconf_OLD_acts(word_num,:),7,forget_hiconf_OLD_n)';
+forget.highconf.acts.OLD.word = forget_hiconf_OLD_word;
+end
+
+if isempty(rest_num) == 0
+forget_hiconf_OLD_rest = reshape(forget_hiconf_OLD_acts(rest_num,:),7,forget_hiconf_OLD_n)';
+forget.highconf.acts.OLD.rest = forget_hiconf_OLD_rest;
+end
+
+
+instr_forget_hiconf_OLD_check = reshape(instr_forget_hiconf_OLD_idx,7,forget_hiconf_OLD_n)';
+forget.highconf.acts.OLD.check = instr_forget_hiconf_OLD_check;
+
+    
+for i = 1:length(instr_forget_hiconf_NEW_idx)
+    forget_hiconf_NEW_acts(:,i)=class_perf(:,instr_forget_hiconf_NEW_idx(i));
+end
+
+forget_hiconf_NEW_n = length(instr_forget_hiconf_NEW_idx)/7;
+forget.highconf.acts.NEW.num = forget_hiconf_NEW_n;
+
+if forget.highconf.acts.NEW.num == 0
+forget_hiconf_NEW_face = NaN;
+forget.highconf.acts.NEW.face = NaN;
+forget_hiconf_NEW_scene = NaN;
+forget.highconf.acts.NEW.scene = NaN;
+forget_hiconf_NEW_object = NaN;
+forget.highconf.acts.NEW.object = NaN;
+forget_hiconf_NEW_word = NaN;
+forget.highconf.acts.NEW.word = NaN;
+forget_hiconf_NEW_rest = NaN;
+forget.highconf.acts.NEW.rest = NaN;
+instr_forget_hiconf_NEW_check = NaN;
+forget.highconf.acts.NEW.check = NaN;
+else 
+    
+    if isempty(face_num) == 0
+forget_hiconf_NEW_face = reshape(forget_hiconf_NEW_acts(face_num,:),7,forget_hiconf_NEW_n)';
+forget.highconf.acts.NEW.face = forget_hiconf_NEW_face;
+    end
+    if isempty(scene_num) == 0
+forget_hiconf_NEW_scene = reshape(forget_hiconf_NEW_acts(scene_num,:),7,forget_hiconf_NEW_n)';
+forget.highconf.acts.NEW.scene = forget_hiconf_NEW_scene;
+    end
+    if isempty(obj_num) == 0
+forget_hiconf_NEW_object = reshape(forget_hiconf_NEW_acts(obj_num,:),7,forget_hiconf_NEW_n)';
+forget.highconf.acts.NEW.object = forget_hiconf_NEW_object;
+    end
+    if isempty(word_num) == 0
+forget_hiconf_NEW_word = reshape(forget_hiconf_NEW_acts(word_num,:),7,forget_hiconf_NEW_n)';
+forget.highconf.acts.NEW.word = forget_hiconf_NEW_word;
+    end
+    if isempty(rest_num) == 0
+forget_hiconf_NEW_rest = reshape(forget_hiconf_NEW_acts(rest_num,:),7,forget_hiconf_NEW_n)';
+forget.highconf.acts.NEW.rest = forget_hiconf_NEW_rest;
+    end
+instr_forget_hiconf_NEW_check = reshape(instr_forget_hiconf_NEW_idx,7,forget_hiconf_NEW_n)';
+forget.highconf.acts.NEW.check = instr_forget_hiconf_NEW_check;
+end
+
+rem_hiconf_OLD_acts=[];
+for i = 1:length(instr_rem_hiconf_OLD_idx)
+    rem_hiconf_OLD_acts(:,i)=class_perf(:,instr_rem_hiconf_OLD_idx(i));
+end
+    
+rem_hiconf_OLD_n = length(instr_rem_hiconf_OLD_idx)/7;
+rem.highconf.acts.OLD.num = rem_hiconf_OLD_n;
+
+if isempty(face_num) == 0
+rem_hiconf_OLD_face = reshape(rem_hiconf_OLD_acts(face_num,:),7,rem_hiconf_OLD_n)';
+rem.highconf.acts.OLD.face = rem_hiconf_OLD_face;
+end
+
+if isempty(scene_num) == 0
+rem_hiconf_OLD_scene = reshape(rem_hiconf_OLD_acts(scene_num,:),7,rem_hiconf_OLD_n)';
+rem.highconf.acts.OLD.scene = rem_hiconf_OLD_scene;
+end
+
+if isempty(obj_num) == 0
+rem_hiconf_OLD_object = reshape(rem_hiconf_OLD_acts(obj_num,:),7,rem_hiconf_OLD_n)';
+rem.highconf.acts.OLD.object = rem_hiconf_OLD_object;
+end
+
+if isempty(word_num) == 0
+rem_hiconf_OLD_word = reshape(rem_hiconf_OLD_acts(word_num,:),7,rem_hiconf_OLD_n)';
+rem.highconf.acts.OLD.word = rem_hiconf_OLD_word;
+end
+
+if isempty(rest_num) == 0
+rem_hiconf_OLD_rest = reshape(rem_hiconf_OLD_acts(rest_num,:),7,rem_hiconf_OLD_n)';
+rem.highconf.acts.OLD.rest = rem_hiconf_OLD_rest;
+end
+
+instr_rem_hiconf_OLD_check = reshape(instr_rem_hiconf_OLD_idx,7,rem_hiconf_OLD_n)';
+rem.highconf.acts.OLD.check = instr_rem_hiconf_OLD_check;
+
+rem_hiconf_NEW_acts = [];   
+for i = 1:length(instr_rem_hiconf_NEW_idx)
+    rem_hiconf_NEW_acts(:,i)=class_perf(:,instr_rem_hiconf_NEW_idx(i));
+end
+
+if isempty(rem_hiconf_NEW_acts)== 1
+    
+    rem.highconf.acts.NEW.num= 0;
+    rem_hiconf_NEW_face=NaN;
+    rem.highconf.acts.NEW.face = NaN;
+    rem_hiconf_NEW_scene=NaN;
+    rem.highconf.acts.NEW.scene = NaN;
+    rem_hiconf_NEW_object=NaN;
+    rem.highconf.acts.NEW.object = NaN;
+    rem_hiconf_NEW_word=NaN;
+    rem.highconf.acts.NEW.word = NaN;
+    rem_hiconf_NEW_rest=NaN;
+    rem.highconf.acts.NEW.rest = NaN;
+else
+    
+
+
+rem_hiconf_NEW_n = length(instr_rem_hiconf_NEW_idx)/7;
+rem.highconf.acts.NEW.num= rem_hiconf_NEW_n;
+
+if isempty(face_num) == 0
+rem_hiconf_NEW_face = reshape(rem_hiconf_NEW_acts(face_num,:),7,rem_hiconf_NEW_n)';
+rem.highconf.acts.NEW.face = rem_hiconf_NEW_face;
+end
+
+if isempty(scene_num) == 0
+rem_hiconf_NEW_scene = reshape(rem_hiconf_NEW_acts(scene_num,:),7,rem_hiconf_NEW_n)';
+rem.highconf.acts.NEW.scene = rem_hiconf_NEW_scene;
+end
+
+if isempty(obj_num) == 0
+rem_hiconf_NEW_object = reshape(rem_hiconf_NEW_acts(obj_num,:),7,rem_hiconf_NEW_n)';
+rem.highconf.acts.NEW.object = rem_hiconf_NEW_object;
+end
+
+if isempty(word_num) == 0
+rem_hiconf_NEW_word = reshape(rem_hiconf_NEW_acts(word_num,:),7,rem_hiconf_NEW_n)';
+rem.highconf.acts.NEW.word = rem_hiconf_NEW_word;
+end
+
+if isempty(rest_num) == 0
+rem_hiconf_NEW_rest = reshape(rem_hiconf_NEW_acts(rest_num,:),7,rem_hiconf_NEW_n)';
+rem.highconf.acts.NEW.rest = rem_hiconf_NEW_rest;
+end
+
+instr_rem_hiconf_NEW_check = reshape(instr_rem_hiconf_NEW_idx,7,rem_hiconf_NEW_n)';
+rem.highconf.acts.NEW.check = instr_rem_hiconf_NEW_check;
+end
+
+  % MERGED confidence SM
+  forget_merged_OLD_acts=[];
+for i = 1:length(instr_forget_merged_OLD_idx)
+    forget_merged_OLD_acts(:,i)=class_perf(:,instr_forget_merged_OLD_idx(i));
+end
+
+forget_merged_OLD_n = length(instr_forget_merged_OLD_idx)/7;
+forget.merged.acts.OLD.num = forget_merged_OLD_n;
+
+if isempty(face_num) == 0
+forget_merged_OLD_face = reshape(forget_merged_OLD_acts(face_num,:),7,forget_merged_OLD_n)';
+forget.merged.acts.OLD.face = forget_merged_OLD_face;
+end
+
+if isempty(scene_num) == 0
+forget_merged_OLD_scene = reshape(forget_merged_OLD_acts(scene_num,:),7,forget_merged_OLD_n)';
+forget.merged.acts.OLD.scene = forget_merged_OLD_scene;
+end
+
+if isempty(obj_num) == 0
+forget_merged_OLD_object = reshape(forget_merged_OLD_acts(obj_num,:),7,forget_merged_OLD_n)';
+forget.merged.acts.OLD.object = forget_merged_OLD_object;
+end
+
+if isempty(word_num) == 0
+forget_merged_OLD_word = reshape(forget_merged_OLD_acts(word_num,:),7,forget_merged_OLD_n)';
+forget.merged.acts.OLD.word = forget_merged_OLD_word;
+end
+
+if isempty(rest_num) == 0
+forget_merged_OLD_rest = reshape(forget_merged_OLD_acts(rest_num,:),7,forget_merged_OLD_n)';
+forget.merged.acts.OLD.rest = forget_merged_OLD_rest;
+end
+
+
+instr_forget_merged_OLD_check = reshape(instr_forget_merged_OLD_idx,7,forget_merged_OLD_n)';
+forget.merged.acts.OLD.check = instr_forget_merged_OLD_check;
+
+forget_merged_NEW_acts=[];
+for i = 1:length(instr_forget_merged_NEW_idx)
+    forget_merged_NEW_acts(:,i)=class_perf(:,instr_forget_merged_NEW_idx(i));
+end
+
+if isempty(forget_merged_NEW_acts)== 1
+    
+    forget_merged_NEW_face=NaN;
+    forget.merged.acts.NEW.face = NaN;
+    forget_merged_NEW_scene=NaN;
+    forget.merged.acts.NEW.scene = NaN;
+    forget_merged_NEW_object=NaN;
+    forget.merged.acts.NEW.object = NaN;
+    forget_merged_NEW_word=NaN;
+    forget.merged.acts.NEW.word = NaN;
+    forget_merged_NEW_rest=NaN;
+    forget.merged.acts.NEW.rest = NaN;
+else
+
+forget_merged_NEW_n = length(instr_forget_merged_NEW_idx)/7;
+forget.merged.acts.NEW.num = forget_merged_NEW_n;
+
+if isempty(face_num) == 0
+forget_merged_NEW_face = reshape(forget_merged_NEW_acts(face_num,:),7,forget_merged_NEW_n)';
+forget.merged.acts.NEW.face = forget_merged_NEW_face;
+end
+
+if isempty(scene_num) == 0
+forget_merged_NEW_scene = reshape(forget_merged_NEW_acts(scene_num,:),7,forget_merged_NEW_n)';
+forget.merged.acts.NEW.scene = forget_merged_NEW_scene;
+end
+
+if isempty(obj_num) == 0
+forget_merged_NEW_object = reshape(forget_merged_NEW_acts(obj_num,:),7,forget_merged_NEW_n)';
+forget.merged.acts.NEW.object = forget_merged_NEW_object;
+end
+
+if isempty(word_num) == 0
+forget_merged_NEW_word = reshape(forget_merged_NEW_acts(word_num,:),7,forget_merged_NEW_n)';
+forget.merged.acts.NEW.word = forget_merged_NEW_word;
+end
+
+if isempty(rest_num) == 0
+forget_merged_NEW_rest = reshape(forget_merged_NEW_acts(rest_num,:),7,forget_merged_NEW_n)';
+forget.merged.acts.NEW.rest = forget_merged_NEW_rest;
+end
+
+
+instr_forget_merged_NEW_check = reshape(instr_forget_merged_NEW_idx,7,forget_merged_NEW_n)';
+forget.merged.acts.NEW.check = instr_forget_merged_NEW_check;
+end
+
+ rem_merged_OLD_acts =[];
+for i = 1:length(instr_rem_merged_OLD_idx)
+    rem_merged_OLD_acts(:,i)=class_perf(:,instr_rem_merged_OLD_idx(i));
+end
+
+rem_merged_OLD_n = length(instr_rem_merged_OLD_idx)/7;
+rem.merged.acts.OLD.num = rem_merged_OLD_n;
+
+if isempty(face_num) == 0
+rem_merged_OLD_face = reshape(rem_merged_OLD_acts(face_num,:),7,rem_merged_OLD_n)';
+rem.merged.acts.OLD.face = rem_merged_OLD_face;
+end
+
+if isempty(scene_num) == 0
+rem_merged_OLD_scene = reshape(rem_merged_OLD_acts(scene_num,:),7,rem_merged_OLD_n)';
+rem.merged.acts.OLD.scene = rem_merged_OLD_scene;
+end
+
+if isempty(obj_num) == 0
+rem_merged_OLD_object = reshape(rem_merged_OLD_acts(obj_num,:),7,rem_merged_OLD_n)';
+rem.merged.acts.OLD.object = rem_merged_OLD_object;
+end
+
+if isempty(word_num) == 0
+rem_merged_OLD_word = reshape(rem_merged_OLD_acts(word_num,:),7,rem_merged_OLD_n)';
+rem.merged.acts.OLD.word = rem_merged_OLD_word;
+end
+
+if isempty(rest_num) == 0
+rem_merged_OLD_rest = reshape(rem_merged_OLD_acts(face_num,:),7,rem_merged_OLD_n)';
+rem.merged.acts.OLD.rest = rem_merged_OLD_rest;
+end
+instr_rem_merged_OLD_check = reshape(instr_rem_merged_OLD_idx,7,rem_merged_OLD_n)';
+rem.merged.acts.OLD.check = instr_rem_merged_OLD_check;
+
+rem_merged_NEW_acts =[];
+for i = 1:length(instr_rem_merged_NEW_idx)
+    rem_merged_NEW_acts(:,i)=class_perf(:,instr_rem_merged_NEW_idx(i));
+end
+
+if isempty(rem_merged_NEW_acts)== 1
+    
+    rem_merged_NEW_face=NaN;
+    rem.merged.acts.NEW.face = NaN;
+    rem_merged_NEW_scene=NaN;
+    rem.merged.acts.NEW.scene = NaN;
+    rem_merged_NEW_object=NaN;
+    rem.merged.acts.NEW.object = NaN;
+    rem_merged_NEW_word=NaN;
+    rem.merged.acts.NEW.word = NaN;
+    rem_merged_NEW_rest=NaN;
+    rem.merged.acts.NEW.rest = NaN;
+else
+
+rem_merged_NEW_n = length(instr_rem_merged_NEW_idx)/7;
+rem.merged.acts.NEW.num= rem_merged_NEW_n;
+if isempty(face_num) == 0
+rem_merged_NEW_face = reshape(rem_merged_NEW_acts(face_num,:),7,rem_merged_NEW_n)';
+rem.merged.acts.NEW.face = rem_merged_NEW_face;
+end
+
+if isempty(scene_num) == 0
+rem_merged_NEW_scene = reshape(rem_merged_NEW_acts(scene_num,:),7,rem_merged_NEW_n)';
+rem.merged.acts.NEW.scene = rem_merged_NEW_scene;
+end
+
+if isempty(obj_num) == 0
+rem_merged_NEW_object = reshape(rem_merged_NEW_acts(obj_num,:),7,rem_merged_NEW_n)';
+rem.merged.acts.NEW.object = rem_merged_NEW_object;
+end
+
+if isempty(word_num) == 0
+rem_merged_NEW_word = reshape(rem_merged_NEW_acts(word_num,:),7,rem_merged_NEW_n)';
+rem.merged.acts.NEW.word = rem_merged_NEW_word;
+end
+
+if isempty(rest_num) == 0
+rem_merged_NEW_rest = reshape(rem_merged_NEW_acts(rest_num,:),7,rem_merged_NEW_n)';
+rem.merged.acts.NEW.rest = rem_merged_NEW_rest;
+end
+
+
+instr_rem_merged_NEW_check = reshape(instr_rem_merged_NEW_idx,7,rem_merged_NEW_n)';
+rem.merged.acts.NEW.check = instr_rem_merged_NEW_check;
+end
+
+
+%%% averaging %%%
+if isempty(face_num) == 0
+rem.all.mean.face = nanmean(rem_face);
+forget.all.mean.face = nanmean(for_face);
+% rem.neu.mean.face = nanmean(rem_neu_face);
+% rem.neg.mean.face = nanmean(rem_neg_face);
+% forget.neu.mean.face = nanmean(forget_neu_face);
+% forget.neg.mean.face = nanmean(forget_neg_face);
+% forget.highconf.mean.OLD.face = nanmean(forget_hiconf_OLD_face);
+% forget.highconf.mean.NEW.face = nanmean(forget_hiconf_NEW_face);
+% rem.highconf.mean.OLD.face = nanmean(rem_hiconf_OLD_face);
+% forget.neu.std.face = std(forget_neu_face);
+% forget.neg.std.face = std(forget_neg_face);
+% forget.highconf.std.OLD.face = std(forget_hiconf_OLD_face);
+% rem.highconf.mean.NEW.face = nanmean(rem_hiconf_NEW_face);
+end
+
+if isempty(scene_num) == 0
+rem.all.mean.scene = nanmean(rem_scene);
+forget.all.mean.scene = nanmean(for_scene);
+% rem.neu.mean.scene = nanmean(rem_neu_scene);
+% rem.neg.mean.scene = nanmean(rem_neg_scene);
+% forget.neu.mean.scene = nanmean(forget_neu_scene);
+% forget.neg.mean.scene = nanmean(forget_neg_scene);
+% forget.highconf.mean.OLD.scene= nanmean(forget_hiconf_OLD_scene);
+% forget.highconf.mean.NEW.scene= nanmean(forget_hiconf_NEW_scene);
+% rem.highconf.mean.OLD.scene= nanmean(rem_hiconf_OLD_scene);
+% rem.highconf.mean.NEW.scene= nanmean(rem_hiconf_NEW_scene);
+% rem.highconf.mean.NEW.object= nanmean(rem_hiconf_NEW_object);
+
+end 
+
+if isempty(obj_num) == 0
+rem.all.mean.object = nanmean(rem_object);
+forget.all.mean.object = nanmean(for_object);
+% rem.neu.mean.object = nanmean(rem_neu_object);
+% rem.neg.mean.object = nanmean(rem_neg_object);
+% forget.neu.mean.object = nanmean(forget_neu_object);
+% forget.neg.mean.object = nanmean(forget_neg_object);
+% forget.highconf.mean.OLD.object= nanmean(forget_hiconf_OLD_object);
+% forget.highconf.mean.NEW.object= nanmean(forget_hiconf_NEW_object);
+% rem.highconf.mean.OLD.object= nanmean(rem_hiconf_OLD_object);
+% rem.highconf.mean.NEW.object= nanmean(rem_hiconf_NEW_objects);
+end
+
+if isempty(word_num) == 0
+rem.all.mean.word = nanmean(rem_word);
+forget.all.mean.word = nanmean(for_word);
+% rem.neu.mean.word = nanmean(rem_neu_word);
+% rem.neg.mean.word = nanmean(rem_neg_word);
+% forget.neu.mean.word = nanmean(forget_neu_word);
+% forget.neg.mean.word = nanmean(forget_neg_word);
+% forget.highconf.mean.OLD.word= nanmean(forget_hiconf_OLD_word);
+% forget.highconf.mean.NEW.word= nanmean(forget_hiconf_NEW_word);
+% rem.highconf.mean.OLD.word= nanmean(rem_hiconf_OLD_word);
+% rem.highconf.mean.NEW.word= nanmean(rem_hiconf_NEW_word);
+end
+if isempty(rest_num) == 0
+rem.all.mean.rest = nanmean(rem_rest);
+forget.all.mean.rest = nanmean(for_rest);
+% rem.neu.mean.rest = nanmean(rem_neu_rest);
+% rem.neg.mean.rest = nanmean(rem_neg_rest);
+% forget.neu.mean.rest = nanmean(forget_neu_rest);
+% forget.neg.mean.rest = nanmean(forget_neg_rest);
+% forget.highconf.mean.OLD.rest= nanmean(forget_hiconf_OLD_rest);
+% forget.highconf.mean.NEW.rest= nanmean(forget_hiconf_NEW_rest);
+% rem.highconf.mean.OLD.rest= nanmean(rem_hiconf_OLD_rest);
+% rem.highconf.mean.NEW.rest= nanmean(rem_hiconf_NEW_rest);
+
+end
+
+
+
+% 
+% 
+% 
+% 
+% forget.merged.mean.OLD.face = nanmean(forget_merged_OLD_face);
+% forget.merged.mean.OLD.scene= nanmean(forget_merged_OLD_scene);
+% forget.merged.mean.OLD.object= nanmean(forget_merged_OLD_object);
+% forget.merged.mean.OLD.word= nanmean(forget_merged_OLD_word);
+% forget.merged.mean.OLD.rest= nanmean(forget_merged_OLD_rest);
+% 
+% forget.merged.mean.NEW.face = nanmean(forget_merged_NEW_face);
+% forget.merged.mean.NEW.scene= nanmean(forget_merged_NEW_scene);
+% forget.merged.mean.NEW.object= nanmean(forget_merged_NEW_object);
+% forget.merged.mean.NEW.word= nanmean(forget_merged_NEW_word);
+% forget.merged.mean.NEW.rest= nanmean(forget_merged_NEW_rest);
+% 
+% rem.merged.mean.OLD.face = nanmean(rem_merged_OLD_face);
+% rem.merged.mean.OLD.scene= nanmean(rem_merged_OLD_scene);
+% rem.merged.mean.OLD.object= nanmean(rem_merged_OLD_object);
+% rem.merged.mean.OLD.word= nanmean(rem_merged_OLD_word);
+% rem.merged.mean.OLD.rest= nanmean(rem_merged_OLD_rest);
+% 
+% rem.merged.mean.NEW.face = nanmean(rem_merged_NEW_face);
+% rem.merged.mean.NEW.scene= nanmean(rem_merged_NEW_scene);
+% rem.merged.mean.NEW.object= nanmean(rem_merged_NEW_object);
+% rem.merged.mean.NEW.word= nanmean(rem_merged_NEW_word);
+% rem.merged.mean.NEW.rest= nanmean(rem_merged_NEW_rest);
+
+
+
+
+%%standard error%%
+
+if isempty(face_num) == 0
+rem.all.std.face = std(rem_face);
+forget.all.std.face = std(for_face);
+end
+
+if isempty(scene_num) == 0
+rem.all.std.scene = std(rem_scene);
+forget.all.std.scene = std(for_scene);
+end
+
+if isempty(obj_num) == 0
+rem.all.std.object = std(rem_object);
+forget.all.std.object = std(for_object);
+end
+
+if isempty(word_num) == 0
+rem.all.std.word = std(rem_word);
+forget.all.std.word = std(for_word);
+end
+
+if isempty(rest_num) == 0
+rem.all.std.rest = std(rem_rest);
+forget.all.std.rest = std(for_rest);
+end
+   
+
+
+
+
+
+
+% rem.neu.std.face = std(rem_neu_face);
+% rem.neu.std.scene = std(rem_neu_scene);
+% rem.neu.std.object = std(rem_neu_object);
+% rem.neu.std.word = std(rem_neu_word);
+% rem.neu.std.rest = std(rem_neu_rest);
+% 
+% rem.neg.std.face = std(rem_neg_face);
+% rem.neg.std.scene = std(rem_neg_scene);
+% rem.neg.std.object = std(rem_neg_object);
+% rem.neg.std.word = std(rem_neg_word);
+% rem.neg.std.rest = std(rem_neg_rest);
+% 
+% 
+% forget.neu.std.scene = std(forget_neu_scene);
+% forget.neu.std.object = std(forget_neu_object);
+% forget.neu.std.word = std(forget_neu_word);
+% forget.neu.std.rest = std(forget_neu_rest);
+% 
+% 
+% forget.neg.std.scene = std(forget_neg_scene);
+% forget.neg.std.object = std(forget_neg_object);
+% forget.neg.std.word = std(forget_neg_word);
+% forget.neg.std.rest = std(forget_neg_rest);
+
+%now by std
+
+
+% forget.highconf.std.OLD.scene= std(forget_hiconf_OLD_scene);
+% forget.highconf.std.OLD.object= std(forget_hiconf_OLD_object);
+% forget.highconf.std.OLD.word= std(forget_hiconf_OLD_word);
+% forget.highconf.std.OLD.rest= std(forget_hiconf_OLD_rest);
+% 
+% forget.highconf.std.NEW.face = std(forget_hiconf_NEW_face);
+% forget.highconf.std.NEW.scene= std(forget_hiconf_NEW_scene);
+% forget.highconf.std.NEW.object= std(forget_hiconf_NEW_object);
+% forget.highconf.std.NEW.word= std(forget_hiconf_NEW_word);
+% forget.highconf.std.NEW.rest= std(forget_hiconf_NEW_rest);
+% 
+% rem.highconf.std.OLD.face = std(rem_hiconf_OLD_face);
+% rem.highconf.std.OLD.scene= std(rem_hiconf_OLD_scene);
+% rem.highconf.std.OLD.object= std(rem_hiconf_OLD_object);
+% rem.highconf.std.OLD.word= std(rem_hiconf_OLD_word);
+% rem.highconf.std.OLD.rest= std(rem_hiconf_OLD_rest);
+% 
+% rem.highconf.std.NEW.face = std(rem_hiconf_NEW_face);
+% rem.highconf.std.NEW.scene= std(rem_hiconf_NEW_scene);
+% rem.highconf.std.NEW.object= std(rem_hiconf_NEW_object);
+% rem.highconf.std.NEW.word= std(rem_hiconf_NEW_word);
+% rem.highconf.std.NEW.rest= std(rem_hiconf_NEW_rest);
+% 
+% forget.merged.std.OLD.face = std(forget_merged_OLD_face);
+% forget.merged.std.OLD.scene= std(forget_merged_OLD_scene);
+% forget.merged.std.OLD.object= std(forget_merged_OLD_object);
+% forget.merged.std.OLD.word= std(forget_merged_OLD_word);
+% forget.merged.std.OLD.rest= std(forget_merged_OLD_rest);
+% 
+% forget.merged.std.NEW.face = std(forget_merged_NEW_face);
+% forget.merged.std.NEW.scene= std(forget_merged_NEW_scene);
+% forget.merged.std.NEW.object= std(forget_merged_NEW_object);
+% forget.merged.std.NEW.word= std(forget_merged_NEW_word);
+% forget.merged.std.NEW.rest= std(forget_merged_NEW_rest);
+% 
+% rem.merged.std.OLD.face = std(rem_merged_OLD_face);
+% rem.merged.std.OLD.scene= std(rem_merged_OLD_scene);
+% rem.merged.std.OLD.object= std(rem_merged_OLD_object);
+% rem.merged.std.OLD.word= std(rem_merged_OLD_word);
+% rem.merged.std.OLD.rest= std(rem_merged_OLD_rest);
+% 
+% rem.merged.std.NEW.face = std(rem_merged_NEW_face);
+% rem.merged.std.NEW.scene= std(rem_merged_NEW_scene);
+% rem.merged.std.NEW.object= std(rem_merged_NEW_object);
+% rem.merged.std.NEW.word= std(rem_merged_NEW_word);
+% rem.merged.std.NEW.rest= std(rem_merged_NEW_rest);
+
+results.remember = rem;
+results.forget = forget;
+
+
+
+filename = sprintf('results_%s.mat',test_phase);
+save(filename,'results');
+
+%%%% back to preview %%%%%%
+elseif strcmp(test_phase, 'Preview') == 1;
+    emo_negative_idx = find(emo == 1);
+    emo_neutral_idx = find(emo == 0);
+    
+    for i = 1:length(emo_negative_idx)
+            negative_acts(:,i)=class_perf(:,emo_negative_idx(i));
+    end
+        
+neg_face = reshape(negative_acts(face_num,:),6,30)';
+neg_scene =reshape(negative_acts(scene_num,:),6,30)';
+neg_object =reshape(negative_acts(obj_num,:),6,30)';
+neg_word =reshape(negative_acts(word_num,:),6,30)';
+neg_rest =   reshape(negative_acts(rest_num,:),6,30)';
+
+    for i = 1:length(emo_neutral_idx)
+            neutral_acts(:,i)=class_perf(:,emo_neutral_idx(i));
+    end
+        
+neu_face = reshape(neutral_acts(face_num,:),6,30)';
+neutral.acts.face = neu_face;
+neu_scene =reshape(neutral_acts(scene_num,:),6,30)';
+neutral.acts.scene = neu_scene;
+neu_object =reshape(neutral_acts(obj_num,:),6,30)';
+neutral.acts.object = neu_object;
+neu_word =reshape(neutral_acts(word_num,:),6,30)';
+neutral.acts.word = neu_word;
+neu_rest =   reshape(neutral_acts(rest_num,:),6,30)';
+neutral.acts.rest = neu_rest;
+            
+negative.mean.face = nanmean(neg_face);
+negative.mean.scene = nanmean(neg_scene);
+negative.mean.object = nanmean(neg_object);
+negative.mean.word = nanmean(neg_word);
+negative.mean.rest = nanmean(neg_rest);
+   
+neutral.mean.face = nanmean(neu_face);
+neutral.mean.scene = nanmean(neu_scene);
+neutral.mean.object = nanmean(neu_object);
+neutral.mean.word = nanmean(neu_word);
+neutral.mean.rest = nanmean(neu_rest);
+
+negative.std.face = std(neg_face);
+negative.std.scene = std(neg_scene);
+negative.std.object = std(neg_object);
+negative.std.word = std(neg_word);
+negative.std.rest = std(neg_rest);
+   
+neutral.std.face = std(neu_face);
+neutral.std.scene = std(neu_scene);
+neutral.std.object = std(neu_object);
+neutral.std.word = std(neu_word);
+neutral.std.rest = std(neu_rest);
+
+results.preview.negative = negative;
+results.preview.neutral = neutral;
+
+filename = sprintf('results_%s_%s.mat',test_phase, conds);
+save(filename,'results');
+
+end
+
+cd(args.script_dir);
+
+
+
+
+
+end
+
+
+
+
+
+
