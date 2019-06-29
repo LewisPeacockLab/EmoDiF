@@ -55,9 +55,6 @@ if strcmp(test_phase, 'DFencode') == true
     results.remember.all.bar.precue.scene_facenorm.nanmean = nanmean(results.remember.all.bar.precue.scene_facenorm.bytrial);
     results.remember.all.bar.precue.scene_facenorm.std = std(results.remember.all.bar.precue.scene_facenorm.bytrial);
     
-    results.remember.all.bar.precue.word_facenorm.bytrial = results.remember.all.bar.precue.word.bytrial-results.remember.all.bar.precue.face.bytrial;
-    results.remember.all.bar.precue.word_facenorm.nanmean = nanmean(results.remember.all.bar.precue.word_facenorm.bytrial);
-    results.remember.all.bar.precue.word_facenorm.std = std(results.remember.all.bar.precue.word_facenorm.bytrial);
     
     %Remember - POSTCUE
     
@@ -85,15 +82,11 @@ if strcmp(test_phase, 'DFencode') == true
     results.remember.all.bar.postcue.scene_facenorm.nanmean = nanmean(results.remember.all.bar.postcue.scene_facenorm.bytrial);
     results.remember.all.bar.postcue.scene_facenorm.std = std(results.remember.all.bar.postcue.scene_facenorm.bytrial);
     
-    results.remember.all.bar.postcue.word_facenorm.bytrial = results.remember.all.bar.postcue.word.bytrial-results.remember.all.bar.postcue.face.bytrial;
-    results.remember.all.bar.postcue.word_facenorm.nanmean = nanmean(results.remember.all.bar.postcue.word_facenorm.bytrial);
-    results.remember.all.bar.postcue.word_facenorm.std = std(results.remember.all.bar.postcue.word_facenorm.bytrial);
-    
     results.remember.all.bar.postminuspre.facenorm.scene.bytrial= results.remember.all.bar.postcue.scene_facenorm.bytrial - results.remember.all.bar.precue.scene_facenorm.bytrial;
     results.remember.all.bar.postminuspre.facenorm.scene.nanmean = nanmean(results.remember.all.bar.postminuspre.facenorm.scene.bytrial);
     results.remember.all.bar.postminuspre.facenorm.scene.std = std(results.remember.all.bar.postminuspre.facenorm.scene.nanmean);
     
-    results.remember.all.bar.postminuspre.nofacenorm.scene.bytrial = results.remember.all.bar.postcue.scene.bytrial -results.remember.all.bar.precue.word.bytrial;
+    results.remember.all.bar.postminuspre.nofacenorm.scene.bytrial = results.remember.all.bar.postcue.scene.bytrial -results.remember.all.bar.precue.scene.bytrial;
     results.remember.all.bar.postminuspre.nofacenorm.scene.nanmean = nanmean(results.remember.all.bar.postminuspre.nofacenorm.scene.bytrial);
     results.remember.all.bar.postminuspre.nofacenorm.scene.std = std(results.remember.all.bar.postminuspre.nofacenorm.scene.nanmean);
     
@@ -123,10 +116,6 @@ if strcmp(test_phase, 'DFencode') == true
     results.forget.all.bar.precue.scene_facenorm.nanmean = nanmean(results.forget.all.bar.precue.scene_facenorm.bytrial);
     results.forget.all.bar.precue.scene_facenorm.std = std(results.forget.all.bar.precue.scene_facenorm.bytrial);
     
-    results.forget.all.bar.precue.word_facenorm.bytrial = results.forget.all.bar.precue.word.bytrial-results.forget.all.bar.precue.face.bytrial;
-    results.forget.all.bar.precue.word_facenorm.nanmean = nanmean(results.forget.all.bar.precue.word_facenorm.bytrial);
-    results.forget.all.bar.precue.word_facenorm.std = std(results.forget.all.bar.precue.word_facenorm.bytrial);
-    
     %forget - POSTCUE
     
     results_for_postcue_acts_face = nanmean(results.forget.all.acts.face(:,5:7),2); %merging 1-3TR
@@ -150,7 +139,6 @@ if strcmp(test_phase, 'DFencode') == true
     results.forget.all.bar.postcue.rest.std = std(results.forget.all.bar.postcue.rest.bytrial);
 
     results.forget.all.bar.postcue.scene_facenorm.bytrial = results.forget.all.bar.postcue.scene.bytrial-results.forget.all.bar.postcue.face.bytrial;
-    results.forget.all.bar.postcue.word_facenorm.bytrial = results.forget.all.bar.postcue.word.bytrial-results.forget.all.bar.postcue.face.bytrial;
     
     results.forget.all.bar.postcue.scene_facenorm.bytrial = results.forget.all.bar.postcue.scene.bytrial-results.forget.all.bar.postcue.face.bytrial;
     results.forget.all.bar.postcue.scene_facenorm.nanmean = nanmean(results.forget.all.bar.postcue.scene_facenorm.bytrial);
@@ -159,12 +147,8 @@ if strcmp(test_phase, 'DFencode') == true
     results.forget.all.bar.postminuspre.facenorm.scene.bytrial= results.forget.all.bar.postcue.scene_facenorm.bytrial - results.forget.all.bar.precue.scene_facenorm.bytrial;
     results.forget.all.bar.postminuspre.facenorm.scene.nanmean = nanmean(results.forget.all.bar.postminuspre.facenorm.scene.bytrial);
     results.forget.all.bar.postminuspre.facenorm.scene.std = std(results.forget.all.bar.postminuspre.facenorm.scene.nanmean);
-    
-    results.forget.all.bar.postminuspre.nofacenorm.word.bytrial = results.forget.all.bar.postcue.word.bytrial -results.forget.all.bar.precue.word.bytrial;
-    results.forget.all.bar.postminuspre.nofacenorm.word.nanmean = nanmean(results.forget.all.bar.postminuspre.nofacenorm.word.bytrial);
-    results.forget.all.bar.postminuspre.nofacenorm.word.std = std(results.forget.all.bar.postminuspre.nofacenorm.word.nanmean);
-    
-    results.forget.all.bar.postminuspre.nofacenorm.scene.bytrial = results.forget.all.bar.postcue.scene.bytrial -results.forget.all.bar.precue.word.bytrial;
+        
+    results.forget.all.bar.postminuspre.nofacenorm.scene.bytrial = results.forget.all.bar.postcue.scene.bytrial -results.forget.all.bar.precue.scene.bytrial;
     results.forget.all.bar.postminuspre.nofacenorm.scene.nanmean = nanmean(results.forget.all.bar.postminuspre.nofacenorm.scene.bytrial);
     results.forget.all.bar.postminuspre.nofacenorm.scene.std = std(results.forget.all.bar.postminuspre.nofacenorm.scene.nanmean);
     
