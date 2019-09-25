@@ -24,6 +24,11 @@ function emodif_mvpa_decoding_bar_compare(subjNum,test_phase, maskName, test_dat
 if strcmp(test_phase, 'DFencode') == true
     load('results_DFencode.mat');    %this loads the result file 
     
+    %figure out how many categories this parsed file has
+    
+    categories = results.remember.all.acts;
+    
+    
     %Remember - PRECUE
     
     results_rem_precue_acts_face = nanmean(results.remember.all.acts.face(:,1:3),2); %merging 1-3TR
